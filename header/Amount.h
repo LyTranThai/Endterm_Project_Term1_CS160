@@ -17,5 +17,4 @@ struct Amount
     }
 };
 
-string currency[100]={"VND","USD"};
 

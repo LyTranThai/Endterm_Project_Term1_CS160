@@ -13,5 +13,5 @@ struct Currency
     double ratio;
 };
 
-void Input_Currency(string filename);
+void Input_Currency(string filename, Currency*& Currency_List);
 

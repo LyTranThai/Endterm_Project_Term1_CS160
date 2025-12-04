@@ -12,3 +12,6 @@ struct Wallet
     string name;
     Amount remain;
 };
+
+void Input_With_Textfile(string filename);
+void Output_Save_Textfile(string filename);

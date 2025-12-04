@@ -23,7 +23,8 @@ using namespace std;
 #include <fstream> // For File I/O
 #include <limits>  // For input cleaning
 
-
+Transaction_Type type[100];
+int number_of_type=0;
 
 using namespace std;
 void Input_Choice(int& choice)

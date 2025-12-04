@@ -9,7 +9,7 @@ using namespace std;
 
 struct Amount
 {
-    int quantity;
+    double quantity;
     Currency currency;
     Amount()
     {

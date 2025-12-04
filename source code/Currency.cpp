@@ -23,7 +23,7 @@ void Input_Currency(string filename,Currency*& Currency_List)
     Currency_List= new Currency[n];
     string info;
 
-
+    
     int i=0;
     while (i<n && getline(fin,info))
 

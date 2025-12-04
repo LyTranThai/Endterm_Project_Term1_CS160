@@ -18,7 +18,8 @@ struct Transaction
 
     Date date;
     Transaction_Type type;
-    Amount amount;
+    long long amount;
     Wallet wallet;
     string description;
 };
+

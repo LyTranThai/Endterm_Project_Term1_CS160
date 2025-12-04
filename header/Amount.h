@@ -17,4 +17,7 @@ struct Amount
     }
 };
 
+//format
+//quantity/currency
+void Input_Amount(string info);
 

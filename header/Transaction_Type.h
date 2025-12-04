@@ -3,10 +3,8 @@
 using namespace std;
 
 
-
-
 struct Transaction_Type
 {
-    int ID;
-    string name;
+    int ID[100];
+    string name[100];
 };

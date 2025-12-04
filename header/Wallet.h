@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
+#include <sstream>
 using namespace std;
-#include "Amount.h"
+
 
 struct Amount;
 
@@ -10,8 +11,12 @@ struct Wallet
 {
     int ID;
     string name;
-    Amount remain;
+    int remain;
 };
 
 void Input_With_Textfile(string filename);
 void Output_Save_Textfile(string filename);
+
+//Format
+//ID-Name-remain
+void Input_Wallet(string info);

@@ -5,6 +5,6 @@ using namespace std;
 
 struct Transaction_Type
 {
-    int ID[100];
-    string name[100];
+    int ID;
+    string name;
 };

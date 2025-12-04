@@ -10,8 +10,8 @@ struct User_Info
     Wallet default_Wallet;
     Wallet* Wallet_List=new Wallet[100];
     Transaction* Transaction_List=new Transaction[100];
-    int number_of_wallets=0;
-    int number_of_transaction=0;
+    int number_of_wallets = 0 ;
+    int number_of_transaction = 0;
     ~User_Info()
     {
         delete[] Wallet_List;

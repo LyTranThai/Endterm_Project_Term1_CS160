@@ -80,3 +80,5 @@ int SinceDate(Date src);
 // Given that the date of week of 1970-01-01 is Thursday. Compute the date of week of the input
 string which_day_of_week(Date src);
 
+
+int compare_Date(Date day1, Date day2);

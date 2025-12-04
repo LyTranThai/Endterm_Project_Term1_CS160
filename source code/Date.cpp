@@ -343,3 +343,25 @@ string which_day_of_week(Date src)
     "Friday", "Saturday", "Sunday","Monday", "Tuesday", "Wednesday"};
     return daysOfWeek[week];
 }
+
+
+int compare_Date(Date day1, Date day2)
+{
+    Date current;
+    GetCurrentDate(current);
+    int age1=compare(day1,current);
+    int age2=compare(day2,current);
+    if(age1>age2)
+    {
+        return 1;
+    }
+    else if(age1<age2)
+    {
+        return 2;
+    }
+    else
+    {
+        return 3;
+    }
+
+}

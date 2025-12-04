@@ -11,7 +11,7 @@ struct Wallet
 {
     int ID;
     string name;
-    int remain;
+    long long remain;
 };
 
 void Input_With_Textfile(string filename);

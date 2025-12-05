@@ -10,12 +10,17 @@ struct User_Info
     string name;
     Wallet default_Wallet;
     Wallet* Wallet_List;
-    Transaction* Transaction_History;
-    Recurring_Transaction* Recurring_Transaction_List;
+    Transaction_Expense* Transaction_Expense_History;
+    Transaction_Income* Transaction_Income_History;
+    Recurring_Transaction_Expense* Recurring_Transaction_Expense_List;
+    Recurring_Transaction_Expense* Recurring_Transaction_Expense_List;
+
     int wallet_count;
     int wallet_capacity;
-    int trans_count;
-    int trans_capacity;
+    int trans_expense_count;
+    int trans_expense_capacity;
+    int trans__count;
+    int trans_expense_capacity;
     User_Info()
     {
         wallet_capacity = 10; // Start small
@@ -29,7 +34,8 @@ struct User_Info
     ~User_Info()
     {
         delete[] Wallet_List;
-        delete[] Transaction_History;
+        delete[] Transaction_Expense_History;
+        delete[] Transaction_Income_History;
         delete[]Recurring_Transaction_List;
     }
 

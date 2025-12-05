@@ -5,6 +5,8 @@ using namespace std;
 #include "Date.h"
 #include "Transaction_Type.h"
 #include "Wallet.h"
+#include "Recurring_Transaction.h"
+#include "MasterData.h"
 
 struct Date;
 struct Transaction_Type;
@@ -13,14 +15,24 @@ struct Wallet;
 
 
 
-struct Transaction
+struct Transaction_Expense
 {
 
     Date date;
-    Transaction_Type type;
+    ExpenseCategory type;
     long long amount;
     Wallet wallet;
     string description;
 
 };
 
+struct Transaction_Income
+{
+
+    Date date;
+    IncomeSource type;
+    long long amount;
+    Wallet wallet;
+    string description;
+
+};

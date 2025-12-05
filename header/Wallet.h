@@ -18,8 +18,7 @@ struct Wallet
     void Output_Terminal();
 };
 
-bool Input_With_Textfile(string filename);
-void Output_Save_Textfile(string filename);
+
 
 //Format
 //ID-Name-remain

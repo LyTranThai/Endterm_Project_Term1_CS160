@@ -1,6 +1,5 @@
 #include <string>
-
-//Bo bot di
+#pragma once
 
 struct MasterData
 {
@@ -16,7 +15,4 @@ struct IncomeSource : MasterData
 {
 };
 
-struct Wallet : MasterData
-{
-    double balance;
-};
+

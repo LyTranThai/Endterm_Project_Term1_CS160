@@ -27,16 +27,17 @@ Transaction_Type type[100];
 int number_of_type=0;
 
 using namespace std;
-void Input_Choice(int& choice)
+bool Input_Choice(int& choice)
 {
 string input;
 getline(cin, input); 
 
 try {
-    choice = stoi(input); // Try to convert string to int
+    choice = stoi(input);
+    return true; // Try to convert string to int
 } 
 catch (...) {
-    continue; // reset
+    return false; // reset
 }
 }
 
@@ -89,11 +90,12 @@ void drawMenu() //ifstream& fin
     cout << "-------------------------------------------------\n";
     cout << "Select option: ";
 }
-void Draw_Wallet_List();
+
+void Draw_Wallet_List(); // 1.Change Wallet 2. back
 void Draw_Transaction_History();
 void Draw_Add_Transaction();
 void Draw_Recurring_Transaction_List();
-void Input_Choice(int& choice);
+bool Input_Choice(int& choice);
 void Input_User_Info_Textfile(string filename);
 
 // Income Management:
@@ -128,10 +130,42 @@ void RunApplication_Navigation()
 {
     while (true)
     {
+        int choice;
         clearScreen();
         drawMenu();
-        Input_Choice;
-        pause();
+        if(!Input_Choice(choice))
+        {
+            cout << "\n[!] Invalid input. Please enter a number.\n";
+            pause();
+            continue;
+        }
+        switch (choice)
+        {
+            // case 1:
+            //     Draw_Wallet_List();
+            //     break;
+            // case 2:
+            //     Draw_Transaction_History();
+            //     break;
+            // case 3:
+            //     Draw_Add_Transaction();
+            //     break;
+            // case 4:
+            //     Draw_Recurring_Transaction_List();
+            //     break;
+            // case 5:
+            //     cout << "\nSaving progress... (Functionality to be implemented)\n";
+            //     pause();
+            //     break;
+            case 6:
+                cout << "\nExiting application. Goodbye!\n";
+                return; // Breaks the loop and ends the program
+            default:
+                cout << "\n[!] Option not found.\n";
+                pause();
+                // Loop will automatically restart here, resetting the UI
+                break; 
+        }
 
     }
     

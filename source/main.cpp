@@ -4,7 +4,7 @@
 #include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\Transaction_Type.h"
 #include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\Transaction.h"
 #include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\Wallet.h"
-#include "Currency.cpp"
+
 using namespace std;
 //MUST RUN TO INPUT CURRENCY DATA 
 // int main()
@@ -36,7 +36,7 @@ try {
     choice = stoi(input); // Try to convert string to int
 } 
 catch (...) {
-    choice = -1; // If conversion fails, set to an invalid number
+    continue; // reset
 }
 }
 
@@ -49,22 +49,24 @@ void clearScreen()
     #endif
 }
 
-
+void Clear_Buffer()
+{
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+}
 //Wait for the user to press something
 void pause()
 {
       cout << "\nPress Enter to continue...";
     // This line clears any leftover "Enter" keys in the keyboard buffer
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     // This line waits for a NEW "Enter" key press
     cin.get();
 }
 
-void drawMenu(ifstream& fin) 
+void drawMenu() //ifstream& fin
 {
-    string userName;
-    string currentWallet;
-    double currentRemainder;
+    string userName="UserName";
+    string currentWallet="DefaultWallet";
+    double currentRemainder=10000;
 
     // 1. Header & User Info
     cout << "=================================================\n";
@@ -122,7 +124,20 @@ void Input_User_Info_Textfile(string filename);
 // o Mechanism: When the user opens the application, the system checks and adds the transaction for
 // the current month if the conditions are met, ensuring that the transaction is not added again if it
 // already exists for the current cycle.
+void RunApplication_Navigation()
+{
+    while (true)
+    {
+        clearScreen();
+        drawMenu();
+        Input_Choice;
+        pause();
+
+    }
+    
+}
 int main()
 {
-    
+    RunApplication_Navigation();
+    return 0;
 }

@@ -21,5 +21,6 @@ struct Transaction
     long long amount;
     Wallet wallet;
     string description;
+
 };
 

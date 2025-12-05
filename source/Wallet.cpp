@@ -3,12 +3,14 @@
 
 bool Wallet::Input_Wallet(string info)
 {
-    string data[3];
+    int length=10;
+    string* data=new string[length];
     stringstream ss(info);
     int i=0;
     while (getline(ss,data[i],'-'))
     {
         i++;
+        if(i>)
     }
     if(i<3)
     {

@@ -1,5 +1,7 @@
 #include <string>
 
+//Bo bot di
+
 struct MasterData
 {
     int id;

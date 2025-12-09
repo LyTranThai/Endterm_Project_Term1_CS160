@@ -1,5 +1,5 @@
 #pragma once
-#include "Transaction.h"
+#include "transaction.h"
 struct Recurring_Transaction_Expense
 {
     ExpenseCategory type;
@@ -8,15 +8,13 @@ struct Recurring_Transaction_Expense
     string description;
     Date start;
     Date end;
-
 };
 struct Recurring_Transaction_Income
 {
-    ExpenseCategory type;
+    IncomeSource type;
     long long amount;
     Wallet wallet;
     string description;
     Date start;
     Date end;
 };
-

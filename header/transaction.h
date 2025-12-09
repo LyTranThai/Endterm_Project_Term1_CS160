@@ -1,19 +1,12 @@
 #pragma once
 #include <iostream>
+#include <string>
 using namespace std;
 #include "Amount.h"
 #include "Date.h"
-#include "Transaction_Type.h"
 #include "Wallet.h"
 #include "Recurring_Transaction.h"
 #include "MasterData.h"
-
-struct Date;
-struct Transaction_Type;
-struct Amount;
-struct Wallet;
-
-
 
 struct Transaction_Expense
 {
@@ -23,7 +16,6 @@ struct Transaction_Expense
     long long amount;
     Wallet wallet;
     string description;
-
 };
 
 struct Transaction_Income
@@ -34,5 +26,4 @@ struct Transaction_Income
     long long amount;
     Wallet wallet;
     string description;
-
 };

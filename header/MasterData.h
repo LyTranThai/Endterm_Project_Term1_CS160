@@ -14,5 +14,3 @@ struct ExpenseCategory : MasterData
 struct IncomeSource : MasterData
 {
 };
-
-

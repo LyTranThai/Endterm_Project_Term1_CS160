@@ -16,6 +16,9 @@ int findNextId(const MasterData *data, int size)
     return maxId + 1;
 }
 
+// Overload for Wallet which uses field name `ID` instead of `id`
+// Wallet now inherits MasterData and uses `id`, so no separate overload is required.
+
 // Tạo array cho exp
 void initExpenseCategoryArray(ExpenseCategoryArray &arr)
 {
@@ -165,7 +168,7 @@ void addIncomeSource(IncomeSourceArray &arr, const std::string &name)
 
     IncomeSource newItem;
 
-    newItem.id = findNextId((MasterData *)arr.data, arr.size);
+    newItem.id = findNextId(arr.data, arr.size);
     newItem.name = name;
 
     arr.data[arr.size] = newItem;
@@ -256,10 +259,9 @@ void addWallet(WalletArray &arr, const std::string &name)
     }
 
     Wallet newItem;
-
-    newItem.id = findNextId((MasterData *)arr.data, arr.size);
+    newItem.id = findNextId(arr.data, arr.size);
     newItem.name = name;
-    newItem.balance = 0.0;
+    newItem.remain = 0.0;
 
     arr.data[arr.size] = newItem;
     arr.size++;

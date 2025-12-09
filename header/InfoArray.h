@@ -1,6 +1,5 @@
 #include "MasterData.h"
 #include "Recurring_Transaction.h"
-#include "Transaction.h"
 #include "Wallet.h"
 #pragma once
 struct ExpenseCategoryArray
@@ -25,8 +24,8 @@ struct WalletArray
     WalletArray()
     {
         capacity = 10;
-        size=0;
-        data=new Wallet[capacity];
+        size = 0;
+        data = new Wallet[capacity];
     }
 
     bool Input_With_Textfile(string filename);
@@ -39,4 +38,3 @@ struct Recurring_Transaction_Enpense_List
 {
     /* data */
 };
-

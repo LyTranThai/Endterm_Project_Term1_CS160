@@ -1,7 +1,7 @@
 #ifndef MASTER_DATA_FUNCS_H
 #define MASTER_DATA_FUNCS_H
 
-#include "DynamicArray.h"
+#include "InfoArray.h"
 #include <string>
 
 void initExpenseCategoryArray(ExpenseCategoryArray &arr);

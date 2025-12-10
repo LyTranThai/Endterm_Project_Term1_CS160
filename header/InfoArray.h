@@ -28,6 +28,8 @@ struct WalletArray
         data = new Wallet[capacity];
     }
 
+    //Format
+    //ID-Name-remain
     bool Input_With_Textfile(string filename);
     bool Output_Save_Textfile(string filename);
 };

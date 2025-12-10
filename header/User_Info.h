@@ -10,8 +10,13 @@ struct User_Info
     string name;
     Wallet default_Wallet;
     Wallet* Wallet_List;
+
+    
     Transaction_Expense* Transaction_Expense_History;
     Transaction_Income* Transaction_Income_History;
+
+
+    //Xu ly nhe
     Recurring_Transaction_Expense* Recurring_Transaction_Expense_List;
     Recurring_Transaction_Expense* Recurring_Transaction_Expense_List;
 

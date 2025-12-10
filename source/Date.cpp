@@ -8,11 +8,30 @@ using namespace std;
 
 
 // Input a date (from console).
-Date InputDate(string info)
+Date InputDate(string info1)
 {
+
     Date date;
-    stringstream ss(info);
-    ss>>date.day>>date.month>>date.year;
+    GetCurrentDate(date); // Default initialize to avoid garbage values
+    
+    // Safety check: if string is empty, return default date
+    if (info1.empty()) return date;
+
+    stringstream ss(info1);
+    string day_str, month_str, year_str;
+
+    if (getline(ss, day_str, '/') && getline(ss, month_str, '/') && getline(ss, year_str))
+    {
+        try {
+
+            date.day = stoi(day_str);
+            date.month = stoi(month_str);
+            date.year = stoi(year_str);
+        } catch (...) {
+
+            return date;
+        }
+    }
     return date;
 };
 
@@ -136,7 +155,6 @@ void OutputDateFormat(Date src, string format)
 
 Date GetCurrentDate(Date& current_date)
 {
-    Date current_date;
     
     time_t now = time(0);
     tm *ltm = localtime(&now);

@@ -38,9 +38,8 @@ Date InputDate(string info1)
 // Output a date (to console). Format: DD/MM/YYYY
 void OutputDate(Date src)
 {
-    cout<<src.day<<"/"<<src.month << "/" << src.year << endl;
-};
-
+    cout<<setw(5)<<right<<src.day<<"/"<<src.month << "/" << src.year;
+}
 // Input a date (from text file).
 void InputDate(ifstream& fin)
 {

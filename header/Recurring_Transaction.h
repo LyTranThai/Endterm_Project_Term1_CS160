@@ -2,18 +2,18 @@
 #include "transaction.h"
 struct Recurring_Transaction_Expense
 {
-    ExpenseCategory type;
+    ExpenseCategory** type;
     long long amount;
-    Wallet wallet;
+    Wallet** wallet;
     string description;
     Date start;
     Date end;
 };
 struct Recurring_Transaction_Income
 {
-    IncomeSource type;
+    IncomeSource** type;
     long long amount;
-    Wallet wallet;
+    Wallet** wallet;
     string description;
     Date start;
     Date end;

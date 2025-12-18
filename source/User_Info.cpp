@@ -1,20 +1,74 @@
-#include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\User_Info.h"
+#include "..\header\User_Info.h"
 
-void User_Info::sort_Transaction_List_Date()
-{
-    // Loop through the history using 'trans_count'
-    for(int i = 0; i < this->trans_count; i++)
+
+    void User_Info::resize()
     {
-        for(int j = i + 1; j < this->trans_count; j++)
-        {
-            // Access 'Transaction_History' instead of 'Transaction_List'
-            if(compare_Date(this->Transaction_History[i].date, this->Transaction_History[j].date) == 2)
-            {
-                // Swap the transactions in the History array
-                Transaction save = Transaction_History[i];
-                Transaction_History[i] = Transaction_History[j];
-                Transaction_History[j] = save;
-            }
-        }   
+        resize1(Wallet_List,wallet_count,wallet_capacity);
+        resize1(expense,expense_count,expense_capacity);
+        resize1(income,income_count,income_capacity);
+        resize1(Recurring_Transaction_Expense_List,recur_trans_expense_count,recur_trans_expense_capacity);
+        resize1(Recurring_Transaction_Income_List,recur_trans_income_count,recur_trans_income_capacity);
+        resize1(incomes_transaction,inCount,inCap);
+        resize1(expenses_transaction,expCount,expCap);
     }
-}
+
+    template <typename T>
+    void resize1(T** & p, int size, int cap)
+    {
+        while(size>=cap)
+        {
+            cap *= 2;
+            
+        }
+        T**dummy=p;
+        p= new T*[cap];
+        for(int i=0; i<size; i++)
+        {
+            p[i]=dummy[i];
+        }
+        delete[]dummy;
+    }
+
+    void User_Info::SaveToBinary(ofstream& out,string filename)
+    {
+        WriteString(out,name);
+        out.write(reinterpret_cast<char*>(&this->default_Wallet->id),sizeof(int));
+
+        //Output number of elements of each array
+        out.write(reinterpret_cast<char*>(&this->income_count),sizeof(int));
+        out.write(reinterpret_cast<char*>(&this->expense_count),sizeof(int));
+        out.write(reinterpret_cast<char*>(&this->wallet_count),sizeof(int));
+        out.write(reinterpret_cast<char*>(&this->recur_trans_income_count),sizeof(int));
+        out.write(reinterpret_cast<char*>(&this->recur_trans_expense_count),sizeof(int));
+        out.write(reinterpret_cast<char*>(&this->inCount),sizeof(int));
+        out.write(reinterpret_cast<char*>(&this->expCount),sizeof(int));
+
+        
+        //Write the actual object info
+        //Write transaction type;
+        //Write Wallet;
+        //Write Recur;
+        //Write Transaction;
+
+
+
+
+        
+    }
+    void User_Info::LoadFromBinary(ifstream& out,string filename)
+    {
+        ReadString(out,name);
+        out.read(reinterpret_cast<char*>(&this->default_Wallet->id),sizeof(int));
+
+        //Get baxk number of elements of each array
+        out.read(reinterpret_cast<char*>(&this->income_count),sizeof(int));
+        out.read(reinterpret_cast<char*>(&this->expense_count),sizeof(int));
+        out.read(reinterpret_cast<char*>(&this->wallet_count),sizeof(int));
+        out.read(reinterpret_cast<char*>(&this->recur_trans_income_count),sizeof(int));
+        out.read(reinterpret_cast<char*>(&this->recur_trans_expense_count),sizeof(int));
+        out.read(reinterpret_cast<char*>(&this->inCount),sizeof(int));
+        out.read(reinterpret_cast<char*>(&this->expCount),sizeof(int));
+
+        this->resize();
+        
+    }

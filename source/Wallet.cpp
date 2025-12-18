@@ -1,6 +1,5 @@
 #include "InfoArray.h"
 #include <fstream>
-<<<<<<< Updated upstream
 #include <sstream>
 #include "Wallet.h"
 
@@ -45,59 +44,6 @@ bool Wallet::Input_Wallet(string info)
     cout<<"Type In your Wallet Name (Does not contain '^'): ";
     getline(cin,info);
     if(check_string(info,'^'))
-=======
-#include <string>
-bool check_string(string src,char c)
-{
-    for(int i=0;i<src.size();i++)
-    {
-        if(src[i]==c)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Wallet::Input_Wallet()
-{
-    string info;
-    cout<<"Type In your Wallet Name (Does not contain '^'): ";
-    getline(cin,info);
-    if(check_string(info,'^'))
-    {
-        cout<<"\nInvalid Name\n"<<endl;
-        cout<<"Press any key to retry..."<<endl;
-        cin.get();
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        return false;
-    }
-    this->name=info;
-    cout<<"Type In your Wallet ID (Does not contain '^'): ";
-    getline(cin,info);
-    if(check_string(info,'^'))
-    {
-        cout<<"\nInvalid Name\n"<<endl;
-        cout<<"Press any key to retry..."<<endl;
-        cin.get();
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        return false;
-    }
-    this->name=ID;
-    this->remain=0;
-    cout<<"Your wallet created "<<this->name<<" ID: "<<this->ID<<endl;
-    return true;
-
-}
-bool Wallet::Input_Wallet(string info)
-{
-    int length=10;
-    string* data=new string[length];
-    stringstream ss(info);
-    int i=0;
-    string segment;
-    while (getline(ss,segment,'^'))
->>>>>>> Stashed changes
     {
         cout<<"\nInvalid Name\n"<<endl;
         cout<<"Press any key to retry..."<<endl;
@@ -143,19 +89,12 @@ bool Wallet::Input_Wallet(string info)
         cerr << "Error: Invalid data format -> " << info << endl;
         return false;
     }
-<<<<<<< Updated upstream
     try
     { /*  */
         this->id = stoi(data[0]);
 
         if (i > 3)
         {
-=======
-    try {
-        this->ID = data[0];
-        
-        if (i > 3) {
->>>>>>> Stashed changes
             this->name = data[1];
             for (int j = 2; j < i - 1; j++)
             {
@@ -244,34 +183,7 @@ bool WalletArray::Output_Save_Textfile(string filename)
 //
 //
 // Vì cnay của wallet, ném qua info kh biết nên tìm ở đâu, nên t để dây tạm
-void WriteString(ofstream &out, const string &s)
-{
-    size_t len = s.size();
-    out.write((char *)&len, sizeof(len)); // xâu length
-    if (len > 0)
-    {
-        out.write(s.c_str(), len); // print xau
-    }
-}
 
-// đọc xâu
-void ReadString(ifstream &in, string &s)
-{
-    size_t len = 0;
-    in.read((char *)&len, sizeof(len));
-    if (in.gcount() != sizeof(len))
-        return;
-
-    if (len > 0)
-    {
-        s.resize(len);
-        in.read(&s[0], len);
-    }
-    else
-    {
-        s = "";
-    }
-}
 
 void Wallet::SaveToBinary(string filename)
 {
@@ -300,9 +212,9 @@ void Wallet::SaveToBinary(string filename)
         // date
         fout.write((char *)&item.date, sizeof(Date));
         // id
-        fout.write((char *)&item.type.id, sizeof(int));
+        fout.write((char *)&item.type->id, sizeof(int));
         // name
-        WriteString(fout, item.type.name);
+        WriteString(fout, item.type->name);
         // Amount
         fout.write((char *)&item.amount, sizeof(long long));
         //  Desc
@@ -317,9 +229,9 @@ void Wallet::SaveToBinary(string filename)
 
         fout.write((char *)&item.date, sizeof(Date));
 
-        fout.write((char *)&item.type.id, sizeof(int));
+        fout.write((char *)&item.type->id, sizeof(int));
 
-        WriteString(fout, item.type.name);
+        WriteString(fout, item.type->name);
 
         fout.write((char *)&item.amount, sizeof(long long));
 
@@ -360,9 +272,9 @@ void Wallet::LoadFromBinary(string filename)
         // Date
         fin.read((char *)&item.date, sizeof(Date));
         //  ID
-        fin.read((char *)&item.type.id, sizeof(int));
+        fin.read((char *)&item.type->id, sizeof(int));
         //  Name
-        ReadString(fin, item.type.name);
+        ReadString(fin, item.type->name);
         // Amount
         fin.read((char *)&item.amount, sizeof(long long));
         //  Descript
@@ -381,9 +293,9 @@ void Wallet::LoadFromBinary(string filename)
 
         fin.read((char *)&item.date, sizeof(Date));
 
-        fin.read((char *)&item.type.id, sizeof(int));
+        fin.read((char *)&item.type->id, sizeof(int));
 
-        ReadString(fin, item.type.name);
+        ReadString(fin, item.type->name);
 
         fin.read((char *)&item.amount, sizeof(long long));
 

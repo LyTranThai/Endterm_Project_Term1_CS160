@@ -1,0 +1,30 @@
+#include "../header/DataHandling.h"
+
+void WriteString(ofstream &out, const string &s)
+{
+    size_t len = s.size();
+    out.write((char *)&len, sizeof(len)); // xâu length
+    if (len > 0)
+    {
+        out.write(s.c_str(), len); // print xau
+    }
+}
+
+// đọc xâu
+void ReadString(ifstream &in, string &s)
+{
+    size_t len = 0;
+    in.read((char *)&len, sizeof(len));
+    if (in.gcount() != sizeof(len))
+        return;
+
+    if (len > 0)
+    {
+        s.resize(len);
+        in.read(&s[0], len);
+    }
+    else
+    {
+        s = "";
+    }
+}

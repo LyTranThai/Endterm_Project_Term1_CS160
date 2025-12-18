@@ -1,6 +1,5 @@
 #include "InfoArray.h"
 #include <fstream>
-<<<<<<< Updated upstream
 #include <sstream>
 #include "Wallet.h"
 
@@ -27,22 +26,19 @@ void add_element(T *&array, int &size, int &capcity, T element)
     resize(array, size, capcity);
     array[size] = element;
     size += 1;
-=======
-#include <string>
-bool check_string(string src,char c)
+}
+bool check_string(string info, char c)
 {
-    for(int i=0;i<src.size();i++)
+    for(int i=0; i<info.size(); i++)
     {
-        if(src[i]==c)
+        if(info[i]==c)
         {
             return true;
         }
     }
     return false;
->>>>>>> Stashed changes
 }
-
-bool Wallet::Input_Wallet()
+bool Wallet::Input_Wallet(string info)
 {
     string info;
     cout<<"Type In your Wallet Name (Does not contain '^'): ";
@@ -66,9 +62,9 @@ bool Wallet::Input_Wallet()
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return false;
     }
-    this->name=ID;
+    this->name=id;
     this->remain=0;
-    cout<<"Your wallet created "<<this->name<<" ID: "<<this->ID<<endl;
+    cout<<"Your wallet created "<<this->name<<" ID: "<<this->id<<endl;
     return true;
 
 }
@@ -79,11 +75,7 @@ bool Wallet::Input_Wallet(string info)
     stringstream ss(info);
     int i = 0;
     string segment;
-<<<<<<< Updated upstream
-    while (getline(ss, segment, '-'))
-=======
     while (getline(ss,segment,'^'))
->>>>>>> Stashed changes
     {
         if (i >= length)
         {
@@ -97,19 +89,12 @@ bool Wallet::Input_Wallet(string info)
         cerr << "Error: Invalid data format -> " << info << endl;
         return false;
     }
-<<<<<<< Updated upstream
     try
     { /*  */
         this->id = stoi(data[0]);
 
         if (i > 3)
         {
-=======
-    try {
-        this->ID = data[0];
-        
-        if (i > 3) {
->>>>>>> Stashed changes
             this->name = data[1];
             for (int j = 2; j < i - 1; j++)
             {

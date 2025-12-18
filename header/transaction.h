@@ -21,7 +21,7 @@ struct Transaction_Expense
     Date date;
     ExpenseCategory* type;
     long long amount;
-    Wallet** wallet;
+    Wallet* wallet;
     string description;
 
     void SaveToBinary(ofstream& out,string filename);
@@ -34,7 +34,7 @@ struct Transaction_Income
     Date date;
     IncomeSource* type;
     long long amount;
-    Wallet** wallet;
+    Wallet* wallet;
     string description;
     //Format
     // Date/Month/Year^Type of transaction ^Amount^WalletName^Description

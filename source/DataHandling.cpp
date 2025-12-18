@@ -28,3 +28,21 @@ void ReadString(ifstream &in, string &s)
         s = "";
     }
 }
+
+
+    template <typename T>
+    void resize1(T** & p, int size, int cap)
+    {
+        while(size>=cap)
+        {
+            cap *= 2;
+            
+        }
+        T**dummy=p;
+        p= new T*[cap];
+        for(int i=0; i<size; i++)
+        {
+            p[i]=dummy[i];
+        }
+        delete[]dummy;
+    }

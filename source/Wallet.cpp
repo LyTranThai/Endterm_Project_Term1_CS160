@@ -171,6 +171,13 @@ bool WalletArray::Output_Save_Textfile(string filename)
     fout.close();
 }
 
+
+void Wallet::Wallet_resize()
+{
+    resize1(this->expenses, this->expCount, this->expCap);
+    resize1(this->incomes,this->inCount,this->inCap);
+}
+
 // Thêm
 //
 //
@@ -207,7 +214,7 @@ void Wallet::SaveToBinary(string filename)
 
     for (int i = 0; i < this->inCount; i++)
     {
-        Transaction_Income &item = this->incomes[i];
+        Transaction_Income &item = *this->incomes[i];
 
         // date
         fout.write((char *)&item.date, sizeof(Date));
@@ -225,7 +232,7 @@ void Wallet::SaveToBinary(string filename)
 
     for (int i = 0; i < this->expCount; i++)
     {
-        Transaction_Expense &item = this->expenses[i];
+        Transaction_Expense &item = *this->expenses[i];
 
         fout.write((char *)&item.date, sizeof(Date));
 

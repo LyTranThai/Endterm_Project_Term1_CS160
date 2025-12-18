@@ -12,22 +12,7 @@
         resize1(expenses_transaction,expCount,expCap);
     }
 
-    template <typename T>
-    void resize1(T** & p, int size, int cap)
-    {
-        while(size>=cap)
-        {
-            cap *= 2;
-            
-        }
-        T**dummy=p;
-        p= new T*[cap];
-        for(int i=0; i<size; i++)
-        {
-            p[i]=dummy[i];
-        }
-        delete[]dummy;
-    }
+
 
     void User_Info::SaveToBinary(ofstream& out,string filename)
     {
@@ -46,12 +31,95 @@
         
         //Write the actual object info
         //Write transaction type;
+            //income
+            for(int i=0; i<this->income_count; i++)
+            {
+                out.write(reinterpret_cast<char*>(&this->income[i]->id), sizeof(int));
+                // name
+                WriteString(out,this->income[i]->name);
+            }
+            //expense
+            for(int i=0; i<this->expense_count; i++)
+            {
+                out.write(reinterpret_cast<char*>(&this->expense[i]->id), sizeof(int));
+                // name
+                WriteString(out,this->expense[i]->name);
+            }
+
         //Write Wallet;
+            for(int i=0; i<wallet_count; i++)
+            {
+                out.write(reinterpret_cast<char*>(&this->Wallet_List[i]->id), sizeof(int));
+                // name
+                WriteString(out, this->Wallet_List[i]->name);
+                // bà lăng (balance)
+                out.write(reinterpret_cast<char*>(&this->Wallet_List[i]->remain), sizeof(long long));
+                out.write(reinterpret_cast<char*>(&this->Wallet_List[i]->inCount), sizeof(int));
+                out.write(reinterpret_cast<char*>(&this->Wallet_List[i]->expCount), sizeof(int));
+            }
+
+
         //Write Recur;
+            //income
+            for (int i = 0; i < this->recur_trans_income_count; i++)
+            {
+                // date
+                out.write((char *)&this->Recurring_Transaction_Income_List[i]->start, sizeof(Date));
+                out.write((char *)&this->Recurring_Transaction_Income_List[i]->end, sizeof(Date));
+                // id
+                out.write((char *)&this->Recurring_Transaction_Income_List[i]->type->id, sizeof(int));
+                // Amount
+                out.write((char *)&this->Recurring_Transaction_Income_List[i]->amount, sizeof(long long));
+                //  Desc
+                WriteString(out, this->Recurring_Transaction_Income_List[i]->description);
+            }
+        //expense
+            for (int i = 0; i < this->recur_trans_expense_count; i++)
+            {
+                //date
+                out.write((char *)&this->Recurring_Transaction_Expense_List[i]->start, sizeof(Date));
+                out.write((char *)&this->Recurring_Transaction_Expense_List[i]->end, sizeof(Date));
+                //id
+                out.write((char *)&this->Recurring_Transaction_Expense_List[i]->type->id, sizeof(int));
+                // Amount
+                out.write((char *)&this->Recurring_Transaction_Expense_List[i]->amount, sizeof(long long));
+                // Desc
+                WriteString(out, this->Recurring_Transaction_Income_List[i]->description);
+            }
+
+
         //Write Transaction;
+        //income
+            for (int i = 0; i < this->inCount; i++)
+            {
+
+                // date
+                out.write((char *)&this->incomes_transaction[i]->date, sizeof(Date));
+                // id
+                out.write((char *)&this->incomes_transaction[i]->type->id, sizeof(int));
+                // Amount
+                out.write((char *)&this->incomes_transaction[i]->amount, sizeof(long long));
+                //  Desc
+                WriteString(out, this->incomes_transaction[i]->description);
+            }
 
 
 
+        //expense
+            for (int i = 0; i < this->expCount; i++)
+            {
+                // date
+                out.write((char *)&this->expenses_transaction[i]->date, sizeof(Date));
+                
+                // id (Accessing the ID from the ExpenseCategory pointer)
+                out.write((char *)&this->expenses_transaction[i]->type->id, sizeof(int));
+                
+                // Amount
+                out.write((char *)&this->expenses_transaction[i]->amount, sizeof(long long));
+                
+                // Desc
+                WriteString(out, expenses_transaction[i]->description);
+            }
 
         
     }
@@ -70,5 +138,5 @@
         out.read(reinterpret_cast<char*>(&this->expCount),sizeof(int));
 
         this->resize();
-        
+
     }

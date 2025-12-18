@@ -13,7 +13,12 @@ struct Amount;
 
 struct Wallet : MasterData
 {
+<<<<<<< Updated upstream
     // id đồ lấy bên master luôn
+=======
+    string ID;
+    string name;
+>>>>>>> Stashed changes
     long long remain;
 
     Transaction_Income *incomes;
@@ -26,6 +31,7 @@ struct Wallet : MasterData
 
     bool Input_Wallet(string info);
     void Output_Terminal();
+<<<<<<< Updated upstream
 
     // Thêm 2 func input output binary file đây nha:
     void SaveToBinary(string filename);
@@ -35,6 +41,11 @@ struct Wallet : MasterData
 // Format
 // ID-Name-remain
 
+=======
+    bool Input_Wallet();
+};
+
+>>>>>>> Stashed changes
 template <typename T>
 void resize(T*& array, int& size,int& capcity);
 template <typename T>

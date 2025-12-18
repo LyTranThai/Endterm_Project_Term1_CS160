@@ -1,5 +1,6 @@
 #include "InfoArray.h"
 #include <fstream>
+<<<<<<< Updated upstream
 #include <sstream>
 #include "Wallet.h"
 
@@ -44,6 +45,59 @@ bool Wallet::Input_Wallet(string info)
     cout<<"Type In your Wallet Name (Does not contain '^'): ";
     getline(cin,info);
     if(check_string(info,'^'))
+=======
+#include <string>
+bool check_string(string src,char c)
+{
+    for(int i=0;i<src.size();i++)
+    {
+        if(src[i]==c)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Wallet::Input_Wallet()
+{
+    string info;
+    cout<<"Type In your Wallet Name (Does not contain '^'): ";
+    getline(cin,info);
+    if(check_string(info,'^'))
+    {
+        cout<<"\nInvalid Name\n"<<endl;
+        cout<<"Press any key to retry..."<<endl;
+        cin.get();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return false;
+    }
+    this->name=info;
+    cout<<"Type In your Wallet ID (Does not contain '^'): ";
+    getline(cin,info);
+    if(check_string(info,'^'))
+    {
+        cout<<"\nInvalid Name\n"<<endl;
+        cout<<"Press any key to retry..."<<endl;
+        cin.get();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return false;
+    }
+    this->name=ID;
+    this->remain=0;
+    cout<<"Your wallet created "<<this->name<<" ID: "<<this->ID<<endl;
+    return true;
+
+}
+bool Wallet::Input_Wallet(string info)
+{
+    int length=10;
+    string* data=new string[length];
+    stringstream ss(info);
+    int i=0;
+    string segment;
+    while (getline(ss,segment,'^'))
+>>>>>>> Stashed changes
     {
         cout<<"\nInvalid Name\n"<<endl;
         cout<<"Press any key to retry..."<<endl;
@@ -89,12 +143,19 @@ bool Wallet::Input_Wallet(string info)
         cerr << "Error: Invalid data format -> " << info << endl;
         return false;
     }
+<<<<<<< Updated upstream
     try
     { /*  */
         this->id = stoi(data[0]);
 
         if (i > 3)
         {
+=======
+    try {
+        this->ID = data[0];
+        
+        if (i > 3) {
+>>>>>>> Stashed changes
             this->name = data[1];
             for (int j = 2; j < i - 1; j++)
             {

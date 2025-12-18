@@ -7,8 +7,6 @@ using namespace std;
 #include "Wallet.h"
 #include "Recurring_Transaction.h"
 #include "InfoArray.h"
-<<<<<<< Updated upstream
-=======
 
 struct Date;
 struct Transaction_Type;
@@ -16,7 +14,6 @@ struct Amount;
 struct Wallet;
 
 
->>>>>>> Stashed changes
 
 struct Transaction_Expense
 {

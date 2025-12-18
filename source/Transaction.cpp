@@ -25,30 +25,30 @@ bool Transaction_Income::Input_Transaction(string info,IncomeSourceArray array)
         cerr << "Error: Invalid data format -> " << info << endl;
         return false;
     }
-    try {
-        int count=0;
-        this->date=InputDate(data[count]);
-        count+=1;
+    // try {
+    //     int count=0;
+    //     this->date=InputDate(data[count]);
+    //     count+=1;
         
-        if (i > 3) {
-            this->type = array[findIncomeSrcIndexById(array,stoi(data[count]))];
-            count += 1;
-            this->amount=stoll(data[count]);
+    //     if (i > 3) {
+    //         this->type = array[findIncomeSrcIndexById(array,stoi(data[count]))];
+    //         count += 1;
+    //         this->amount=stoll(data[count]);
             
-            this->remain = stoll(data[i-1]); // Take the very last element as balance
-        } else {
-            this->name = data[1];
-            this->remain = stoll(data[2]); // CHANGED: stoll for long long
-        }
-    }
-    catch (const exception& e) {
-        cerr << "Error: Conversion failed for line -> " << info << endl;
-        delete[] data;
-        data=nullptr;
-        return false;
-    }
-    delete[]data;
-    data=nullptr;
+    //         this->amount = stoll(data[i-1]); // Take the very last element as balance
+    //     } else {
+    //         this->name = data[1];
+    //         this->amount = stoll(data[2]); // CHANGED: stoll for long long
+    //     }
+    // }
+    // catch (const exception& e) {
+    //     cerr << "Error: Conversion failed for line -> " << info << endl;
+    //     delete[] data;
+    //     data=nullptr;
+    //     return false;
+    // }
+    // delete[]data;
+    // data=nullptr;
     return true;
     
 

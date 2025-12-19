@@ -139,4 +139,130 @@
 
         this->resize();
 
+        //Read the actual object info
+        //Read transaction type;
+            //income
+            for(int i=0; i<this->income_count; i++)
+            {
+                this->income[i]=new IncomeSource;
+                out.read(reinterpret_cast<char*>(&this->income[i]->id), sizeof(int));
+                // name
+                ReadString(out,this->income[i]->name);
+            }
+            //expense
+            for(int i=0; i<this->expense_count; i++)
+            {
+                this->expense[i]=new ExpenseCategory;
+                out.read(reinterpret_cast<char*>(&this->expense[i]->id), sizeof(int));
+                // name
+                ReadString(out,this->expense[i]->name);
+            }
+        
+        
+        //Read Wallet;
+            
+            for(int i=0; i<wallet_count; i++)
+            {
+                this->Wallet_List[i]=new Wallet;
+                out.read(reinterpret_cast<char*>(&this->Wallet_List[i]->id), sizeof(int));
+                // name
+                ReadString(out, this->Wallet_List[i]->name);
+                // bà lăng (balance)
+                out.read(reinterpret_cast<char*>(&this->Wallet_List[i]->remain), sizeof(long long));
+                out.read(reinterpret_cast<char*>(&this->Wallet_List[i]->inCount), sizeof(int));
+                out.read(reinterpret_cast<char*>(&this->Wallet_List[i]->expCount), sizeof(int));
+                this->Wallet_List[i]->Wallet_resize();
+            }
+        
+        //Write Recur;
+            //income
+            for (int i = 0; i < this->recur_trans_income_count; i++)
+            {
+                this->Recurring_Transaction_Income_List[i] = new Recurring_Transaction_Income;
+                // date
+                out.read((char *)&this->Recurring_Transaction_Income_List[i]->start, sizeof(Date));
+                out.read((char *)&this->Recurring_Transaction_Income_List[i]->end, sizeof(Date));
+                // id
+                out.read((char *)&this->Recurring_Transaction_Income_List[i]->type->id, sizeof(int));
+                // Amount
+                out.read((char *)&this->Recurring_Transaction_Income_List[i]->amount, sizeof(long long));
+                //  Desc
+                ReadString(out, this->Recurring_Transaction_Income_List[i]->description);
+            }
+            //expense
+            for (int i = 0; i < this->recur_trans_expense_count; i++)
+            {
+                this->Recurring_Transaction_Expense_List[i]=new Recurring_Transaction_Expense;
+                //date
+                out.read((char *)&this->Recurring_Transaction_Expense_List[i]->start, sizeof(Date));
+                out.read((char *)&this->Recurring_Transaction_Expense_List[i]->end, sizeof(Date));
+                //id
+                out.read((char *)&this->Recurring_Transaction_Expense_List[i]->type->id, sizeof(int));
+                // Amount
+                out.read((char *)&this->Recurring_Transaction_Expense_List[i]->amount, sizeof(long long));
+                // Desc
+                ReadString(out, this->Recurring_Transaction_Income_List[i]->description);
+            }
+        //Must Link to Wallet and type
+
+        //Read Transaction;
+        //income
+            for (int i = 0; i < this->inCount; i++)
+            {
+                this->incomes_transaction[i]=new Transaction_Income;
+                // date
+                out.read((char *)&this->incomes_transaction[i]->date, sizeof(Date));
+                // id
+                out.read((char *)&this->incomes_transaction[i]->type->id, sizeof(int));
+                // Amount
+                out.read((char *)&this->incomes_transaction[i]->amount, sizeof(long long));
+                //  Desc
+                ReadString(out, this->incomes_transaction[i]->description);
+            }
+
+
+
+        //expense
+            for (int i = 0; i < this->expCount; i++)
+            {
+                this->expenses_transaction[i]=new Transaction_Expense;
+                // date
+                out.read((char *)&this->expenses_transaction[i]->date, sizeof(Date));
+                
+                // id (Accessing the ID from the ExpenseCategory pointer)
+                out.read((char *)&this->expenses_transaction[i]->type->id, sizeof(int));
+                
+                // Amount
+                out.read((char *)&this->expenses_transaction[i]->amount, sizeof(long long));
+                
+                // Desc
+                ReadString(out, expenses_transaction[i]->description);
+            }
+
+        //Must Link to Wallet and type
+
+
+
+
+    }
+
+
+    template <typename T>
+    bool Find_By_ID(int& id,T**& List, int& size,T*& pointer)
+    {
+        check=false;
+        for(int i=0; i<size; i++)
+        {
+            if(list[i]->id==id)
+            {
+                pointer=list[i];
+                check=true;
+                break;
+            }
+        }
+        if(!check)
+        {
+            pointer=list[0];
+        }
+        return check;
     }

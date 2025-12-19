@@ -72,12 +72,16 @@ struct User_Info
         Wallet_List[0]->name="Default";
         default_Wallet=Wallet_List[0];
 
-        expense_count=0;
+        expense_count=1;
         expense_capacity=10;
         expense=new ExpenseCategory*[expense_capacity];
-        income_count=0;
+        expense[0]->name="Unknown";
+        expense[0]->id=0;
+        income_count=1;
         income_capacity=10;
         income=new IncomeSource*[income_capacity];
+        income[0]->name="Unknown";
+        income[0]->id=0;
         recur_trans_expense_count=0;
         recur_trans_expense_capacity=10;
         Recurring_Transaction_Expense_List= new Recurring_Transaction_Expense*[recur_trans_expense_capacity];

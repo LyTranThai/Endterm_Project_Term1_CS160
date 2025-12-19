@@ -9,6 +9,15 @@ struct Recurring_Transaction_Expense
     Wallet* wallet;
     ExpenseCategory* type;
     string description;
+    Recurring_Transaction_Expense()
+    {
+        Date dum;
+        GetCurrentDate(dum);
+        amount=0;
+        wallet=NULL;
+        type=NULL;
+        description="";
+    }
 
 };
 struct Recurring_Transaction_Income
@@ -19,5 +28,14 @@ struct Recurring_Transaction_Income
     Wallet* wallet;
     IncomeSource* type;
     string description;
+    Recurring_Transaction_Income()
+    {
+        Date dum;
+        GetCurrentDate(dum);
+        amount=0;
+        wallet=NULL;
+        type=NULL;
+        description="";
+    }
 
 };

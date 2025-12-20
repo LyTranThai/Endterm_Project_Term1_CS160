@@ -46,3 +46,23 @@ void ReadString(ifstream &in, string &s)
         }
         delete[]dummy;
     }
+
+    template <typename T>
+    bool Find_By_ID(int& id,T**& list, int& size,T*& pointer)
+    {
+        check=false;
+        for(int i=0; i<size; i++)
+        {
+            if(list[i]->id==id)
+            {
+                pointer=list[i];
+                check=true;
+                break;
+            }
+        }
+        if(!check)
+        {
+            pointer=list[0];
+        }
+        return check;
+    }

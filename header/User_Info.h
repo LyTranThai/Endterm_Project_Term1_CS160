@@ -43,6 +43,27 @@ struct User_Info
     void SaveToBinary(ofstream& out,string filename);
     void LoadFromBinary(ifstream& out,string filename);
 
+    //Name - Remain 
+    void Show_Wallet_List();
+
+    //Date - Amount - Wallet Name - Type - Description
+    void Show_Transaction_History();
+
+    ////Date (Start - End) - Amount - Wallet Name - Type - Description
+    void Show_Recurring_Transaction_List();
+
+    
+    void Add_Wallet();
+    void Add_Expense();
+    void Add_Income();
+    void Add_Expense_Transaction();
+    void Add_Income_Transaction();
+    void Add_Recur_Expense_Transaction();
+    void Add_Recur_Income_Transaction();
+    
+    bool Input_Choice(int& choice);
+    void Input_User_Info_Textfile(string filename);
+
     void resize();
     //Sort by Date
     void sort_Transaction_List_Date();
@@ -142,19 +163,7 @@ struct User_Info
         delete[] incomes_transaction;
     }
 
-    void Show_Wallet_List();
-    void Show_Transaction_History();
-    void Show_Recurring_Transaction_List();
-    void Add_Wallet();
-    void Add_Expense();
-    void Add_Income();
-    void Add_Expense_Transaction();
-    void Add_Income_Transaction();
-    void Add_Recur_Expense_Transaction();
-    void Add_Recur_Income_Transaction();
     
-    bool Input_Choice(int& choice);
-    void Input_User_Info_Textfile(string filename);
     
 
 };

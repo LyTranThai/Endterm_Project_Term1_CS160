@@ -468,160 +468,127 @@ void User_Info::Add_Income()
     cout << "---------------------------------" << endl;
 }
 
-void User_Info::Add_Income_Transaction()
-{
-
-    if (inCount >= inCap)
-        this->resize();
-
-    Transaction_Income *trans = new Transaction_Income;
-
-    string dateStr;
-    do
-    {
-        cout << "Enter Date (dd/mm/yyyy): ";
-        if (cin.peek() == '\n')
-            cin.ignore();
-        getline(cin, dateStr);
-        trans->date = InputDate(dateStr);
-        if (trans->date.day == 0)
-            cout << "Invalid Date!\n";
-    } while (trans->date.day == 0);
-
-    while (true)
-    {
-        cout << "Enter Source Name: ";
-        string srcName;
-        getline(cin, srcName);
-
-        IncomeSource *foundSrc = nullptr;
-        if (Find_By_Name(srcName, this->income, this->income_count, foundSrc))
-        {
-            trans->type = foundSrc;
-            break;
-        }
-        else
-        {
-            cout << "Source not found! Create new? (1: Yes, 0: No): ";
-            int choice;
-            cin >> choice;
-            cin.ignore();
-            if (choice == 1)
-            {
-                this->Add_Income();
-
-                trans->type = this->income[this->income_count - 1];
-                break;
-            }
-        }
-    }
-
-    while (true)
-    {
-        cout << "Enter Amount: ";
-        string s;
-        cin >> s;
-        if (isValidLongLong(s))
-        {
-            trans->amount = stoll(s);
-            break;
-        }
-        cout << "Invalid amount!\n";
-    }
-
-    cin.ignore();
-    while (true)
-    {
-        cout << "Enter Wallet Name: ";
-        string wName;
-        getline(cin, wName);
-
-        Wallet *foundWallet = nullptr;
-        if (Find_By_Name(wName, this->Wallet_List, this->wallet_count, foundWallet))
-        {
-            trans->wallet = foundWallet;
-            break;
-        }
-        else
-        {
-            cout << "Wallet not found! Create new? (1: Yes, 0: No): ";
-            int choice;
-            cin >> choice;
-            cin.ignore();
-            if (choice == 1)
-            {
-                this->Add_Wallet();
-                trans->wallet = this->Wallet_List[this->wallet_count - 1];
-                break;
-            }
-        }
-    }
-
-    cout << "Enter Description: ";
-    getline(cin, trans->description);
-
-    trans->wallet->remain += trans->amount;
-    trans->wallet->inCount++;
-
-    this->incomes_transaction[this->inCount] = trans;
-    this->inCount++;
-
-    cout << "\n=== INCOME TRANSACTION ADDED SUCCESSFULLY ===\n";
-}
-
 void User_Info::Add_Expense_Transaction()
 {
-    if (expCount >= expCap)
-        this->resize();
-    Transaction_Expense *trans = new Transaction_Expense;
-
-    // Date
+}
+void User_Info::Add_Income_Transaction()
+{
     string dateStr;
+    // DATE
+    Date transDate;
+    // --- INPUT LOOP TO GET DATE---
     do
     {
-        cout << "Enter Date (dd/mm/yyyy): ";
-        if (cin.peek() == '\n')
-            cin.ignore();
+        cout << "Enter Date of transaction (dd/mm/yyyy): ";
         getline(cin, dateStr);
-        trans->date = InputDate(dateStr);
-    } while (trans->date.day == 0);
+        transDate = InputDate(dateStr);
 
-    // Category
-    while (true)
-    {
-        cout << "Enter Category Name (e.g. Food): ";
-        string catName;
-        getline(cin, catName);
-        ExpenseCategory *foundCat = nullptr;
-        if (Find_By_Name(catName, this->expense, this->expense_count, foundCat))
+        if (transDate.day == 0)
         {
-            trans->type = foundCat;
-            break;
+            cout << "Invalid date format or logic! Please try again (e.g., 25/12/2023).\n";
+        }
+    } while (transDate.day == 0);
+
+    string type_name;
+    // INCOME SOURCE POINTER
+    IncomeSource *dummy_IS = nullptr;
+    int choice;
+    bool check_IS = true;
+    // --- INPUT LOOP TO GET INCOME SOURCE---
+    while (check_IS)
+    {
+        while (true)
+        {
+            cout << "Enter your income source name (e.g., Salary): ";
+            // Show_Income_Source();
+            // This will draw all the Incomsource on for user to choose
+            if (cin.peek() == '\n')
+                cin.ignore();
+            getline(cin, type_name);
+
+            if (type_name.empty() || check_string(type_name, '^'))
+            {
+                cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
+                continue;
+            }
+            else
+            {
+                break;
+            }
+        }
+        string new_name = type_name;
+
+        // Using Find_By_Name to check duplicates in the income array
+        if (Find_By_Name(type_name, this->income, this->income_count, dummy_IS))
+        {
+            cout << "Source chosen successfully: " << type_name << endl;
+            check_IS = false;
         }
         else
         {
-            cout << "Category not found. Create new? (1: Yes / 0: Retry): ";
-            int c;
-            cin >> c;
-            cin.ignore();
-            if (c == 1)
+            cout << "Income source does not exist, do you want to create a new incoce source?\n";
+            cout << "Enter your choice (1/0): \n";
+            cout << "1. Yes\n";
+            cout << "2. No\n";
+            // Clear buffer here also, Write me a function for clear buffer specifically
+            cin >> choice;
+            int new_IS_id;
+            switch (choice)
             {
-                Add_Expense();
-                trans->type = this->expense[this->expense_count - 1];
+            case 1:
+                // Auto add a income source here
+                // name: new_name
+                // ID: auto generate
+                this->resize(); // Ensure capacity exists
+
+                // --- AUTO ID GENERATION ---
+                new_IS_id = Generate_ID(this->income, this->income_count);
+
+                // --- SAVE TO ARRAY ---
+                this->income[this->income_count] = new IncomeSource;
+                this->income[this->income_count]->id = new_IS_id;
+                this->income[this->income_count]->name = new_name;
+                // Linking for later assigning
+                dummy_IS = this->income[this->income_count];
+                // Update size count
+                this->income_count++;
+
+                // --- OUTPUT FEEDBACK ---
+                cout << "---------------------------------" << endl;
+                cout << " New Income Source Added: " << new_name << endl;
+                cout << " ID Assigned: " << new_IS_id << endl;
+                cout << "---------------------------------" << endl;
+                check_IS = false;
+                break;
+
+            case 0:
+                cout << "Invalid Income Source\n";
+                cout << "Press enter to go back...";
+                cin.get();
+                // User decline so we go back to ask them to type the name again
+                break;
+            default:
+                cout << "Invalid Income Source\n";
+                cout << "Press enter to go back...";
+                cin.get();
+                // User decline so we go back to ask them to type the name again
                 break;
             }
         }
     }
-
-    // Amount
+    // --- INPUT LOOP TO GET AMOUNT---
+    string s;
+    long long validAmount = 0;
+    bool check_W = true;
     while (true)
     {
-        cout << "Enter Amount: ";
-        string s;
-        cin >> s;
+        cout << "Enter your amount of transaction: ";
+        cin >> s; // No spaces allowed in numbers, so cin is fine here
+
+        // Use your existing helper
         if (isValidLongLong(s))
         {
-            trans->amount = stoll(s);
+            validAmount = stoll(s);
             break;
         }
     }
@@ -646,122 +613,72 @@ void User_Info::Add_Expense_Transaction()
                 if (f == 0)
                     continue;
             }
-            trans->wallet = w;
-            break;
-        }
-        else
-        {
-            cout << "Wallet not found.\n";
+
+            // Find Wallet
+            if (Find_By_Name(dummy.name, this->Wallet_List, this->wallet_count, dummy_W))
+            {
+                cout << "Wallet chosen successfully: " << dummy.name << endl;
+                check_W = false;
+            }
+            else
+            {
+                cout << "Wallet does not exist, do you want to create a new Wallet?\n";
+                cout << "Enter your choice (1/0): \n";
+                cout << "1. Yes\n";
+                cout << "2. No\n";
+                // Clear buffer here also, Write me a function for clear buffer specifically
+                int new_W_id;
+                cin >> choice;
+                switch (choice)
+                {
+                case 1:
+                    // Auto add a Wallet here
+                    // name: new_name
+                    // ID: auto generate
+                    // Balance = 0;
+                    this->resize(); // Ensure capacity exists
+
+                    // --- AUTO ID GENERATION ---
+                    new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
+
+                    // 5. Save to List
+                    Wallet_List[wallet_count] = new Wallet;
+                    Wallet_List[wallet_count]->id = new_W_id; // Assign the auto-generated ID
+                    Wallet_List[wallet_count]->name = dummy.name;
+                    Wallet_List[wallet_count]->remain = 0;
+                    dummy_W = Wallet_List[wallet_count];
+
+                    wallet_count += 1;
+
+                    cout << "---------------------------------" << endl;
+                    cout << " New Wallet Created Successfully " << endl;
+                    cout << " ID:      " << new_W_id << endl;
+                    cout << " Name:    " << dummy.name << endl;
+                    cout << " Balance: " << 0 << endl;
+                    cout << "---------------------------------" << endl;
+
+                case 0:
+                    cout << "Invalid Wallet\n";
+                    cout << "Press enter to go back...";
+                    cin.get();
+                    // User decline so we go back to ask them to type the name again
+                    break;
+                default:
+                    cout << "Invalid Wallet\n";
+                    cout << "Press enter to go back...";
+                    cin.get();
+                    // User decline so we go back to ask them to type the name again
+                    break;
+                }
+            }
         }
     }
 
-    cout << "Enter Description: ";
-    getline(cin, trans->description);
-
-    // Trừ ví
-    trans->wallet->remain -= trans->amount;
-
-    // lưu
-    this->expenses_transaction[this->expCount] = trans;
-    this->expCount++;
-    cout << "\n=== EXPENSE TRANSACTION ADDED SUCCESSFULLY ===\n";
+    // --- INPUT LOOP TO GET Description---
 }
-
 void User_Info::Add_Recur_Expense_Transaction()
 {
 }
 void User_Info::Add_Recur_Income_Transaction()
 {
-}
-
-// --- Bổ sung vào User_Info.cpp ---
-
-void User_Info::Show_Wallet_List()
-{
-    cout << "\n==================== WALLET LIST ====================\n";
-    cout << left << setw(5) << "ID"
-         << left << setw(20) << "Wallet Name"
-         << right << setw(15) << "Balance" << endl;
-    cout << "-----------------------------------------------------\n";
-
-    if (wallet_count == 0)
-    {
-        cout << "No wallets found.\n";
-    }
-    else
-    {
-        for (int i = 0; i < wallet_count; i++)
-        {
-            cout << left << setw(5) << Wallet_List[i]->id
-                 << left << setw(20) << Wallet_List[i]->name
-                 << right << setw(15) << Wallet_List[i]->remain << endl;
-        }
-    }
-    cout << "=====================================================\n";
-}
-
-void User_Info::Show_Transaction_History()
-{
-    cout << "\n================ TRANSACTION HISTORY ================\n";
-
-    // 1. Hiển thị Income
-    if (inCount > 0)
-    {
-        cout << "\n--- [INCOME] ---\n";
-        cout << left << setw(12) << "Date"
-             << left << setw(15) << "Source"
-             << left << setw(15) << "Wallet"
-             << right << setw(12) << "Amount"
-             << "   " << "Description" << endl;
-        cout << "----------------------------------------------------------------\n";
-
-        for (int i = 0; i < inCount; i++)
-        {
-            // In ngày tháng (giả sử OutputDate in ra không xuống dòng)
-            OutputDate(incomes_transaction[i]->date);
-
-            cout << "   " // Padding sau ngày
-                 << left << setw(15) << (incomes_transaction[i]->type ? incomes_transaction[i]->type->name : "Unknown")
-                 << left << setw(15) << (incomes_transaction[i]->wallet ? incomes_transaction[i]->wallet->name : "Unknown")
-                 << right << setw(12) << incomes_transaction[i]->amount
-                 << "   " << incomes_transaction[i]->description << endl;
-        }
-    }
-
-    // 2. Hiển thị Expense
-    if (expCount > 0)
-    {
-        cout << "\n--- [EXPENSE] ---\n";
-        cout << left << setw(12) << "Date"
-             << left << setw(15) << "Category"
-             << left << setw(15) << "Wallet"
-             << right << setw(12) << "Amount"
-             << "   " << "Description" << endl;
-        cout << "----------------------------------------------------------------\n";
-
-        for (int i = 0; i < expCount; i++)
-        {
-            OutputDate(expenses_transaction[i]->date);
-
-            cout << "   "
-                 << left << setw(15) << (expenses_transaction[i]->type ? expenses_transaction[i]->type->name : "Unknown")
-                 << left << setw(15) << (expenses_transaction[i]->wallet ? expenses_transaction[i]->wallet->name : "Unknown")
-                 << right << setw(12) << expenses_transaction[i]->amount
-                 << "   " << expenses_transaction[i]->description << endl;
-        }
-    }
-
-    if (inCount == 0 && expCount == 0)
-    {
-        cout << "No transactions found.\n";
-    }
-    cout << "=====================================================\n";
-}
-
-void User_Info::Show_Recurring_Transaction_List()
-{
-    cout << "\n=== RECURRING TRANSACTIONS (Feature in progress) ===\n";
-    // Tạm thời để trống hoặc in ra thông báo
-    cout << "Income Recurring Count: " << recur_trans_income_count << endl;
-    cout << "Expense Recurring Count: " << recur_trans_expense_count << endl;
 }

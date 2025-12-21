@@ -483,8 +483,209 @@
 
     void User_Info::Add_Expense_Transaction()
     {
+        this->resize(); // Ensure we have space before starting
+
+        // --- STEP 1: DATE ---
+        string dateStr;
+        Date transDate;
+        do 
+        {
+            cout << "Enter Date of transaction (dd/mm/yyyy): ";
+            // Optional: Clean buffer if coming from previous cin input
+            if (cin.peek() == '\n') cin.ignore(); 
+            getline(cin, dateStr);
+            transDate = InputDate(dateStr);
+
+            if (transDate.day == 0) {
+                cout << "Invalid date format! Please try again (e.g., 25/12/2023).\n";
+            }
+        } while (transDate.day == 0);
 
 
+        // --- STEP 2: EXPENSE CATEGORY ---
+        string type_name;
+        ExpenseCategory* dummy_EC = nullptr;
+        bool check_EC = true;
+        int choice;
+
+        while (check_EC)
+        {
+            // Loop to get a valid name string
+            while(true)
+            {
+                cout << "Enter your expense category name (e.g., Food): ";
+                if (cin.peek() == '\n') cin.ignore(); 
+                getline(cin, type_name);
+
+                if (type_name.empty() || check_string(type_name, '^'))
+                {
+                    cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
+                    continue;
+                }
+                break;
+            }
+
+            // Check if exists
+            if (Find_By_Name(type_name, this->expense, this->expense_count, dummy_EC))
+            {
+                cout << "Category chosen successfully: " << type_name << endl;
+                check_EC = false;
+            }
+            else
+            {
+                cout << "Expense category does not exist. Do you want to create it?\n";
+                cout << "1. Yes\n2. No\n0. Cancel\nChoice: ";
+                cin >> choice;
+
+                switch (choice)
+                {
+                case 1:
+                {
+                    // Auto-create Category
+                    this->resize(); 
+                    int new_EC_id = Generate_ID(this->expense, this->expense_count);
+
+                    this->expense[this->expense_count] = new ExpenseCategory;
+                    this->expense[this->expense_count]->id = new_EC_id;
+                    this->expense[this->expense_count]->name = type_name;
+                    
+                    // Link immediately
+                    dummy_EC = this->expense[this->expense_count];
+                    this->expense_count++;
+
+                    cout << "---------------------------------" << endl;
+                    cout << " New Expense Category Added: " << type_name << endl;
+                    cout << " ID Assigned: " << new_EC_id << endl;
+                    cout << "---------------------------------" << endl;
+                    check_EC = false;
+                    break;
+                }
+                case 2:
+                    cout << "Please choose an existing category or create a new one.\n";
+                    break;
+                case 0:
+                    return; // Exit function
+                default:
+                    cout << "Invalid choice.\n";
+                    break;
+                }
+            }
+        }
+
+
+        // --- STEP 3: AMOUNT ---
+        string s;
+        long long validAmount = 0;
+        while (true) 
+        {
+            cout << "Enter expense amount: ";
+            cin >> s; 
+
+            if (isValidLongLong(s)) {
+                validAmount = stoll(s);
+                if (validAmount < 0) {
+                    cout << "Amount cannot be negative. Enter a positive value (it will be subtracted).\n";
+                    continue;
+                }
+                break;
+            } else {
+                cout << "Invalid amount. Please enter a valid integer.\n";
+            }
+        }
+
+
+        // --- STEP 4: WALLET ---
+        Wallet dummy;
+        Wallet* dummy_W = nullptr;
+        bool check_W = true;
+
+        while(check_W)
+        {
+            while (true) 
+            {
+                cout << "Enter wallet name to pay from: ";
+                if (cin.peek() == '\n') cin.ignore(); 
+                getline(cin, dummy.name);
+
+                if (dummy.name.empty() || check_string(dummy.name, '^')) 
+                {
+                    cout << "Invalid name. Try again.\n";
+                    continue;
+                }
+                break;
+            }
+
+            // Find Wallet
+            if (Find_By_Name(dummy.name, this->Wallet_List, this->wallet_count, dummy_W)) 
+            {
+                // Optional: Warning if balance will go negative
+                if (dummy_W->remain < validAmount) {
+                    cout << "Warning: This expense will make the wallet balance negative.\n";
+                }
+                cout << "Wallet chosen: " << dummy.name << endl;
+                check_W = false;
+            } 
+            else 
+            {
+                cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
+                cin >> choice;
+                
+                switch (choice)
+                {
+                case 1:
+                {
+                    this->resize(); 
+                    int new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
+
+                    Wallet_List[wallet_count] = new Wallet;
+                    Wallet_List[wallet_count]->id = new_W_id; 
+                    Wallet_List[wallet_count]->name = dummy.name;
+                    Wallet_List[wallet_count]->remain = 0;
+                    
+                    dummy_W = Wallet_List[wallet_count];
+                    wallet_count++;
+
+                    cout << "---------------------------------" << endl;
+                    cout << " New Wallet Created (Balance: 0)" << endl;
+                    cout << "---------------------------------" << endl;
+                    check_W = false;
+                    break;
+                }
+                case 2: 
+                    break;
+                case 0: 
+                    return;
+                default: 
+                    cout << "Invalid choice.\n";
+                    break;
+                }
+            }
+        }
+
+        // --- STEP 5: DESCRIPTION ---
+        string Des_Input;
+        cout << "Enter description: ";
+        if (cin.peek() == '\n') cin.ignore();
+        getline(cin, Des_Input);
+
+
+        // --- STEP 6: SAVE & UPDATE BALANCE ---
+        this->resize(); // Final check for array capacity
+
+        expenses_transaction[expCount] = new Transaction_Expense;
+        expenses_transaction[expCount]->date = transDate;
+        expenses_transaction[expCount]->type = dummy_EC;
+        expenses_transaction[expCount]->wallet = dummy_W;
+        expenses_transaction[expCount]->amount = validAmount;
+        expenses_transaction[expCount]->description = Des_Input;
+
+        // CRITICAL DIFFERENCE: SUBTRACT MONEY
+        dummy_W->remain -= validAmount;
+
+        expCount++;
+        
+        cout << "Expense Transaction Added Successfully!\n";
+        cout << "New Balance of " << dummy_W->name << ": " << dummy_W->remain << endl;
     }
     void User_Info::Add_Income_Transaction()
     {   
@@ -494,6 +695,7 @@
         // --- INPUT LOOP TO GET DATE---
         do 
         {
+            if (cin.peek() == '\n') cin.ignore();
             cout << "Enter Date of transaction (dd/mm/yyyy): ";
             getline(cin, dateStr);
             transDate = InputDate(dateStr);
@@ -544,6 +746,7 @@
                 cout<< "Enter your choice (1/0): \n";
                 cout<< "1. Yes\n";
                 cout<< "2. No\n";
+                cout<< "0. Back to menu\n";
                 //Clear buffer here also, Write me a function for clear buffer specifically
                 cin>>choice;
                 int new_IS_id;
@@ -576,12 +779,17 @@
                     check_IS=false;
                     break;
                 
-                case 0:
+                case 2:
                     cout << "Invalid Income Source\n";
                     cout << "Press enter to go back...";
                     cin.get();
                     // User decline so we go back to ask them to type the name again
                     break;
+                case 0:
+                    cout<< "Invalid transaction\n";
+                    cout << "Press enter to go back...";
+                    cin.get();
+                    return;
                 default:
                     cout << "Invalid Income Source\n";
                     cout << "Press enter to go back...";
@@ -594,13 +802,13 @@
         // --- INPUT LOOP TO GET AMOUNT---
         string s;
         long long validAmount = 0;
-        bool check_W=true;
         while (true) {
         cout << "Enter your amount of transaction: ";
         cin >> s; // No spaces allowed in numbers, so cin is fine here
 
         // Use your existing helper
         if (isValidLongLong(s)) {
+            cout<<"Your amount is valid!"<<endl;
             validAmount = stoll(s);
             break;
         } else {
@@ -643,6 +851,7 @@
                 cout<< "Enter your choice (1/0): \n";
                 cout<< "1. Yes\n";
                 cout<< "2. No\n";
+                cout<< "0. Back to menu";
                 //Clear buffer here also, Write me a function for clear buffer specifically
                 int new_W_id;
                 cin>>choice;
@@ -675,13 +884,20 @@
                     cout << " Name:    " << dummy.name << endl;
                     cout << " Balance: " << 0 << endl;
                     cout << "---------------------------------" << endl;
+                    check_W=false;
+                    break;
                 
-                case 0:
+                case 2:
                     cout << "Invalid Wallet\n";
                     cout << "Press enter to go back...";
                     cin.get();
                     // User decline so we go back to ask them to type the name again
                     break;
+                case 0:
+                    cout<< "Invalid transaction\n";
+                    cout << "Press enter to go back...";
+                    cin.get();
+                    return;
                 default:
                     cout << "Invalid Wallet\n";
                     cout << "Press enter to go back...";
@@ -694,18 +910,449 @@
         }
 
 
+
         // --- INPUT LOOP TO GET Description---
+        string Des_Input;
+        cout<<"Enter your description, press enter to finish: ";
+        getline(cin, Des_Input);
 
+        resize();
+        incomes_transaction[inCount]=new Transaction_Income;
+        incomes_transaction[inCount]->date=transDate;
+        incomes_transaction[inCount]->type=dummy_IS;
+        incomes_transaction[inCount]->wallet=dummy_W;
+        incomes_transaction[inCount]->amount=validAmount;
+        incomes_transaction[inCount]->wallet->remain += validAmount;
+        incomes_transaction[inCount]->description=Des_Input;
+        cout<<"New Transaction Added\n";
+        //prinout all the informatuin one more time for the user to check
+        inCount +=1;
 
 
     }
-    void User_Info::Add_Recur_Expense_Transaction()
+void User_Info::Add_Recur_Expense_Transaction()
+{
+    this->resize(); // Ensure capacity
+
+    // --- STEP 1: START DATE ---
+    string dateStr;
+    Date startDate;
+    do 
     {
+        cout << "Enter Start Date (dd/mm/yyyy): ";
+        if (cin.peek() == '\n') cin.ignore(); 
+        getline(cin, dateStr);
+        startDate = InputDate(dateStr);
 
-    }
-    void User_Info::Add_Recur_Income_Transaction()
+        if (startDate.day == 0) {
+            cout << "Invalid date format! Please try again.\n";
+        }
+    } while (startDate.day == 0);
+
+
+    // --- STEP 2: END DATE ---
+    Date endDate;
+    while (true)
     {
+        cout << "Enter End Date (dd/mm/yyyy): ";
+        // We don't need cin.ignore() here because the previous loop ended with getline
+        getline(cin, dateStr);
+        endDate = InputDate(dateStr);
 
+        if (endDate.day == 0) {
+            cout << "Invalid date format! Please try again.\n";
+            continue;
+        }
+
+        // Logic Check: End Date must be >= Start Date
+        // Using your compare function: returns positive if date1 > date2
+        if (compare(endDate, startDate) < 0) {
+            cout << "Error: End Date cannot be before Start Date.\n";
+        } else {
+            break; // Valid date
+        }
     }
 
+
+    // --- STEP 3: EXPENSE CATEGORY ---
+    string type_name;
+    ExpenseCategory* dummy_EC = nullptr;
+    bool check_EC = true;
+    int choice;
+
+    while (check_EC)
+    {
+        while(true)
+        {
+            cout << "Enter expense category name (e.g., Rent): ";
+            getline(cin, type_name);
+
+            if (type_name.empty() || check_string(type_name, '^'))
+            {
+                cout << "Invalid name. Try again.\n";
+                continue;
+            }
+            break;
+        }
+
+        if (Find_By_Name(type_name, this->expense, this->expense_count, dummy_EC))
+        {
+            cout << "Category chosen: " << type_name << endl;
+            check_EC = false;
+        }
+        else
+        {
+            cout << "Category does not exist. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
+            cin >> choice;
+            if (cin.peek() == '\n') cin.ignore(); // Clear buffer after cin >> choice
+
+            switch (choice)
+            {
+            case 1:
+            {
+                this->resize(); 
+                int new_EC_id = Generate_ID(this->expense, this->expense_count);
+
+                this->expense[this->expense_count] = new ExpenseCategory;
+                this->expense[this->expense_count]->id = new_EC_id;
+                this->expense[this->expense_count]->name = type_name;
+                
+                dummy_EC = this->expense[this->expense_count];
+                this->expense_count++;
+
+                cout << "New Category Created: " << type_name << endl;
+                check_EC = false;
+                break;
+            }
+            case 2: break;
+            case 0: return;
+            default: cout << "Invalid choice.\n"; break;
+            }
+        }
+    }
+
+
+    // --- STEP 4: AMOUNT ---
+    string s;
+    long long validAmount = 0;
+    while (true) 
+    {
+        cout << "Enter recurring amount: ";
+        cin >> s; 
+
+        if (isValidLongLong(s)) {
+            validAmount = stoll(s);
+            if (validAmount < 0) {
+                cout << "Amount must be positive.\n";
+                continue;
+            }
+            break;
+        }
+        cout << "Invalid integer amount.\n";
+    }
+
+
+    // --- STEP 5: WALLET ---
+    Wallet dummy;
+    Wallet* dummy_W = nullptr;
+    bool check_W = true;
+
+    while(check_W)
+    {
+        while (true) 
+        {
+            cout << "Enter wallet name: ";
+            if (cin.peek() == '\n') cin.ignore(); 
+            getline(cin, dummy.name);
+
+            if (dummy.name.empty() || check_string(dummy.name, '^')) 
+            {
+                cout << "Invalid name.\n";
+                continue;
+            }
+            break;
+        }
+
+        if (Find_By_Name(dummy.name, this->Wallet_List, this->wallet_count, dummy_W)) 
+        {
+            cout << "Wallet chosen: " << dummy.name << endl;
+            check_W = false;
+        } 
+        else 
+        {
+            cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
+            cin >> choice;
+            if (cin.peek() == '\n') cin.ignore(); 
+
+            switch (choice)
+            {
+            case 1:
+            {
+                this->resize(); 
+                int new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
+
+                Wallet_List[wallet_count] = new Wallet;
+                Wallet_List[wallet_count]->id = new_W_id; 
+                Wallet_List[wallet_count]->name = dummy.name;
+                Wallet_List[wallet_count]->remain = 0;
+                
+                dummy_W = Wallet_List[wallet_count];
+                wallet_count++;
+
+                cout << "New Wallet Created: " << dummy.name << endl;
+                check_W = false;
+                break;
+            }
+            case 2: break;
+            case 0: return;
+            default: cout << "Invalid choice.\n"; break;
+            }
+        }
+    }
+
+    // --- STEP 6: DESCRIPTION ---
+    string Des_Input;
+    cout << "Enter description: ";
+    // Previous input was cin >> s or cin >> choice, buffer might be clean if we used ignore(), 
+    // but safe to check peek just in case logic flow skipped an ignore
+    if (cin.peek() == '\n') cin.ignore();
+    getline(cin, Des_Input);
+
+
+    // --- STEP 7: SAVE (NO BALANCE UPDATE) ---
+    this->resize(); 
+
+    // Accessing the Recurring List
+    Recurring_Transaction_Expense_List[recur_trans_expense_count] = new Recurring_Transaction_Expense;
+    
+    Recurring_Transaction_Expense_List[recur_trans_expense_count]->start = startDate;
+    Recurring_Transaction_Expense_List[recur_trans_expense_count]->end = endDate;
+    Recurring_Transaction_Expense_List[recur_trans_expense_count]->type = dummy_EC;
+    Recurring_Transaction_Expense_List[recur_trans_expense_count]->wallet = dummy_W;
+    Recurring_Transaction_Expense_List[recur_trans_expense_count]->amount = validAmount;
+    Recurring_Transaction_Expense_List[recur_trans_expense_count]->description = Des_Input;
+
+    // NOTE: Wallet balance (remain) is NOT updated here, as requested.
+
+    recur_trans_expense_count++;
+    
+    cout << "---------------------------------------" << endl;
+    cout << " Recurring Expense Scheduled! " << endl;
+    cout << " From: "; OutputDate(startDate); cout << endl;
+    cout << " To:   "; OutputDate(endDate);   cout << endl;
+    cout << "---------------------------------------" << endl;
+}
+
+
+
+void User_Info::Add_Recur_Income_Transaction()
+{
+    this->resize(); // Ensure capacity exists
+
+    // --- STEP 1: START DATE ---
+    string dateStr;
+    Date startDate;
+    do 
+    {
+        cout << "Enter Start Date (dd/mm/yyyy): ";
+        if (cin.peek() == '\n') cin.ignore(); 
+        getline(cin, dateStr);
+        startDate = InputDate(dateStr);
+
+        if (startDate.day == 0) {
+            cout << "Invalid date format! Please try again.\n";
+        }
+    } while (startDate.day == 0);
+
+
+    // --- STEP 2: END DATE ---
+    Date endDate;
+    while (true)
+    {
+        cout << "Enter End Date (dd/mm/yyyy): ";
+        // Previous loop ended with getline, buffer is clean
+        getline(cin, dateStr);
+        endDate = InputDate(dateStr);
+
+        if (endDate.day == 0) {
+            cout << "Invalid date format! Please try again.\n";
+            continue;
+        }
+
+        // Logic Check: End Date must be >= Start Date
+        if (compare(endDate, startDate) < 0) {
+            cout << "Error: End Date cannot be before Start Date.\n";
+        } else {
+            break; // Valid date
+        }
+    }
+
+
+    // --- STEP 3: INCOME SOURCE ---
+    string type_name;
+    IncomeSource* dummy_IS = nullptr;
+    bool check_IS = true;
+    int choice;
+
+    while (check_IS)
+    {
+        while(true)
+        {
+            cout << "Enter income source name (e.g., Salary): ";
+            getline(cin, type_name);
+
+            if (type_name.empty() || check_string(type_name, '^'))
+            {
+                cout << "Invalid name. Try again.\n";
+                continue;
+            }
+            break;
+        }
+
+        // Check against Income Array
+        if (Find_By_Name(type_name, this->income, this->income_count, dummy_IS))
+        {
+            cout << "Source chosen: " << type_name << endl;
+            check_IS = false;
+        }
+        else
+        {
+            cout << "Source does not exist. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
+            cin >> choice;
+            if (cin.peek() == '\n') cin.ignore(); 
+
+            switch (choice)
+            {
+            case 1:
+            {
+                this->resize(); 
+                int new_IS_id = Generate_ID(this->income, this->income_count);
+
+                this->income[this->income_count] = new IncomeSource;
+                this->income[this->income_count]->id = new_IS_id;
+                this->income[this->income_count]->name = type_name;
+                
+                dummy_IS = this->income[this->income_count];
+                this->income_count++;
+
+                cout << "New Income Source Created: " << type_name << endl;
+                check_IS = false;
+                break;
+            }
+            case 2: break;
+            case 0: return;
+            default: cout << "Invalid choice.\n"; break;
+            }
+        }
+    }
+
+
+    // --- STEP 4: AMOUNT ---
+    string s;
+    long long validAmount = 0;
+    while (true) 
+    {
+        cout << "Enter recurring amount: ";
+        cin >> s; 
+
+        if (isValidLongLong(s)) {
+            validAmount = stoll(s);
+            if (validAmount < 0) {
+                cout << "Amount must be positive.\n";
+                continue;
+            }
+            break;
+        }
+        cout << "Invalid integer amount.\n";
+    }
+
+
+    // --- STEP 5: WALLET ---
+    Wallet dummy;
+    Wallet* dummy_W = nullptr;
+    bool check_W = true;
+
+    while(check_W)
+    {
+        while (true) 
+        {
+            cout << "Enter target wallet name: ";
+            if (cin.peek() == '\n') cin.ignore(); 
+            getline(cin, dummy.name);
+
+            if (dummy.name.empty() || check_string(dummy.name, '^')) 
+            {
+                cout << "Invalid name.\n";
+                continue;
+            }
+            break;
+        }
+
+        if (Find_By_Name(dummy.name, this->Wallet_List, this->wallet_count, dummy_W)) 
+        {
+            cout << "Wallet chosen: " << dummy.name << endl;
+            check_W = false;
+        } 
+        else 
+        {
+            cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
+            cin >> choice;
+            if (cin.peek() == '\n') cin.ignore(); 
+
+            switch (choice)
+            {
+            case 1:
+            {
+                this->resize(); 
+                int new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
+
+                Wallet_List[wallet_count] = new Wallet;
+                Wallet_List[wallet_count]->id = new_W_id; 
+                Wallet_List[wallet_count]->name = dummy.name;
+                Wallet_List[wallet_count]->remain = 0;
+                
+                dummy_W = Wallet_List[wallet_count];
+                wallet_count++;
+
+                cout << "New Wallet Created: " << dummy.name << endl;
+                check_W = false;
+                break;
+            }
+            case 2: break;
+            case 0: return;
+            default: cout << "Invalid choice.\n"; break;
+            }
+        }
+    }
+
+    // --- STEP 6: DESCRIPTION ---
+    string Des_Input;
+    cout << "Enter description: ";
+    if (cin.peek() == '\n') cin.ignore();
+    getline(cin, Des_Input);
+
+
+    // --- STEP 7: SAVE (NO BALANCE UPDATE) ---
+    this->resize(); 
+
+    // Accessing the Recurring Income List
+    Recurring_Transaction_Income_List[recur_trans_income_count] = new Recurring_Transaction_Income;
+    
+    Recurring_Transaction_Income_List[recur_trans_income_count]->start = startDate;
+    Recurring_Transaction_Income_List[recur_trans_income_count]->end = endDate;
+    Recurring_Transaction_Income_List[recur_trans_income_count]->type = dummy_IS;
+    Recurring_Transaction_Income_List[recur_trans_income_count]->wallet = dummy_W;
+    Recurring_Transaction_Income_List[recur_trans_income_count]->amount = validAmount;
+    Recurring_Transaction_Income_List[recur_trans_income_count]->description = Des_Input;
+
+    // NOTE: Wallet balance (remain) is NOT updated here.
+
+    recur_trans_income_count++;
+    
+    cout << "---------------------------------------" << endl;
+    cout << " Recurring Income Scheduled! " << endl;
+    cout << " From: "; OutputDate(startDate); cout << endl;
+    cout << " To:   "; OutputDate(endDate);   cout << endl;
+    cout << "---------------------------------------" << endl;
+}
 

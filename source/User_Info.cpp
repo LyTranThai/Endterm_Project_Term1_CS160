@@ -1356,3 +1356,187 @@ void User_Info::Add_Recur_Income_Transaction()
     cout << "---------------------------------------" << endl;
 }
 
+
+// --- Bổ sung vào User_Info.cpp ---
+
+void User_Info::Show_Wallet_List()
+{
+    cout << "\n==================== WALLET LIST ====================\n";
+    cout << left << setw(5) << "ID"
+         << left << setw(20) << "Wallet Name"
+         << right << setw(15) << "Balance" << endl;
+    cout << "-----------------------------------------------------\n";
+
+    if (wallet_count == 0)
+    {
+        cout << "No wallets found.\n";
+    }
+    else
+    {
+        for (int i = 0; i < wallet_count; i++)
+        {
+            cout << left << setw(5) << Wallet_List[i]->id
+                 << left << setw(20) << Wallet_List[i]->name
+                 << right << setw(15) << Wallet_List[i]->remain << endl;
+        }
+    }
+    cout << "=====================================================\n";
+}
+
+void User_Info::Show_Transaction_History()
+{
+    cout << "\n================ TRANSACTION HISTORY ================\n";
+
+    // 1. Hiển thị Income
+    if (inCount > 0)
+    {
+        cout << "\n--- [INCOME] ---\n";
+        cout << left << setw(12) << "Date"
+             << left << setw(15) << "Source"
+             << left << setw(15) << "Wallet"
+             << right << setw(12) << "Amount"
+             << "   " << "Description" << endl;
+        cout << "----------------------------------------------------------------\n";
+
+        for (int i = 0; i < inCount; i++)
+        {
+            // In ngày tháng (giả sử OutputDate in ra không xuống dòng)
+            OutputDate(incomes_transaction[i]->date);
+
+            cout << "   " // Padding sau ngày
+                 << left << setw(15) << (incomes_transaction[i]->type ? incomes_transaction[i]->type->name : "Unknown")
+                 << left << setw(15) << (incomes_transaction[i]->wallet ? incomes_transaction[i]->wallet->name : "Unknown")
+                 << right << setw(12) << incomes_transaction[i]->amount
+                 << "   " << incomes_transaction[i]->description << endl;
+        }
+    }
+
+    // 2. Hiển thị Expense
+    if (expCount > 0)
+    {
+        cout << "\n--- [EXPENSE] ---\n";
+        cout << left << setw(12) << "Date"
+             << left << setw(15) << "Category"
+             << left << setw(15) << "Wallet"
+             << right << setw(12) << "Amount"
+             << "   " << "Description" << endl;
+        cout << "----------------------------------------------------------------\n";
+
+        for (int i = 0; i < expCount; i++)
+        {
+            OutputDate(expenses_transaction[i]->date);
+
+            cout << "   "
+                 << left << setw(15) << (expenses_transaction[i]->type ? expenses_transaction[i]->type->name : "Unknown")
+                 << left << setw(15) << (expenses_transaction[i]->wallet ? expenses_transaction[i]->wallet->name : "Unknown")
+                 << right << setw(12) << expenses_transaction[i]->amount
+                 << "   " << expenses_transaction[i]->description << endl;
+        }
+    }
+
+    if (inCount == 0 && expCount == 0)
+    {
+        cout << "No transactions found.\n";
+    }
+    cout << "=====================================================\n";
+}
+
+void User_Info::Show_Recurring_Transaction_List()
+{
+    cout << "\n=== RECURRING TRANSACTIONS (Feature in progress) ===\n";
+    // Tạm thời để trống hoặc in ra thông báo
+    cout << "Income Recurring Count: " << recur_trans_income_count << endl;
+    cout << "Expense Recurring Count: " << recur_trans_expense_count << endl;
+}
+
+// --- Bổ sung vào User_Info.cpp ---
+
+void User_Info::Show_Wallet_List()
+{
+    cout << "\n==================== WALLET LIST ====================\n";
+    cout << left << setw(5) << "ID"
+         << left << setw(20) << "Wallet Name"
+         << right << setw(15) << "Balance" << endl;
+    cout << "-----------------------------------------------------\n";
+
+    if (wallet_count == 0)
+    {
+        cout << "No wallets found.\n";
+    }
+    else
+    {
+        for (int i = 0; i < wallet_count; i++)
+        {
+            cout << left << setw(5) << Wallet_List[i]->id
+                 << left << setw(20) << Wallet_List[i]->name
+                 << right << setw(15) << Wallet_List[i]->remain << endl;
+        }
+    }
+    cout << "=====================================================\n";
+}
+
+void User_Info::Show_Transaction_History()
+{
+    cout << "\n================ TRANSACTION HISTORY ================\n";
+
+    // 1. Hiển thị Income
+    if (inCount > 0)
+    {
+        cout << "\n--- [INCOME] ---\n";
+        cout << left << setw(12) << "Date"
+             << left << setw(15) << "Source"
+             << left << setw(15) << "Wallet"
+             << right << setw(12) << "Amount"
+             << "   " << "Description" << endl;
+        cout << "----------------------------------------------------------------\n";
+
+        for (int i = 0; i < inCount; i++)
+        {
+            // In ngày tháng (giả sử OutputDate in ra không xuống dòng)
+            OutputDate(incomes_transaction[i]->date);
+
+            cout << "   " // Padding sau ngày
+                 << left << setw(15) << (incomes_transaction[i]->type ? incomes_transaction[i]->type->name : "Unknown")
+                 << left << setw(15) << (incomes_transaction[i]->wallet ? incomes_transaction[i]->wallet->name : "Unknown")
+                 << right << setw(12) << incomes_transaction[i]->amount
+                 << "   " << incomes_transaction[i]->description << endl;
+        }
+    }
+
+    // 2. Hiển thị Expense
+    if (expCount > 0)
+    {
+        cout << "\n--- [EXPENSE] ---\n";
+        cout << left << setw(12) << "Date"
+             << left << setw(15) << "Category"
+             << left << setw(15) << "Wallet"
+             << right << setw(12) << "Amount"
+             << "   " << "Description" << endl;
+        cout << "----------------------------------------------------------------\n";
+
+        for (int i = 0; i < expCount; i++)
+        {
+            OutputDate(expenses_transaction[i]->date);
+
+            cout << "   "
+                 << left << setw(15) << (expenses_transaction[i]->type ? expenses_transaction[i]->type->name : "Unknown")
+                 << left << setw(15) << (expenses_transaction[i]->wallet ? expenses_transaction[i]->wallet->name : "Unknown")
+                 << right << setw(12) << expenses_transaction[i]->amount
+                 << "   " << expenses_transaction[i]->description << endl;
+        }
+    }
+
+    if (inCount == 0 && expCount == 0)
+    {
+        cout << "No transactions found.\n";
+    }
+    cout << "=====================================================\n";
+}
+
+void User_Info::Show_Recurring_Transaction_List()
+{
+    cout << "\n=== RECURRING TRANSACTIONS (Feature in progress) ===\n";
+    // Tạm thời để trống hoặc in ra thông báo
+    cout << "Income Recurring Count: " << recur_trans_income_count << endl;
+    cout << "Expense Recurring Count: " << recur_trans_expense_count << endl;
+}

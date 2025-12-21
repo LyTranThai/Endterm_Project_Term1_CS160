@@ -20,7 +20,6 @@ using namespace std;
 
 string filename = "user_data.bin";
 
-Transaction_Type type[100];
 int number_of_type = 0;
 
 using namespace std;
@@ -46,7 +45,6 @@ void clearScreen()
 // If you are on Windows, use "cls". If on Mac/Linux, use "clear"
 #ifdef _WIN32
     system("cls");
-#else system("clear");
 #endif
 }
 
@@ -218,7 +216,6 @@ int main()
     cout << "Type in your name" << endl;
     string name;
     cin >> name;
-    User_Info user;
 
     ifstream inFile(filename, ios::binary);
     if (inFile.is_open())

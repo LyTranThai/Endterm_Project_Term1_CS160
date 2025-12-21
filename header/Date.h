@@ -40,6 +40,7 @@ struct Date
 
 
 // Input a date (from console).
+bool IsValidCalendarDate(int d, int m, int y);
 Date InputDate(string info);
 
 // Output a date (to console).

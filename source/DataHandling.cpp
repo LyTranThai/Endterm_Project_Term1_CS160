@@ -1,5 +1,6 @@
 #include "../header/DataHandling.h"
 
+
 void WriteString(ofstream &out, const string &s)
 {
     size_t len = s.size();
@@ -66,3 +67,65 @@ void ReadString(ifstream &in, string &s)
         }
         return check;
     }
+
+template <typename T>
+bool Find_By_Name(string& name,T**& list, int& size,T*& pointer)
+{
+    check=false;
+        for(int i=0; i<size; i++)
+        {
+            if(compare_string(name, list[i]->name))
+            {
+                pointer=list[i];
+                check=true;
+                break;
+            }
+        }
+        if(!check)
+        {
+            pointer=list[0];
+        }
+    return check;
+}
+
+bool compare_string(string& s1, string& s2)
+{
+    if(s1.size() != s2.size())
+    {
+        return false;
+    }
+    for(int i =0; i<s1.size(); i++)
+    {
+        if(s1[i]!=s2[i])
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename T>
+int Generate_ID(T** list, int count) 
+{
+    if (count == 0) return 1; // Start at 1 if list is empty
+
+    int max_id = 0;
+    for (int i = 0; i < count; i++) {
+        if (list[i]->id > max_id) {
+            max_id = list[i]->id;
+        }
+    }
+    return max_id + 1;
+}
+
+bool check_string(string info, char c)
+{
+    for(int i=0; i<info.size(); i++)
+    {
+        if(info[i]==c)
+        {
+            return true;
+        }
+    }
+    return false;
+}

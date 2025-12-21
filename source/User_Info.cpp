@@ -309,4 +309,403 @@
 
     }
 
+    void User_Info::Show_Wallet_List()
+    {
+
+    }
+    void Show_Transaction_History();
+    void Show_Recurring_Transaction_List();
+    void User_Info::Add_Wallet()
+    {
+        Wallet dummy;
+        this->resize();
+        while (true) 
+        {
+        cout << "Enter your new wallet name: ";
+        if (cin.peek() == '\n') cin.ignore(); 
+        getline(cin, dummy.name);
+
+
+        if (dummy.name.empty() || check_string(dummy.name, '^')) 
+        {
+            cout << "Invalid name (cannot be empty or contain '^'). Try again.\n";
+            continue;
+        }
+
+        Wallet* save = nullptr;
+        // Check for duplicate name
+        if (Find_By_Name(dummy.name, this->Wallet_List, this->wallet_count, save)) {
+            cout << "Wallet name existed, please choose another name.\n";
+        } else {
+            break; // Name is valid and unique
+        }
+        }
+
+        // Loop for Balance Input (Robust check)
+        string s;
+        long long validBalance = 0;
+        while (true) {
+        cout << "Enter your balance: ";
+        cin >> s; // No spaces allowed in numbers, so cin is fine here
+
+        // Use your existing helper
+        if (isValidLongLong(s)) {
+            validBalance = stoll(s);
+            break;
+        } else {
+            cout << "Invalid amount. Please enter a valid integer number.\n";
+        }
+        }
+
+        // 4. GENERATE ID automatically
+        // It scans existing wallets to find the highest ID and adds 1
+        int new_id = Generate_ID(this->Wallet_List, this->wallet_count);
+
+        // 5. Save to List
+        Wallet_List[wallet_count] = new Wallet;
+        Wallet_List[wallet_count]->id = new_id; // Assign the auto-generated ID
+        Wallet_List[wallet_count]->name = dummy.name;
+        Wallet_List[wallet_count]->remain = validBalance;
+
+        wallet_count += 1;
+
+        cout << "---------------------------------" << endl;
+        cout << " New Wallet Created Successfully " << endl;
+        cout << " ID:      " << new_id << endl;
+        cout << " Name:    " << dummy.name << endl;
+        cout << " Balance: " << validBalance << endl;
+        cout << "---------------------------------" << endl;
+
+    }
+
+    void User_Info::Add_Expense()
+    {
+
+        this->resize(); // Ensure capacity exists
+        string new_name;
+
+        // --- INPUT LOOP ---
+        while (true)
+        {
+        cout << "Enter new expense category name (e.g., Food): ";
+
+        // Clear buffer if needed to allow spaces in name
+        if (cin.peek() == '\n') cin.ignore(); 
+        getline(cin, new_name);
+
+        // Validation 1: Empty or Invalid Char
+        if (new_name.empty() || check_string(new_name, '^'))
+        {
+            cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
+            continue;
+        }
+
+        // Validation 2: Duplicates
+        ExpenseCategory* temp = nullptr;
+        // Using Find_By_Name from DataHandling.h
+        if (Find_By_Name(new_name, this->expense, this->expense_count, temp))
+        {
+            cout << "This category already exists! Please enter a different name.\n";
+        }
+        else
+        {
+            break; // Name is valid and unique
+        }
+        }
+
+        // --- AUTO ID GENERATION ---
+        // Uses the helper function to find max ID + 1
+        int new_id = Generate_ID(this->expense, this->expense_count);
+
+        // --- SAVE TO ARRAY ---
+        this->expense[this->expense_count] = new ExpenseCategory;
+        this->expense[this->expense_count]->id = new_id;
+        this->expense[this->expense_count]->name = new_name;
+
+        this->expense_count++;
+
+        // --- OUTPUT FEEDBACK ---
+        cout << "---------------------------------" << endl;
+        cout << " New Expense Category Added: " << new_name << endl;
+        cout << " ID Assigned: " << new_id << endl;
+        cout << "---------------------------------" << endl;
+
+    }
+    void User_Info::Add_Income()
+    {
+        this->resize(); // Ensure capacity exists
+        string new_name;
+
+        // --- INPUT LOOP ---
+        while (true)
+        {
+        cout << "Enter new income source name (e.g., Salary): ";
+
+        if (cin.peek() == '\n') cin.ignore(); 
+        getline(cin, new_name);
+
+        if (new_name.empty() || check_string(new_name, '^'))
+        {
+            cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
+            continue;
+        }
+
+        IncomeSource* temp = nullptr;
+        // Using Find_By_Name to check duplicates in the income array
+        if (Find_By_Name(new_name, this->income, this->income_count, temp))
+        {
+            cout << "This source already exists! Please enter a different name.\n";
+        }
+        else
+        {
+            break;
+        }
+        }
+
+        // --- AUTO ID GENERATION ---
+        int new_id = Generate_ID(this->income, this->income_count);
+
+        // --- SAVE TO ARRAY ---
+        this->income[this->income_count] = new IncomeSource;
+        this->income[this->income_count]->id = new_id;
+        this->income[this->income_count]->name = new_name;
+
+        this->income_count++;
+
+        // --- OUTPUT FEEDBACK ---
+        cout << "---------------------------------" << endl;
+        cout << " New Income Source Added: " << new_name << endl;
+        cout << " ID Assigned: " << new_id << endl;
+        cout << "---------------------------------" << endl;
+    }
+
+
+
+    void User_Info::Add_Expense_Transaction()
+    {
+
+
+    }
+    void User_Info::Add_Income_Transaction()
+    {   
+        string dateStr;
+        //DATE
+        Date transDate;
+        // --- INPUT LOOP TO GET DATE---
+        do 
+        {
+            cout << "Enter Date of transaction (dd/mm/yyyy): ";
+            getline(cin, dateStr);
+            transDate = InputDate(dateStr);
+
+            if (transDate.day == 0) {
+                cout << "Invalid date format or logic! Please try again (e.g., 25/12/2023).\n";
+            }
+        } while (transDate.day == 0);
+
+        string type_name;
+        //INCOME SOURCE POINTER
+        IncomeSource* dummy_IS = nullptr;
+        int choice;
+        bool check_IS=true;
+        // --- INPUT LOOP TO GET INCOME SOURCE---
+        while (check_IS)
+        {
+            while(true)
+            {
+                cout << "Enter your income source name (e.g., Salary): ";
+                //Show_Income_Source();
+                //This will draw all the Incomsource on for user to choose
+                if (cin.peek() == '\n') cin.ignore(); 
+                getline(cin, type_name);
+
+                if (type_name.empty() || check_string(type_name, '^'))
+                {
+                    cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            string new_name=type_name;
+
+            
+            // Using Find_By_Name to check duplicates in the income array
+            if (Find_By_Name(type_name, this->income, this->income_count, dummy_IS))
+            {
+                cout << "Source chosen successfully: "<< type_name<<endl;
+                check_IS=false;
+            }
+            else
+            {
+                cout<< "Income source does not exist, do you want to create a new incoce source?\n";
+                cout<< "Enter your choice (1/0): \n";
+                cout<< "1. Yes\n";
+                cout<< "2. No\n";
+                //Clear buffer here also, Write me a function for clear buffer specifically
+                cin>>choice;
+                int new_IS_id;
+                switch (choice)
+                {
+                case 1:
+                    //Auto add a income source here
+                    //name: new_name
+                    //ID: auto generate
+                    this->resize(); // Ensure capacity exists
+
+
+                    // --- AUTO ID GENERATION ---
+                    new_IS_id = Generate_ID(this->income, this->income_count);
+
+                    // --- SAVE TO ARRAY ---
+                    this->income[this->income_count] = new IncomeSource;
+                    this->income[this->income_count]->id = new_IS_id;
+                    this->income[this->income_count]->name = new_name;
+                    // Linking for later assigning
+                    dummy_IS = this->income[this->income_count];
+                    // Update size count
+                    this->income_count++;
+
+                    // --- OUTPUT FEEDBACK ---
+                    cout << "---------------------------------" << endl;
+                    cout << " New Income Source Added: " << new_name << endl;
+                    cout << " ID Assigned: " << new_IS_id << endl;
+                    cout << "---------------------------------" << endl;
+                    check_IS=false;
+                    break;
+                
+                case 0:
+                    cout << "Invalid Income Source\n";
+                    cout << "Press enter to go back...";
+                    cin.get();
+                    // User decline so we go back to ask them to type the name again
+                    break;
+                default:
+                    cout << "Invalid Income Source\n";
+                    cout << "Press enter to go back...";
+                    cin.get();
+                    // User decline so we go back to ask them to type the name again
+                    break;
+                }
+            }
+        }
+        // --- INPUT LOOP TO GET AMOUNT---
+        string s;
+        long long validAmount = 0;
+        bool check_W=true;
+        while (true) {
+        cout << "Enter your amount of transaction: ";
+        cin >> s; // No spaces allowed in numbers, so cin is fine here
+
+        // Use your existing helper
+        if (isValidLongLong(s)) {
+            validAmount = stoll(s);
+            break;
+        } else {
+            cout << "Invalid amount. Please enter a valid integer number.\n";
+        }
+        }
+        // --- INPUT LOOP TO GET WALLET---
+        //dummy for getting input
+        Wallet dummy;
+        bool check_W=true;
+        //Dummy pointer for later linking
+        Wallet* dummy_W = nullptr;
+        while(check_W)
+        {
+        while (true) 
+        {
+            cout << "Enter your new wallet name: ";
+            //Show_Wallet();
+            //Draw all Wallet for user to choose
+            if (cin.peek() == '\n') cin.ignore(); 
+            getline(cin, dummy.name);
+
+
+            if (dummy.name.empty() || check_string(dummy.name, '^')) 
+            {
+                cout << "Invalid name (cannot be empty or contain '^'). Try again.\n";
+                continue;
+            }
+
+            
+            // Find Wallet
+            if (Find_By_Name(dummy.name, this->Wallet_List, this->wallet_count, dummy_W)) 
+            {
+                cout << "Wallet chosen successfully: "<< dummy.name<<endl;
+                check_W=false;
+            } 
+            else 
+            {
+                cout<< "Wallet does not exist, do you want to create a new Wallet?\n";
+                cout<< "Enter your choice (1/0): \n";
+                cout<< "1. Yes\n";
+                cout<< "2. No\n";
+                //Clear buffer here also, Write me a function for clear buffer specifically
+                int new_W_id;
+                cin>>choice;
+                switch (choice)
+                {
+                case 1:
+                    //Auto add a Wallet here
+                    //name: new_name
+                    //ID: auto generate
+                    //Balance = 0;
+                    this->resize(); // Ensure capacity exists
+
+
+                    // --- AUTO ID GENERATION ---
+                    new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
+
+                    // 5. Save to List
+                    Wallet_List[wallet_count] = new Wallet;
+                    Wallet_List[wallet_count]->id = new_W_id; // Assign the auto-generated ID
+                    Wallet_List[wallet_count]->name = dummy.name;
+                    Wallet_List[wallet_count]->remain = 0;
+                    dummy_W = Wallet_List[wallet_count];
+
+
+                    wallet_count += 1;
+
+                    cout << "---------------------------------" << endl;
+                    cout << " New Wallet Created Successfully " << endl;
+                    cout << " ID:      " << new_W_id << endl;
+                    cout << " Name:    " << dummy.name << endl;
+                    cout << " Balance: " << 0 << endl;
+                    cout << "---------------------------------" << endl;
+                
+                case 0:
+                    cout << "Invalid Wallet\n";
+                    cout << "Press enter to go back...";
+                    cin.get();
+                    // User decline so we go back to ask them to type the name again
+                    break;
+                default:
+                    cout << "Invalid Wallet\n";
+                    cout << "Press enter to go back...";
+                    cin.get();
+                    // User decline so we go back to ask them to type the name again
+                    break;
+                }
+            }
+            }
+        }
+
+
+        // --- INPUT LOOP TO GET Description---
+
+
+
+    }
+    void User_Info::Add_Recur_Expense_Transaction()
+    {
+
+    }
+    void User_Info::Add_Recur_Income_Transaction()
+    {
+
+    }
+
 

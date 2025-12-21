@@ -6,33 +6,77 @@
 #include <fstream>
 using namespace std;
 
+bool IsValidCalendarDate(int d, int m, int y) 
+{
+    if (y < 1900 || y > 3000) return false; // Reasonable limits for finance
+    if (m < 1 || m > 12) return false;
+
+    int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    // Leap year check: Divisible by 4 AND (not divisible by 100 OR divisible by 400)
+    if ((y % 4 == 0 && y % 100 != 0) || (y % 400 == 0)) {
+        daysInMonth[2] = 29;
+    }
+
+    return d > 0 && d <= daysInMonth[m];
+}
 
 // Input a date (from console).
-Date InputDate(string info1)
+Date InputDate(string info)
 {
-
-    Date date;
-    GetCurrentDate(date); // Default initialize to avoid garbage values
+Date errorDate = {0, 0, 0}; // Return this if input is invalid
     
-    // Safety check: if string is empty, return default date
-    if (info1.empty()) return date;
+    if (info.empty()) return errorDate;
 
-    stringstream ss(info1);
-    string day_str, month_str, year_str;
+    // 1. Normalize Separators
+    // Replace '-' or '.' with '/' to handle formats like 12-05-2024
+    string cleanInfo = info;
+    for (char &c : cleanInfo) {
+        if (c == '-' || c == '.') c = '/';
+    }
 
-    if (getline(ss, day_str, '/') && getline(ss, month_str, '/') && getline(ss, year_str))
-    {
+    stringstream ss(cleanInfo);
+    string segment;
+    vector<int> parts;
+
+    // 2. Split string by '/'
+    while (getline(ss, segment, '/')) {
         try {
-
-            date.day = stoi(day_str);
-            date.month = stoi(month_str);
-            date.year = stoi(year_str);
+            size_t pos;
+            int val = stoi(segment, &pos);
+            
+            // Ensure the segment was fully numeric (avoids "12abc" being read as 12)
+            if (pos != segment.size()) return errorDate; 
+            
+            parts.push_back(val);
         } catch (...) {
-
-            return date;
+            return errorDate;
         }
     }
-    return date;
+
+    // 3. Check if we got exactly 3 parts (Day, Month, Year)
+    if (parts.size() != 3) return errorDate;
+
+    int d = parts[0];
+    int m = parts[1];
+    int y = parts[2];
+
+    // 4. Handle shorthand years (e.g., input "23" -> "2023")
+    if (y < 100) {
+        y += 2000;
+    }
+
+    // 5. Logical Validation
+    if (!IsValidCalendarDate(d, m, y)) {
+        return errorDate;
+    }
+
+    // 6. Success
+    Date result;
+    result.day = d;
+    result.month = m;
+    result.year = y;
+    return result;
 };
 
 // Output a date (to console). Format: DD/MM/YYYY

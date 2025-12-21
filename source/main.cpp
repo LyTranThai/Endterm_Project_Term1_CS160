@@ -1,9 +1,5 @@
 #include <iostream>
-#include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\Currency.h"
-#include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\Date.h"
-#include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\Transaction_Type.h"
-#include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\Transaction.h"
-#include "C:\Users\Admin\Documents\GitHub\Endterm_Project_Term1_CS160\header\Wallet.h"
+#include "../header/User_Info.h"
 
 using namespace std;
 //MUST RUN TO INPUT CURRENCY DATA 
@@ -170,8 +166,21 @@ void RunApplication_Navigation()
     }
     
 }
+
+
+
 int main()
 {
+    cout<<endl;
+    cout << "=================================================\n";
+    cout << "              FINANCIAL TRACKER APP              \n";
+    cout << "=================================================\n";
+    cout << "Type in your name"<<endl;
+    string name;
+    cin >> name;
+    User_Info user;
+
+
     RunApplication_Navigation();
     return 0;
 }

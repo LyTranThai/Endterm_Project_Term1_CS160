@@ -118,3 +118,21 @@ bool isValidInt(const string &s)
     }
     return true;
 }
+
+
+bool isValidLongLong(const string &s) 
+{
+    if (s.empty()) return false;
+    if (isspace(s[0])) return false;
+
+    try {
+        size_t pos;
+        // stoll converts string to long long
+        long long val = std::stoll(s, &pos);
+        
+        return pos == s.size();
+    } 
+    catch (...) {
+        return false;
+    }
+}

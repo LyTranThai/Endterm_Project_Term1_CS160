@@ -2,6 +2,7 @@
 #include "Wallet.h"
 #include "Recurring_Transaction.h"
 #include "MasterData.h"
+#include "InfoArray.h"
 struct Wallet_Node;
 struct Transaction_Node;
 
@@ -103,13 +104,57 @@ struct User_Info
     }
     ~User_Info()
     {
+        for(int i=0; i<wallet_count;i++)
+        {
+            delete Wallet_List[i];
+        }
+        for(int i=0; i<expense_count; i++)
+        {
+            delete expense[i];
+        }
+        for(int i=0; i<income_count; i++)
+        {
+            delete income[i];
+        }
+        for(int i=0; i<recur_trans_expense_count; i++)
+        {
+            delete Recurring_Transaction_Expense_List[i];
+        }
+        for(int i=0; i<recur_trans_income_count; i++)
+        {
+            delete Recurring_Transaction_Income_List[i];
+        }
+        for(int i=0; i<expCount; i++)
+        {
+            delete expenses_transaction[i];
+        }
+        for(int i=0; i<inCount; i++)
+        {
+            delete incomes_transaction[i];
+        }
+
         delete[] Wallet_List;
         delete[] expense;
         delete[] income;
         delete[] Recurring_Transaction_Expense_List;
         delete[] Recurring_Transaction_Income_List;
+        delete[] expenses_transaction;
+        delete[] incomes_transaction;
     }
 
-
+    void Show_Wallet_List();
+    void Show_Transaction_History();
+    void Show_Recurring_Transaction_List();
+    void Add_Wallet();
+    void Add_Expense();
+    void Add_Income();
+    void Add_Expense_Transaction();
+    void Add_Income_Transaction();
+    void Add_Recur_Expense_Transaction();
+    void Add_Recur_Income_Transaction();
+    
+    bool Input_Choice(int& choice);
+    void Input_User_Info_Textfile(string filename);
+    
 
 };

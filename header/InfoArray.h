@@ -40,3 +40,25 @@ struct Recurring_Transaction_Enpense_List
 {
     /* data */
 };
+
+
+bool isLeapYear(int year);
+
+// helper
+int getDaysInMonth(int month, int year);
+
+// nhập sai ngày là bt đấy :)), I'm watching you
+bool isValidDate(const Date &d);
+
+// chuyển date string
+string dateToString(const Date &d);
+
+// chuyển string date
+bool stringToDate(const string &str, Date &outDate);
+
+bool isValidDouble(const string &s);
+
+// check int
+bool isValidInt(const string &s);
+
+bool isValidLongLong(const string &s);

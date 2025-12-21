@@ -25,3 +25,8 @@ template <typename T>
 int Generate_ID(T** list, int count);
 
 bool check_string(string info, char c);
+
+
+void Clear_Buffer();
+
+void ClearLines(int numLines);

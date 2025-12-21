@@ -319,51 +319,61 @@
     {
         Wallet dummy;
         this->resize();
+        
+        // --- NAME INPUT LOOP ---
         while (true) 
         {
-        cout << "Enter your new wallet name: ";
-        if (cin.peek() == '\n') cin.ignore(); 
-        getline(cin, dummy.name);
+            cout << "Enter your new wallet name: ";
+            if (cin.peek() == '\n') cin.ignore(); 
+            getline(cin, dummy.name);
 
+            if (dummy.name.empty() || check_string(dummy.name, '^')) 
+            {
+                cout << "Invalid name (cannot be empty or contain '^').\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer(); // getline leaves buffer clean usually, but consistent with your template
+                ClearLines(3); 
+                continue;
+            }
 
-        if (dummy.name.empty() || check_string(dummy.name, '^')) 
-        {
-            cout << "Invalid name (cannot be empty or contain '^'). Try again.\n";
-            continue;
+            Wallet* save = nullptr;
+            // Check for duplicate name
+            if (Find_By_Name(dummy.name, this->Wallet_List, this->wallet_count, save)) {
+                cout << "Wallet name existed, please choose another name.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                ClearLines(3);
+            } else {
+                break; // Name is valid and unique
+            }
         }
 
-        Wallet* save = nullptr;
-        // Check for duplicate name
-        if (Find_By_Name(dummy.name, this->Wallet_List, this->wallet_count, save)) {
-            cout << "Wallet name existed, please choose another name.\n";
-        } else {
-            break; // Name is valid and unique
-        }
-        }
-
-        // Loop for Balance Input (Robust check)
+        // --- BALANCE INPUT LOOP ---
         string s;
         long long validBalance = 0;
         while (true) {
-        cout << "Enter your balance: ";
-        cin >> s; // No spaces allowed in numbers, so cin is fine here
+            cout << "Enter your balance: ";
+            cin >> s; 
 
-        // Use your existing helper
-        if (isValidLongLong(s)) {
-            validBalance = stoll(s);
-            break;
-        } else {
-            cout << "Invalid amount. Please enter a valid integer number.\n";
-        }
+            if (isValidLongLong(s)) {
+                validBalance = stoll(s);
+                break;
+            } else {
+                cout << "Invalid amount. Please enter a valid integer number.\n";
+                cout << "Press enter to retype...";
+                cin.ignore(); // cin >> leaves newline, consume it before cin.get()
+                cin.get();
+                ClearLines(3);
+            }
         }
 
         // 4. GENERATE ID automatically
-        // It scans existing wallets to find the highest ID and adds 1
         int new_id = Generate_ID(this->Wallet_List, this->wallet_count);
 
         // 5. Save to List
         Wallet_List[wallet_count] = new Wallet;
-        Wallet_List[wallet_count]->id = new_id; // Assign the auto-generated ID
+        Wallet_List[wallet_count]->id = new_id; 
         Wallet_List[wallet_count]->name = dummy.name;
         Wallet_List[wallet_count]->remain = validBalance;
 
@@ -375,110 +385,116 @@
         cout << " Name:    " << dummy.name << endl;
         cout << " Balance: " << validBalance << endl;
         cout << "---------------------------------" << endl;
-
     }
 
     void User_Info::Add_Expense()
     {
-
-        this->resize(); // Ensure capacity exists
+        this->resize(); 
         string new_name;
 
         // --- INPUT LOOP ---
         while (true)
         {
-        cout << "Enter new expense category name (e.g., Food): ";
+            cout << "Enter new expense category name (e.g., Food): ";
 
-        // Clear buffer if needed to allow spaces in name
-        if (cin.peek() == '\n') cin.ignore(); 
-        getline(cin, new_name);
+            if (cin.peek() == '\n') cin.ignore(); 
+            getline(cin, new_name);
 
-        // Validation 1: Empty or Invalid Char
-        if (new_name.empty() || check_string(new_name, '^'))
-        {
-            cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
-            continue;
+            // Validation 1: Empty or Invalid Char
+            if (new_name.empty() || check_string(new_name, '^'))
+            {
+                cout << "Invalid name. Cannot be empty or contain '^'.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
+                continue;
+            }
+
+            // Validation 2: Duplicates
+            ExpenseCategory* temp = nullptr;
+            if (Find_By_Name(new_name, this->expense, this->expense_count, temp))
+            {
+                cout << "This category already exists! Please enter a different name.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
+            }
+            else
+            {
+                break; 
+            }
         }
 
-        // Validation 2: Duplicates
-        ExpenseCategory* temp = nullptr;
-        // Using Find_By_Name from DataHandling.h
-        if (Find_By_Name(new_name, this->expense, this->expense_count, temp))
-        {
-            cout << "This category already exists! Please enter a different name.\n";
-        }
-        else
-        {
-            break; // Name is valid and unique
-        }
-        }
-
-        // --- AUTO ID GENERATION ---
-        // Uses the helper function to find max ID + 1
+        // --- SAVE ---
         int new_id = Generate_ID(this->expense, this->expense_count);
 
-        // --- SAVE TO ARRAY ---
         this->expense[this->expense_count] = new ExpenseCategory;
         this->expense[this->expense_count]->id = new_id;
         this->expense[this->expense_count]->name = new_name;
 
         this->expense_count++;
 
-        // --- OUTPUT FEEDBACK ---
         cout << "---------------------------------" << endl;
         cout << " New Expense Category Added: " << new_name << endl;
         cout << " ID Assigned: " << new_id << endl;
         cout << "---------------------------------" << endl;
-
     }
-    void User_Info::Add_Income()
+
+
+        void User_Info::Add_Income()
     {
-        this->resize(); // Ensure capacity exists
+        this->resize(); 
         string new_name;
 
         // --- INPUT LOOP ---
         while (true)
         {
-        cout << "Enter new income source name (e.g., Salary): ";
+            cout << "Enter new income source name (e.g., Salary): ";
 
-        if (cin.peek() == '\n') cin.ignore(); 
-        getline(cin, new_name);
+            if (cin.peek() == '\n') cin.ignore(); 
+            getline(cin, new_name);
 
-        if (new_name.empty() || check_string(new_name, '^'))
-        {
-            cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
-            continue;
+            if (new_name.empty() || check_string(new_name, '^'))
+            {
+                cout << "Invalid name. Cannot be empty or contain '^'.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
+                continue;
+            }
+
+            IncomeSource* temp = nullptr;
+            if (Find_By_Name(new_name, this->income, this->income_count, temp))
+            {
+                cout << "This source already exists! Please enter a different name.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
+            }
+            else
+            {
+                break;
+            }
         }
 
-        IncomeSource* temp = nullptr;
-        // Using Find_By_Name to check duplicates in the income array
-        if (Find_By_Name(new_name, this->income, this->income_count, temp))
-        {
-            cout << "This source already exists! Please enter a different name.\n";
-        }
-        else
-        {
-            break;
-        }
-        }
-
-        // --- AUTO ID GENERATION ---
+        // --- SAVE ---
         int new_id = Generate_ID(this->income, this->income_count);
 
-        // --- SAVE TO ARRAY ---
         this->income[this->income_count] = new IncomeSource;
         this->income[this->income_count]->id = new_id;
         this->income[this->income_count]->name = new_name;
 
         this->income_count++;
 
-        // --- OUTPUT FEEDBACK ---
         cout << "---------------------------------" << endl;
         cout << " New Income Source Added: " << new_name << endl;
         cout << " ID Assigned: " << new_id << endl;
         cout << "---------------------------------" << endl;
     }
-
 
 
     void User_Info::Add_Expense_Transaction()
@@ -497,7 +513,11 @@
             transDate = InputDate(dateStr);
 
             if (transDate.day == 0) {
-                cout << "Invalid date format! Please try again (e.g., 25/12/2023).\n";
+                cout << "Invalid date format! Please enter as format (e.g., 25/12/2023)...\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
             }
         } while (transDate.day == 0);
 
@@ -519,7 +539,10 @@
 
                 if (type_name.empty() || check_string(type_name, '^'))
                 {
-                    cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
+                    cout << "Invalid name. Cannot be empty or contain '^'. Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(2);
                     continue;
                 }
                 break;
@@ -534,9 +557,15 @@
             else
             {
                 cout << "Expense category does not exist. Do you want to create it?\n";
-                cout << "1. Yes\n2. No\n0. Cancel\nChoice: ";
+                cout << "1. Yes\n2. No\n0. Back to menu\n";
+                
+                do
+                {
+                cout << "Choice: ";
                 cin >> choice;
-
+                Clear_Buffer();
+                
+                
                 switch (choice)
                 {
                 case 1:
@@ -558,17 +587,30 @@
                     cout << " ID Assigned: " << new_EC_id << endl;
                     cout << "---------------------------------" << endl;
                     check_EC = false;
+                    choice = 0;
                     break;
                 }
                 case 2:
                     cout << "Please choose an existing category or create a new one.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(8);
+                    choice =0;
                     break;
                 case 0:
                     return; // Exit function
                 default:
                     cout << "Invalid choice.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
                     break;
                 }
+                
+
+                } while (choice != 0);
             }
         }
 
@@ -585,11 +627,19 @@
                 validAmount = stoll(s);
                 if (validAmount < 0) {
                     cout << "Amount cannot be negative. Enter a positive value (it will be subtracted).\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
                     continue;
                 }
                 break;
             } else {
                 cout << "Invalid amount. Please enter a valid integer.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
             }
         }
 
@@ -610,6 +660,10 @@
                 if (dummy.name.empty() || check_string(dummy.name, '^')) 
                 {
                     cout << "Invalid name. Try again.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
                     continue;
                 }
                 break;
@@ -627,8 +681,12 @@
             } 
             else 
             {
-                cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
+                cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\n";
+                do
+                {
+                cout << "Choice: ";
                 cin >> choice;
+                Clear_Buffer();
                 
                 switch (choice)
                 {
@@ -646,19 +704,33 @@
                     wallet_count++;
 
                     cout << "---------------------------------" << endl;
-                    cout << " New Wallet Created (Balance: 0)" << endl;
+                    cout << " New Wallet Created Successfully " << endl;
+                    cout << " ID:      " << new_W_id << endl;
+                    cout << " Name:    " << dummy.name << endl;
+                    cout << " Balance: " << 0 << endl;
                     cout << "---------------------------------" << endl;
                     check_W = false;
+                    choice = 0;
                     break;
                 }
-                case 2: 
+                case 2:
+                    cout << "Please enter a exist wallet name\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(8);
                     break;
                 case 0: 
                     return;
                 default: 
                     cout << "Invalid choice.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
                     break;
                 }
+            }while(choice !=0);
             }
         }
 
@@ -700,8 +772,13 @@
             getline(cin, dateStr);
             transDate = InputDate(dateStr);
 
-            if (transDate.day == 0) {
-                cout << "Invalid date format or logic! Please try again (e.g., 25/12/2023).\n";
+            if (transDate.day == 0) 
+            {
+                cout << "Invalid date format or logic! (e.g., 25/12/2023).\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
             }
         } while (transDate.day == 0);
 
@@ -723,7 +800,11 @@
 
                 if (type_name.empty() || check_string(type_name, '^'))
                 {
-                    cout << "Invalid name. Cannot be empty or contain '^'. Try again.\n";
+                    cout << "Invalid name. Cannot be empty or contain '^'.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
                     continue;
                 }
                 else
@@ -747,56 +828,54 @@
                 cout<< "1. Yes\n";
                 cout<< "2. No\n";
                 cout<< "0. Back to menu\n";
-                //Clear buffer here also, Write me a function for clear buffer specifically
-                cin>>choice;
-                int new_IS_id;
-                switch (choice)
+                do 
                 {
-                case 1:
-                    //Auto add a income source here
-                    //name: new_name
-                    //ID: auto generate
-                    this->resize(); // Ensure capacity exists
+                    cout << "Enter your choice: ";
+                    cin >> choice;
+                    Clear_Buffer(); // Clear newline after cin >> choice
 
+                    int new_IS_id;
+                    switch (choice)
+                    {
+                    case 1:
+                        this->resize(); 
+                        new_IS_id = Generate_ID(this->income, this->income_count);
 
-                    // --- AUTO ID GENERATION ---
-                    new_IS_id = Generate_ID(this->income, this->income_count);
+                        this->income[this->income_count] = new IncomeSource;
+                        this->income[this->income_count]->id = new_IS_id;
+                        this->income[this->income_count]->name = new_name;
+                        dummy_IS = this->income[this->income_count];
+                        this->income_count++;
 
-                    // --- SAVE TO ARRAY ---
-                    this->income[this->income_count] = new IncomeSource;
-                    this->income[this->income_count]->id = new_IS_id;
-                    this->income[this->income_count]->name = new_name;
-                    // Linking for later assigning
-                    dummy_IS = this->income[this->income_count];
-                    // Update size count
-                    this->income_count++;
+                        cout << "---------------------------------" << endl;
+                        cout << " New Income Source Added: " << new_name << endl;
+                        cout << " ID Assigned: " << new_IS_id << endl;
+                        cout << "---------------------------------" << endl;
+                        check_IS=false;
+                        choice = 0; // Break do-while
+                        break;
+                    
+                    case 2:
+                        cout << "Please type the name again.\n";
+                        cout << "Press enter to retype...";
+                        cin.get();
+                        Clear_Buffer();
+                        ClearLines(8); // Clear menu and previous inputs
+                        choice = 0; // Break do-while to loop back to name input
+                        break;
 
-                    // --- OUTPUT FEEDBACK ---
-                    cout << "---------------------------------" << endl;
-                    cout << " New Income Source Added: " << new_name << endl;
-                    cout << " ID Assigned: " << new_IS_id << endl;
-                    cout << "---------------------------------" << endl;
-                    check_IS=false;
-                    break;
-                
-                case 2:
-                    cout << "Invalid Income Source\n";
-                    cout << "Press enter to go back...";
-                    cin.get();
-                    // User decline so we go back to ask them to type the name again
-                    break;
-                case 0:
-                    cout<< "Invalid transaction\n";
-                    cout << "Press enter to go back...";
-                    cin.get();
-                    return;
-                default:
-                    cout << "Invalid Income Source\n";
-                    cout << "Press enter to go back...";
-                    cin.get();
-                    // User decline so we go back to ask them to type the name again
-                    break;
-                }
+                    case 0:
+                        return;
+
+                    default:
+                        cout << "Invalid choice.\n";
+                        cout << "Press enter to retype...";
+                        cin.get();
+                        Clear_Buffer();
+                        ClearLines(3);
+                        break;
+                    }
+                } while (choice != 0 && check_IS); // Loop if invalid choice
             }
         }
         // --- INPUT LOOP TO GET AMOUNT---
@@ -813,6 +892,10 @@
             break;
         } else {
             cout << "Invalid amount. Please enter a valid integer number.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         }
         // --- INPUT LOOP TO GET WALLET---
@@ -834,7 +917,11 @@
 
             if (dummy.name.empty() || check_string(dummy.name, '^')) 
             {
-                cout << "Invalid name (cannot be empty or contain '^'). Try again.\n";
+                cout << "Invalid name (cannot be empty or contain '^').\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
                 continue;
             }
 
@@ -848,63 +935,61 @@
             else 
             {
                 cout<< "Wallet does not exist, do you want to create a new Wallet?\n";
-                cout<< "Enter your choice (1/0): \n";
                 cout<< "1. Yes\n";
                 cout<< "2. No\n";
-                cout<< "0. Back to menu";
-                //Clear buffer here also, Write me a function for clear buffer specifically
-                int new_W_id;
-                cin>>choice;
-                switch (choice)
-                {
-                case 1:
-                    //Auto add a Wallet here
-                    //name: new_name
-                    //ID: auto generate
-                    //Balance = 0;
-                    this->resize(); // Ensure capacity exists
-
-
-                    // --- AUTO ID GENERATION ---
-                    new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
-
-                    // 5. Save to List
-                    Wallet_List[wallet_count] = new Wallet;
-                    Wallet_List[wallet_count]->id = new_W_id; // Assign the auto-generated ID
-                    Wallet_List[wallet_count]->name = dummy.name;
-                    Wallet_List[wallet_count]->remain = 0;
-                    dummy_W = Wallet_List[wallet_count];
-
-
-                    wallet_count += 1;
-
-                    cout << "---------------------------------" << endl;
-                    cout << " New Wallet Created Successfully " << endl;
-                    cout << " ID:      " << new_W_id << endl;
-                    cout << " Name:    " << dummy.name << endl;
-                    cout << " Balance: " << 0 << endl;
-                    cout << "---------------------------------" << endl;
-                    check_W=false;
-                    break;
+                cout<< "0. Back to menu\n";
                 
-                case 2:
-                    cout << "Invalid Wallet\n";
-                    cout << "Press enter to go back...";
-                    cin.get();
-                    // User decline so we go back to ask them to type the name again
-                    break;
-                case 0:
-                    cout<< "Invalid transaction\n";
-                    cout << "Press enter to go back...";
-                    cin.get();
-                    return;
-                default:
-                    cout << "Invalid Wallet\n";
-                    cout << "Press enter to go back...";
-                    cin.get();
-                    // User decline so we go back to ask them to type the name again
-                    break;
-                }
+                int new_W_id;
+                
+                do {
+                    cout<< "Enter your choice: ";
+                    cin>>choice;
+                    Clear_Buffer();
+
+                    switch (choice)
+                    {
+                    case 1:
+                        this->resize(); 
+                        new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
+
+                        Wallet_List[wallet_count] = new Wallet;
+                        Wallet_List[wallet_count]->id = new_W_id; 
+                        Wallet_List[wallet_count]->name = dummy.name;
+                        Wallet_List[wallet_count]->remain = 0;
+                        dummy_W = Wallet_List[wallet_count];
+                        wallet_count += 1;
+
+                        cout << "---------------------------------" << endl;
+                        cout << " New Wallet Created Successfully " << endl;
+                        cout << " ID:      " << new_W_id << endl;
+                        cout << " Name:    " << dummy.name << endl;
+                        cout << " Balance: " << 0 << endl;
+                        cout << "---------------------------------" << endl;
+                        check_W=false;
+                        choice = 0; 
+                        break;
+                    
+                    case 2: 
+                        cout << "Please type the name again.\n";
+                        cout << "Press enter to retype...";
+                        cin.get();
+                        Clear_Buffer();
+                        ClearLines(8);
+                        choice = 0; // Break do-while, go back to name loop
+                        break;
+                    
+                    case 0: return;
+                    
+                    default: 
+                        cout << "Invalid choice.\n";
+                        cout << "Press enter to retype...";
+                        cin.get();
+                        Clear_Buffer();
+                        ClearLines(3);
+                        break;
+                    }
+                } while (choice != 0 && check_W);
+                if (!check_W) break; // Break name loop if wallet created
             }
             }
         }
@@ -932,7 +1017,7 @@
     }
 void User_Info::Add_Recur_Expense_Transaction()
 {
-    this->resize(); // Ensure capacity
+    this->resize(); 
 
     // --- STEP 1: START DATE ---
     string dateStr;
@@ -946,6 +1031,10 @@ void User_Info::Add_Recur_Expense_Transaction()
 
         if (startDate.day == 0) {
             cout << "Invalid date format! Please try again.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
     } while (startDate.day == 0);
 
@@ -955,24 +1044,28 @@ void User_Info::Add_Recur_Expense_Transaction()
     while (true)
     {
         cout << "Enter End Date (dd/mm/yyyy): ";
-        // We don't need cin.ignore() here because the previous loop ended with getline
         getline(cin, dateStr);
         endDate = InputDate(dateStr);
 
         if (endDate.day == 0) {
             cout << "Invalid date format! Please try again.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
             continue;
         }
 
-        // Logic Check: End Date must be >= Start Date
-        // Using your compare function: returns positive if date1 > date2
         if (compare(endDate, startDate) < 0) {
             cout << "Error: End Date cannot be before Start Date.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         } else {
-            break; // Valid date
+            break; 
         }
     }
-
 
     // --- STEP 3: EXPENSE CATEGORY ---
     string type_name;
@@ -990,6 +1083,10 @@ void User_Info::Add_Recur_Expense_Transaction()
             if (type_name.empty() || check_string(type_name, '^'))
             {
                 cout << "Invalid name. Try again.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
                 continue;
             }
             break;
@@ -1002,35 +1099,52 @@ void User_Info::Add_Recur_Expense_Transaction()
         }
         else
         {
-            cout << "Category does not exist. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
-            cin >> choice;
-            if (cin.peek() == '\n') cin.ignore(); // Clear buffer after cin >> choice
+            cout << "Category does not exist. Create new?\n1. Yes\n2. No\n0. Cancel\n";
+            
+            do {
+                cout << "Choice: ";
+                cin >> choice;
+                Clear_Buffer();
 
-            switch (choice)
-            {
-            case 1:
-            {
-                this->resize(); 
-                int new_EC_id = Generate_ID(this->expense, this->expense_count);
+                switch (choice)
+                {
+                case 1:
+                {
+                    this->resize(); 
+                    int new_EC_id = Generate_ID(this->expense, this->expense_count);
 
-                this->expense[this->expense_count] = new ExpenseCategory;
-                this->expense[this->expense_count]->id = new_EC_id;
-                this->expense[this->expense_count]->name = type_name;
-                
-                dummy_EC = this->expense[this->expense_count];
-                this->expense_count++;
+                    this->expense[this->expense_count] = new ExpenseCategory;
+                    this->expense[this->expense_count]->id = new_EC_id;
+                    this->expense[this->expense_count]->name = type_name;
+                    
+                    dummy_EC = this->expense[this->expense_count];
+                    this->expense_count++;
 
-                cout << "New Category Created: " << type_name << endl;
-                check_EC = false;
-                break;
-            }
-            case 2: break;
-            case 0: return;
-            default: cout << "Invalid choice.\n"; break;
-            }
+                    cout << "New Category Created: " << type_name << endl;
+                    check_EC = false;
+                    choice = 0;
+                    break;
+                }
+                case 2:
+                    cout << "Please type the name again.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(8);
+                    choice = 0;
+                    break;
+                case 0: return;
+                default: 
+                    cout << "Invalid choice.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
+                    break;
+                }
+            } while (choice != 0 && check_EC);
         }
     }
-
 
     // --- STEP 4: AMOUNT ---
     string s;
@@ -1044,13 +1158,20 @@ void User_Info::Add_Recur_Expense_Transaction()
             validAmount = stoll(s);
             if (validAmount < 0) {
                 cout << "Amount must be positive.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
                 continue;
             }
             break;
         }
         cout << "Invalid integer amount.\n";
+        cout << "Press enter to retype...";
+        cin.get();
+        Clear_Buffer();
+        ClearLines(3);
     }
-
 
     // --- STEP 5: WALLET ---
     Wallet dummy;
@@ -1068,6 +1189,10 @@ void User_Info::Add_Recur_Expense_Transaction()
             if (dummy.name.empty() || check_string(dummy.name, '^')) 
             {
                 cout << "Invalid name.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
                 continue;
             }
             break;
@@ -1080,51 +1205,64 @@ void User_Info::Add_Recur_Expense_Transaction()
         } 
         else 
         {
-            cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
-            cin >> choice;
-            if (cin.peek() == '\n') cin.ignore(); 
-
-            switch (choice)
+            cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\n";
+            
+            do
             {
-            case 1:
-            {
-                this->resize(); 
-                int new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
+                cout << "Choice: ";
+                cin >> choice;
+                Clear_Buffer();
 
-                Wallet_List[wallet_count] = new Wallet;
-                Wallet_List[wallet_count]->id = new_W_id; 
-                Wallet_List[wallet_count]->name = dummy.name;
-                Wallet_List[wallet_count]->remain = 0;
-                
-                dummy_W = Wallet_List[wallet_count];
-                wallet_count++;
+                switch (choice)
+                {
+                case 1:
+                {
+                    this->resize(); 
+                    int new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
 
-                cout << "New Wallet Created: " << dummy.name << endl;
-                check_W = false;
-                break;
-            }
-            case 2: break;
-            case 0: return;
-            default: cout << "Invalid choice.\n"; break;
-            }
+                    Wallet_List[wallet_count] = new Wallet;
+                    Wallet_List[wallet_count]->id = new_W_id; 
+                    Wallet_List[wallet_count]->name = dummy.name;
+                    Wallet_List[wallet_count]->remain = 0;
+                    
+                    dummy_W = Wallet_List[wallet_count];
+                    wallet_count++;
+
+                    cout << "New Wallet Created: " << dummy.name << endl;
+                    check_W = false;
+                    choice = 0;
+                    break;
+                }
+                case 2:
+                    cout << "Please type the name again.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(8);
+                    choice = 0;
+                    break;
+                case 0: return;
+                default: 
+                    cout << "Invalid choice.\n"; 
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
+                    break;
+                } 
+            } while (choice != 0 && check_W);
         }
     }
 
     // --- STEP 6: DESCRIPTION ---
     string Des_Input;
     cout << "Enter description: ";
-    // Previous input was cin >> s or cin >> choice, buffer might be clean if we used ignore(), 
-    // but safe to check peek just in case logic flow skipped an ignore
     if (cin.peek() == '\n') cin.ignore();
     getline(cin, Des_Input);
 
-
-    // --- STEP 7: SAVE (NO BALANCE UPDATE) ---
+    // --- STEP 7: SAVE ---
     this->resize(); 
-
-    // Accessing the Recurring List
     Recurring_Transaction_Expense_List[recur_trans_expense_count] = new Recurring_Transaction_Expense;
-    
     Recurring_Transaction_Expense_List[recur_trans_expense_count]->start = startDate;
     Recurring_Transaction_Expense_List[recur_trans_expense_count]->end = endDate;
     Recurring_Transaction_Expense_List[recur_trans_expense_count]->type = dummy_EC;
@@ -1132,22 +1270,16 @@ void User_Info::Add_Recur_Expense_Transaction()
     Recurring_Transaction_Expense_List[recur_trans_expense_count]->amount = validAmount;
     Recurring_Transaction_Expense_List[recur_trans_expense_count]->description = Des_Input;
 
-    // NOTE: Wallet balance (remain) is NOT updated here, as requested.
-
     recur_trans_expense_count++;
     
     cout << "---------------------------------------" << endl;
     cout << " Recurring Expense Scheduled! " << endl;
-    cout << " From: "; OutputDate(startDate); cout << endl;
-    cout << " To:   "; OutputDate(endDate);   cout << endl;
     cout << "---------------------------------------" << endl;
 }
 
-
-
 void User_Info::Add_Recur_Income_Transaction()
 {
-    this->resize(); // Ensure capacity exists
+    this->resize(); 
 
     // --- STEP 1: START DATE ---
     string dateStr;
@@ -1161,6 +1293,10 @@ void User_Info::Add_Recur_Income_Transaction()
 
         if (startDate.day == 0) {
             cout << "Invalid date format! Please try again.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
     } while (startDate.day == 0);
 
@@ -1170,23 +1306,28 @@ void User_Info::Add_Recur_Income_Transaction()
     while (true)
     {
         cout << "Enter End Date (dd/mm/yyyy): ";
-        // Previous loop ended with getline, buffer is clean
         getline(cin, dateStr);
         endDate = InputDate(dateStr);
 
         if (endDate.day == 0) {
             cout << "Invalid date format! Please try again.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
             continue;
         }
 
-        // Logic Check: End Date must be >= Start Date
         if (compare(endDate, startDate) < 0) {
             cout << "Error: End Date cannot be before Start Date.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         } else {
-            break; // Valid date
+            break; 
         }
     }
-
 
     // --- STEP 3: INCOME SOURCE ---
     string type_name;
@@ -1204,12 +1345,15 @@ void User_Info::Add_Recur_Income_Transaction()
             if (type_name.empty() || check_string(type_name, '^'))
             {
                 cout << "Invalid name. Try again.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
                 continue;
             }
             break;
         }
 
-        // Check against Income Array
         if (Find_By_Name(type_name, this->income, this->income_count, dummy_IS))
         {
             cout << "Source chosen: " << type_name << endl;
@@ -1217,35 +1361,52 @@ void User_Info::Add_Recur_Income_Transaction()
         }
         else
         {
-            cout << "Source does not exist. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
-            cin >> choice;
-            if (cin.peek() == '\n') cin.ignore(); 
+            cout << "Source does not exist. Create new?\n1. Yes\n2. No\n0. Cancel\n";
+            
+            do {
+                cout << "Choice: ";
+                cin >> choice;
+                Clear_Buffer();
 
-            switch (choice)
-            {
-            case 1:
-            {
-                this->resize(); 
-                int new_IS_id = Generate_ID(this->income, this->income_count);
+                switch (choice)
+                {
+                case 1:
+                {
+                    this->resize(); 
+                    int new_IS_id = Generate_ID(this->income, this->income_count);
 
-                this->income[this->income_count] = new IncomeSource;
-                this->income[this->income_count]->id = new_IS_id;
-                this->income[this->income_count]->name = type_name;
-                
-                dummy_IS = this->income[this->income_count];
-                this->income_count++;
+                    this->income[this->income_count] = new IncomeSource;
+                    this->income[this->income_count]->id = new_IS_id;
+                    this->income[this->income_count]->name = type_name;
+                    
+                    dummy_IS = this->income[this->income_count];
+                    this->income_count++;
 
-                cout << "New Income Source Created: " << type_name << endl;
-                check_IS = false;
-                break;
-            }
-            case 2: break;
-            case 0: return;
-            default: cout << "Invalid choice.\n"; break;
-            }
+                    cout << "New Income Source Created: " << type_name << endl;
+                    check_IS = false;
+                    choice = 0;
+                    break;
+                }
+                case 2:
+                    cout << "Please type the name again.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(8);
+                    choice = 0;
+                    break;
+                case 0: return;
+                default: 
+                    cout << "Invalid choice.\n"; 
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
+                    break;
+                }
+            } while (choice != 0 && check_IS);
         }
     }
-
 
     // --- STEP 4: AMOUNT ---
     string s;
@@ -1259,13 +1420,20 @@ void User_Info::Add_Recur_Income_Transaction()
             validAmount = stoll(s);
             if (validAmount < 0) {
                 cout << "Amount must be positive.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
                 continue;
             }
             break;
         }
         cout << "Invalid integer amount.\n";
+        cout << "Press enter to retype...";
+        cin.get();
+        Clear_Buffer();
+        ClearLines(3);
     }
-
 
     // --- STEP 5: WALLET ---
     Wallet dummy;
@@ -1283,6 +1451,10 @@ void User_Info::Add_Recur_Income_Transaction()
             if (dummy.name.empty() || check_string(dummy.name, '^')) 
             {
                 cout << "Invalid name.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(3);
                 continue;
             }
             break;
@@ -1295,33 +1467,51 @@ void User_Info::Add_Recur_Income_Transaction()
         } 
         else 
         {
-            cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\nChoice: ";
-            cin >> choice;
-            if (cin.peek() == '\n') cin.ignore(); 
+            cout << "Wallet not found. Create new?\n1. Yes\n2. No\n0. Cancel\n";
+            
+            do {
+                cout << "Choice: ";
+                cin >> choice;
+                Clear_Buffer();
 
-            switch (choice)
-            {
-            case 1:
-            {
-                this->resize(); 
-                int new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
+                switch (choice)
+                {
+                case 1:
+                {
+                    this->resize(); 
+                    int new_W_id = Generate_ID(this->Wallet_List, this->wallet_count);
 
-                Wallet_List[wallet_count] = new Wallet;
-                Wallet_List[wallet_count]->id = new_W_id; 
-                Wallet_List[wallet_count]->name = dummy.name;
-                Wallet_List[wallet_count]->remain = 0;
-                
-                dummy_W = Wallet_List[wallet_count];
-                wallet_count++;
+                    Wallet_List[wallet_count] = new Wallet;
+                    Wallet_List[wallet_count]->id = new_W_id; 
+                    Wallet_List[wallet_count]->name = dummy.name;
+                    Wallet_List[wallet_count]->remain = 0;
+                    
+                    dummy_W = Wallet_List[wallet_count];
+                    wallet_count++;
 
-                cout << "New Wallet Created: " << dummy.name << endl;
-                check_W = false;
-                break;
-            }
-            case 2: break;
-            case 0: return;
-            default: cout << "Invalid choice.\n"; break;
-            }
+                    cout << "New Wallet Created: " << dummy.name << endl;
+                    check_W = false;
+                    choice = 0;
+                    break;
+                }
+                case 2:
+                    cout << "Please type the name again.\n";
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(8);
+                    choice = 0;
+                    break;
+                case 0: return;
+                default: 
+                    cout << "Invalid choice.\n"; 
+                    cout << "Press enter to retype...";
+                    cin.get();
+                    Clear_Buffer();
+                    ClearLines(3);
+                    break;
+                }
+            } while (choice != 0 && check_W);
         }
     }
 
@@ -1331,13 +1521,9 @@ void User_Info::Add_Recur_Income_Transaction()
     if (cin.peek() == '\n') cin.ignore();
     getline(cin, Des_Input);
 
-
-    // --- STEP 7: SAVE (NO BALANCE UPDATE) ---
+    // --- STEP 7: SAVE ---
     this->resize(); 
-
-    // Accessing the Recurring Income List
     Recurring_Transaction_Income_List[recur_trans_income_count] = new Recurring_Transaction_Income;
-    
     Recurring_Transaction_Income_List[recur_trans_income_count]->start = startDate;
     Recurring_Transaction_Income_List[recur_trans_income_count]->end = endDate;
     Recurring_Transaction_Income_List[recur_trans_income_count]->type = dummy_IS;
@@ -1345,18 +1531,12 @@ void User_Info::Add_Recur_Income_Transaction()
     Recurring_Transaction_Income_List[recur_trans_income_count]->amount = validAmount;
     Recurring_Transaction_Income_List[recur_trans_income_count]->description = Des_Input;
 
-    // NOTE: Wallet balance (remain) is NOT updated here.
-
     recur_trans_income_count++;
     
     cout << "---------------------------------------" << endl;
     cout << " Recurring Income Scheduled! " << endl;
-    cout << " From: "; OutputDate(startDate); cout << endl;
-    cout << " To:   "; OutputDate(endDate);   cout << endl;
     cout << "---------------------------------------" << endl;
 }
-
-
 // --- Bổ sung vào User_Info.cpp ---
 
 void User_Info::Show_Wallet_List()

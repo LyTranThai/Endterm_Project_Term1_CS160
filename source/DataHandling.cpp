@@ -129,3 +129,19 @@ bool check_string(string info, char c)
     }
     return false;
 }
+
+
+void Clear_Buffer()
+{
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+}
+
+void ClearLines(int numLines) 
+{
+    for (int i = 0; i < numLines; i++) 
+    {
+        // \033[A moves cursor up 1 line
+        // \033[2K clears the entire line
+        cout << "\033[A" << "\033[2K";
+    }
+}

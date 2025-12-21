@@ -1,6 +1,5 @@
 #include "../header/DataHandling.h"
 
-
 void WriteString(ofstream &out, const string &s)
 {
     size_t len = s.size();
@@ -30,73 +29,71 @@ void ReadString(ifstream &in, string &s)
     }
 }
 
-
-    template <typename T>
-    void resize1(T** & p, int size, int cap)
+template <typename T>
+void resize1(T **&p, int size, int cap)
+{
+    while (size >= cap)
     {
-        while(size>=cap)
-        {
-            cap *= 2;
-            
-        }
-        T**dummy=p;
-        p= new T*[cap];
-        for(int i=0; i<size; i++)
-        {
-            p[i]=dummy[i];
-        }
-        delete[]dummy;
+        cap *= 2;
     }
-
-    template <typename T>
-    bool Find_By_ID(int& id,T**& list, int& size,T*& pointer)
+    T **dummy = p;
+    p = new T *[cap];
+    for (int i = 0; i < size; i++)
     {
-        check=false;
-        for(int i=0; i<size; i++)
-        {
-            if(list[i]->id==id)
-            {
-                pointer=list[i];
-                check=true;
-                break;
-            }
-        }
-        if(!check)
-        {
-            pointer=list[0];
-        }
-        return check;
+        p[i] = dummy[i];
     }
+    delete[] dummy;
+}
 
 template <typename T>
-bool Find_By_Name(string& name,T**& list, int& size,T*& pointer)
+bool Find_By_ID(int &id, T **&list, int &size, T *&pointer)
 {
-    check=false;
-        for(int i=0; i<size; i++)
+    bool check = false;
+    for (int i = 0; i < size; i++)
+    {
+        if (list[i]->id == id)
         {
-            if(compare_string(name, list[i]->name))
-            {
-                pointer=list[i];
-                check=true;
-                break;
-            }
+            pointer = list[i];
+            check = true;
+            break;
         }
-        if(!check)
-        {
-            pointer=list[0];
-        }
+    }
+    if (!check)
+    {
+        pointer = list[0];
+    }
     return check;
 }
 
-bool compare_string(string& s1, string& s2)
+template <typename T>
+bool Find_By_Name(string &name, T **&list, int &size, T *&pointer)
 {
-    if(s1.size() != s2.size())
+    bool check = false;
+    for (int i = 0; i < size; i++)
+    {
+        if (compare_string(name, list[i]->name))
+        {
+            pointer = list[i];
+            check = true;
+            break;
+        }
+    }
+    if (!check)
+    {
+        pointer = list[0];
+    }
+    return check;
+}
+
+bool compare_string(string &s1, string &s2)
+{
+    if (s1.size() != s2.size())
     {
         return false;
     }
-    for(int i =0; i<s1.size(); i++)
+    for (int i = 0; i < s1.size(); i++)
     {
-        if(s1[i]!=s2[i])
+        if (s1[i] != s2[i])
         {
             return false;
         }
@@ -105,13 +102,16 @@ bool compare_string(string& s1, string& s2)
 }
 
 template <typename T>
-int Generate_ID(T** list, int count) 
+int Generate_ID(T **list, int count)
 {
-    if (count == 0) return 1; // Start at 1 if list is empty
+    if (count == 0)
+        return 1; // Start at 1 if list is empty
 
     int max_id = 0;
-    for (int i = 0; i < count; i++) {
-        if (list[i]->id > max_id) {
+    for (int i = 0; i < count; i++)
+    {
+        if (list[i]->id > max_id)
+        {
             max_id = list[i]->id;
         }
     }
@@ -120,9 +120,9 @@ int Generate_ID(T** list, int count)
 
 bool check_string(string info, char c)
 {
-    for(int i=0; i<info.size(); i++)
+    for (int i = 0; i < info.size(); i++)
     {
-        if(info[i]==c)
+        if (info[i] == c)
         {
             return true;
         }

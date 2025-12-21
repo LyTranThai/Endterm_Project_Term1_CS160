@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\NHAT\\lnhat_local\\Project Endterm\\Endterm_Project_Term1_CS160\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\NHAT\\lnhat_local\\Project Endterm\\Endterm_Project_Term1_CS160\\header\\Transaction_Type_Node.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:header\\Transaction_Type_Node.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Transaction_Type_Node.h",
+              "DocumentMoniker": "C:\\Users\\NHAT\\lnhat_local\\Project Endterm\\Endterm_Project_Term1_CS160\\header\\Transaction_Type_Node.h",
+              "RelativeDocumentMoniker": "header\\Transaction_Type_Node.h",
+              "ToolTip": "C:\\Users\\NHAT\\lnhat_local\\Project Endterm\\Endterm_Project_Term1_CS160\\header\\Transaction_Type_Node.h",
+              "RelativeToolTip": "header\\Transaction_Type_Node.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-12-04T13:51:14.987Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

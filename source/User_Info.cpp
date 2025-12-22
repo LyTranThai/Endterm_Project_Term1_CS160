@@ -14,7 +14,7 @@
 
 
 
-    void User_Info::SaveToBinary(ofstream& out,string filename)
+    void User_Info::SaveToBinary(ofstream& out)
     {
         WriteString(out,name);
         out.write(reinterpret_cast<char*>(&this->default_Wallet->id),sizeof(int));
@@ -63,6 +63,8 @@
             //income
             for (int i = 0; i < this->recur_trans_income_count; i++)
             {
+                //id
+                out.write((char *)&this->Recurring_Transaction_Income_List[i]->id, sizeof(int));
                 // date
                 out.write((char *)&this->Recurring_Transaction_Income_List[i]->start, sizeof(Date));
                 out.write((char *)&this->Recurring_Transaction_Income_List[i]->end, sizeof(Date));
@@ -78,6 +80,8 @@
         //expense
             for (int i = 0; i < this->recur_trans_expense_count; i++)
             {
+                //id
+                out.write((char *)&this->Recurring_Transaction_Expense_List[i]->id, sizeof(int));
                 //date
                 out.write((char *)&this->Recurring_Transaction_Expense_List[i]->start, sizeof(Date));
                 out.write((char *)&this->Recurring_Transaction_Expense_List[i]->end, sizeof(Date));
@@ -96,7 +100,7 @@
         //income
             for (int i = 0; i < this->inCount; i++)
             {
-
+                out.write((char *)&this->incomes_transaction[i]->id, sizeof(int));
                 // date
                 out.write((char *)&this->incomes_transaction[i]->date, sizeof(Date));
                 // id
@@ -114,6 +118,7 @@
         //expense
             for (int i = 0; i < this->expCount; i++)
             {
+                out.write((char *)&this->expenses_transaction[i]->id, sizeof(int));
                 // date
                 out.write((char *)&this->expenses_transaction[i]->date, sizeof(Date));
                 
@@ -131,7 +136,7 @@
 
         
     }
-    void User_Info::LoadFromBinary(ifstream& out,string filename)
+    void User_Info::LoadFromBinary(ifstream& out)
     {
         ReadString(out,name);
         out.read(reinterpret_cast<char*>(&this->default_Wallet->id),sizeof(int));
@@ -189,6 +194,7 @@
                 this->Recurring_Transaction_Income_List[i] = new Recurring_Transaction_Income;
                 
                 // Date
+                out.read((char *)&this->Recurring_Transaction_Income_List[i]->id, sizeof(int));
                 out.read((char *)&this->Recurring_Transaction_Income_List[i]->start, sizeof(Date));
                 out.read((char *)&this->Recurring_Transaction_Income_List[i]->end, sizeof(Date));
                 
@@ -219,6 +225,7 @@
                 this->Recurring_Transaction_Expense_List[i] = new Recurring_Transaction_Expense;
                 
                 // Date
+                out.read((char *)&this->Recurring_Transaction_Expense_List[i]->id, sizeof(int));
                 out.read((char *)&this->Recurring_Transaction_Expense_List[i]->start, sizeof(Date));
                 out.read((char *)&this->Recurring_Transaction_Expense_List[i]->end, sizeof(Date));
                 
@@ -251,7 +258,10 @@
         //income
             for (int i = 0; i < this->inCount; i++)
             {
+                
                 this->incomes_transaction[i]=new Transaction_Income;
+                //id
+                out.read((char *)&this->incomes_transaction[i]->id, sizeof(int));
                 // date
                 out.read((char *)&this->incomes_transaction[i]->date, sizeof(Date));
                 // id -> create dummy object
@@ -271,6 +281,10 @@
                 delete dummy_trans;
                 Find_By_ID(this->incomes_transaction[i]->wallet->id, this->Wallet_List, this->wallet_count, this->incomes_transaction[i]->wallet);
                 delete dummy_wallet;
+                //Wallet Linking back
+                this->incomes_transaction[i]->wallet->Wallet_resize();
+                this->incomes_transaction[i]->wallet->incomes[this->incomes_transaction[i]->wallet->inCount]=this->incomes_transaction[i];
+                this->incomes_transaction[i]->wallet->inCount += 1;
             }
 
 
@@ -278,7 +292,9 @@
             for (int i = 0; i < this->expCount; i++)
             {
                 this->expenses_transaction[i] = new Transaction_Expense;
-                
+
+                //id
+                out.read((char *)&this->expenses_transaction[i]->id, sizeof(int));
                 // Date
                 out.read((char *)&this->expenses_transaction[i]->date, sizeof(Date));
                 
@@ -303,10 +319,16 @@
                 delete dummy_type;
                 Find_By_ID(this->expenses_transaction[i]->wallet->id, this->Wallet_List, this->wallet_count, this->expenses_transaction[i]->wallet);
                 delete dummy_wallet;
+
+                //Wallet linking back
+                this->expenses_transaction[i]->wallet->Wallet_resize();
+                this->expenses_transaction[i]->wallet->expenses[this->expenses_transaction[i]->wallet->inCount]=this->expenses_transaction[i];
+                this->expenses_transaction[i]->wallet->expCount += 1;
+
             }
-
+            Sort_By_Date_Transaction(incomes_transaction, inCount);
+            Sort_By_Date_Transaction(expenses_transaction,expCount);
         //Must Link to Wallet and type
-
     }
 
     void User_Info::Show_Wallet_List()
@@ -754,10 +776,13 @@
         // CRITICAL DIFFERENCE: SUBTRACT MONEY
         dummy_W->remain -= validAmount;
 
-        expCount++;
         
+        expenses_transaction[inCount]->wallet->Wallet_resize();
+        expenses_transaction[inCount]->wallet->expenses[expenses_transaction[inCount]->wallet->inCount] = expenses_transaction[expCount];
+        expenses_transaction[inCount]->wallet->inCount += 1;
         cout << "Expense Transaction Added Successfully!\n";
         cout << "New Balance of " << dummy_W->name << ": " << dummy_W->remain << endl;
+        expCount++;
     }
     void User_Info::Add_Income_Transaction()
     {   
@@ -1009,7 +1034,14 @@
         incomes_transaction[inCount]->amount=validAmount;
         incomes_transaction[inCount]->wallet->remain += validAmount;
         incomes_transaction[inCount]->description=Des_Input;
-        cout<<"New Transaction Added\n";
+
+
+        //Wallet Linking back
+        incomes_transaction[inCount]->wallet->Wallet_resize();
+        incomes_transaction[inCount]->wallet->incomes[incomes_transaction[inCount]->wallet->inCount]=incomes_transaction[inCount];
+        incomes_transaction[inCount]->wallet->inCount += 1;
+        cout<<"New Income Transaction Added\n";
+        cout << "New Balance of " << dummy_W->name << ": " << dummy_W->remain << endl;
         //prinout all the informatuin one more time for the user to check
         inCount +=1;
 
@@ -1043,6 +1075,7 @@ void User_Info::Add_Recur_Expense_Transaction()
     Date endDate;
     while (true)
     {
+        cout << "Enter end date 31/12/3000 to make your transaction recur indefinitely";
         cout << "Enter End Date (dd/mm/yyyy): ";
         getline(cin, dateStr);
         endDate = InputDate(dateStr);
@@ -1052,7 +1085,7 @@ void User_Info::Add_Recur_Expense_Transaction()
             cout << "Press enter to retype...";
             cin.get();
             Clear_Buffer();
-            ClearLines(3);
+            ClearLines(4);
             continue;
         }
 
@@ -1061,7 +1094,7 @@ void User_Info::Add_Recur_Expense_Transaction()
             cout << "Press enter to retype...";
             cin.get();
             Clear_Buffer();
-            ClearLines(3);
+            ClearLines(4);
         } else {
             break; 
         }
@@ -1262,7 +1295,9 @@ void User_Info::Add_Recur_Expense_Transaction()
 
     // --- STEP 7: SAVE ---
     this->resize(); 
+    int new_RTE_id=Generate_ID(Recurring_Transaction_Expense_List,recur_trans_expense_count);
     Recurring_Transaction_Expense_List[recur_trans_expense_count] = new Recurring_Transaction_Expense;
+    Recurring_Transaction_Expense_List[recur_trans_expense_count]->id=new_RTE_id;
     Recurring_Transaction_Expense_List[recur_trans_expense_count]->start = startDate;
     Recurring_Transaction_Expense_List[recur_trans_expense_count]->end = endDate;
     Recurring_Transaction_Expense_List[recur_trans_expense_count]->type = dummy_EC;
@@ -1522,8 +1557,10 @@ void User_Info::Add_Recur_Income_Transaction()
     getline(cin, Des_Input);
 
     // --- STEP 7: SAVE ---
-    this->resize(); 
+    this->resize();
+    int new_RTI_id=Generate_ID(Recurring_Transaction_Income_List, recur_trans_income_count);
     Recurring_Transaction_Income_List[recur_trans_income_count] = new Recurring_Transaction_Income;
+    Recurring_Transaction_Income_List[recur_trans_income_count]->id = new_RTI_id;
     Recurring_Transaction_Income_List[recur_trans_income_count]->start = startDate;
     Recurring_Transaction_Income_List[recur_trans_income_count]->end = endDate;
     Recurring_Transaction_Income_List[recur_trans_income_count]->type = dummy_IS;
@@ -1538,185 +1575,330 @@ void User_Info::Add_Recur_Income_Transaction()
     cout << "---------------------------------------" << endl;
 }
 // --- Bổ sung vào User_Info.cpp ---
+// --- Helper to ensure uniform date spacing (10 chars + 2 padding) ---
+void PrintDateTable(Date d) {
+    cout << right << setfill('0') << setw(2) << d.day << "/"
+         << setw(2) << d.month << "/"
+         << setw(4) << d.year << setfill(' ');
+}
+
+const int width=70;
+
 
 void User_Info::Show_Wallet_List()
 {
-    cout << "\n==================== WALLET LIST ====================\n";
-    cout << left << setw(5) << "ID"
-         << left << setw(20) << "Wallet Name"
-         << right << setw(15) << "Balance" << endl;
-    cout << "-----------------------------------------------------\n";
+    cout << "\n";
+    
+    // Header
+    cout << left << setw(8)  << "ID"
+         << left << setw(25) << "Wallet Name"
+         << right << setw(20) << "Balance" << endl;
+    cout<<string(width,'-')<<endl;
 
     if (wallet_count == 0)
     {
-        cout << "No wallets found.\n";
+        cout << " [!] No wallets found.\n";
     }
     else
     {
         for (int i = 0; i < wallet_count; i++)
         {
-            cout << left << setw(5) << Wallet_List[i]->id
-                 << left << setw(20) << Wallet_List[i]->name
-                 << right << setw(15) << Wallet_List[i]->remain << endl;
+            cout << left << setw(8) << Wallet_List[i]->id
+                 << left << setw(25) << Wallet_List[i]->name
+                 << right << setw(20) << Wallet_List[i]->remain << endl;
         }
     }
-    cout << "=====================================================\n";
+    cout<<string(width,'=')<<endl;
 }
+
 
 void User_Info::Show_Transaction_History()
 {
-    cout << "\n================ TRANSACTION HISTORY ================\n";
+    // Define standard widths
+    const int wDate = 14;
+    const int wCat = 22;
+    const int wWal = 18;
+    const int wAmt = 15;
+    
+    cout << "\n";
 
-    // 1. Hiển thị Income
+    // 1. INCOME TABLE
     if (inCount > 0)
     {
-        cout << "\n--- [INCOME] ---\n";
-        cout << left << setw(12) << "Date"
-             << left << setw(15) << "Source"
-             << left << setw(15) << "Wallet"
-             << right << setw(12) << "Amount"
-             << "   " << "Description" << endl;
-        cout << "----------------------------------------------------------------\n";
-
-        for (int i = 0; i < inCount; i++)
-        {
-            // In ngày tháng (giả sử OutputDate in ra không xuống dòng)
-            OutputDate(incomes_transaction[i]->date);
-
-            cout << "   " // Padding sau ngày
-                 << left << setw(15) << (incomes_transaction[i]->type ? incomes_transaction[i]->type->name : "Unknown")
-                 << left << setw(15) << (incomes_transaction[i]->wallet ? incomes_transaction[i]->wallet->name : "Unknown")
-                 << right << setw(12) << incomes_transaction[i]->amount
-                 << "   " << incomes_transaction[i]->description << endl;
-        }
+        cout << "\n [INCOME HISTORY]\n";
+        Show_Transaction(this->incomes_transaction, this->inCount);
     }
 
-    // 2. Hiển thị Expense
+    // 2. EXPENSE TABLE
     if (expCount > 0)
     {
-        cout << "\n--- [EXPENSE] ---\n";
-        cout << left << setw(12) << "Date"
-             << left << setw(15) << "Category"
-             << left << setw(15) << "Wallet"
-             << right << setw(12) << "Amount"
-             << "   " << "Description" << endl;
-        cout << "----------------------------------------------------------------\n";
-
-        for (int i = 0; i < expCount; i++)
-        {
-            OutputDate(expenses_transaction[i]->date);
-
-            cout << "   "
-                 << left << setw(15) << (expenses_transaction[i]->type ? expenses_transaction[i]->type->name : "Unknown")
-                 << left << setw(15) << (expenses_transaction[i]->wallet ? expenses_transaction[i]->wallet->name : "Unknown")
-                 << right << setw(12) << expenses_transaction[i]->amount
-                 << "   " << expenses_transaction[i]->description << endl;
-        }
+        cout << "\n [EXPENSE HISTORY]\n";
+        Show_Transaction(this->expenses_transaction, this->expCount);
     }
 
     if (inCount == 0 && expCount == 0)
     {
-        cout << "No transactions found.\n";
+        cout << " [!] No transaction history found.\n";
     }
-    cout << "=====================================================\n";
+    cout<<string(width,'-')<<endl;
 }
 
 void User_Info::Show_Recurring_Transaction_List()
 {
-    cout << "\n=== RECURRING TRANSACTIONS (Feature in progress) ===\n";
-    // Tạm thời để trống hoặc in ra thông báo
-    cout << "Income Recurring Count: " << recur_trans_income_count << endl;
-    cout << "Expense Recurring Count: " << recur_trans_expense_count << endl;
-}
+    // Define standard widths
+    const int wDate = 14;
+    const int wCat = 22;
+    const int wWal = 18;
+    const int wAmt = 15;
+    
+    cout << "\n";
 
-// --- Bổ sung vào User_Info.cpp ---
 
-void User_Info::Show_Wallet_List()
-{
-    cout << "\n==================== WALLET LIST ====================\n";
-    cout << left << setw(5) << "ID"
-         << left << setw(20) << "Wallet Name"
-         << right << setw(15) << "Balance" << endl;
-    cout << "-----------------------------------------------------\n";
-
-    if (wallet_count == 0)
-    {
-        cout << "No wallets found.\n";
-    }
-    else
-    {
-        for (int i = 0; i < wallet_count; i++)
-        {
-            cout << left << setw(5) << Wallet_List[i]->id
-                 << left << setw(20) << Wallet_List[i]->name
-                 << right << setw(15) << Wallet_List[i]->remain << endl;
-        }
-    }
-    cout << "=====================================================\n";
-}
-
-void User_Info::Show_Transaction_History()
-{
-    cout << "\n================ TRANSACTION HISTORY ================\n";
-
-    // 1. Hiển thị Income
+    // 1. INCOME TABLE
     if (inCount > 0)
     {
-        cout << "\n--- [INCOME] ---\n";
-        cout << left << setw(12) << "Date"
-             << left << setw(15) << "Source"
-             << left << setw(15) << "Wallet"
-             << right << setw(12) << "Amount"
-             << "   " << "Description" << endl;
-        cout << "----------------------------------------------------------------\n";
-
-        for (int i = 0; i < inCount; i++)
-        {
-            // In ngày tháng (giả sử OutputDate in ra không xuống dòng)
-            OutputDate(incomes_transaction[i]->date);
-
-            cout << "   " // Padding sau ngày
-                 << left << setw(15) << (incomes_transaction[i]->type ? incomes_transaction[i]->type->name : "Unknown")
-                 << left << setw(15) << (incomes_transaction[i]->wallet ? incomes_transaction[i]->wallet->name : "Unknown")
-                 << right << setw(12) << incomes_transaction[i]->amount
-                 << "   " << incomes_transaction[i]->description << endl;
-        }
+        cout << "\n [RECURRING INCOME TRANSACTIONS]\n";
+        Show_Recur_Transaction(this->Recurring_Transaction_Income_List, this->recur_trans_income_count);
     }
 
-    // 2. Hiển thị Expense
+    // 2. EXPENSE TABLE
     if (expCount > 0)
     {
-        cout << "\n--- [EXPENSE] ---\n";
-        cout << left << setw(12) << "Date"
-             << left << setw(15) << "Category"
-             << left << setw(15) << "Wallet"
-             << right << setw(12) << "Amount"
-             << "   " << "Description" << endl;
-        cout << "----------------------------------------------------------------\n";
+        cout << "\n [RECURRING EXPENSE TRANSACTIONS]\n";
+        Show_Recur_Transaction(this->Recurring_Transaction_Expense_List, this->recur_trans_expense_count);
+    }
 
-        for (int i = 0; i < expCount; i++)
+    if (recur_trans_expense_count == 0 && recur_trans_income_count == 0)
+    {
+        cout << " [!] No recurring transaction yet found.\n";
+    }
+    cout<<string(width,'=')<<endl;
+}
+
+// Add to User_Info.cpp
+
+// Helper to compare dates (returns true if d1 <= d2)
+bool Date_Less_Or_Equal(Date d1, Date d2) {
+    if (d1.year < d2.year) return true;
+    if (d1.year == d2.year && d1.month < d2.month) return true;
+    if (d1.year == d2.year && d1.month == d2.month && d1.day <= d2.day) return true;
+    return false;
+}
+
+bool User_Info::check_recur_trans(Recurring_Transaction_Expense*& p, Date current_date)
+{
+    // 1. Validate pointers
+    if (!p || !p->wallet || !p->type) return false;
+
+    bool has_changes = false;
+    Date iterator_date = p->start; // Start checking from the recurring start date
+
+    // 2. Loop month-by-month until we pass the current date
+    while (Date_Less_Or_Equal(iterator_date, current_date))
+    {
+        // Stop if we have passed the recurring end date (if one is set)
+        if (p->end.day != 0) { // Assuming day=0 means "no end date"
+            if (!Date_Less_Or_Equal(iterator_date, p->end)) break;
+        }
+
+        // 3. CHECK: Has this transaction already been generated for this specific Month/Year?
+        bool already_exists = false;
+        
+        // Scan the existing expense history
+        for (int i = 0; i < p->wallet->expCount; i++)
         {
-            OutputDate(expenses_transaction[i]->date);
+            // Check if this wallet already has this recurring transaction for this month/year
+            if (p->wallet->expenses[i]->id == p->id &&
+                p->wallet->expenses[i]->date.month == iterator_date.month &&
+                p->wallet->expenses[i]->date.year == iterator_date.year &&
+                p->wallet->expenses[i]->type->id == p->type->id &&
+                p->wallet->expenses[i]->amount == p->amount)
+            {
+                already_exists = true;
+                break;
+            }
+        }
 
-            cout << "   "
-                 << left << setw(15) << (expenses_transaction[i]->type ? expenses_transaction[i]->type->name : "Unknown")
-                 << left << setw(15) << (expenses_transaction[i]->wallet ? expenses_transaction[i]->wallet->name : "Unknown")
-                 << right << setw(12) << expenses_transaction[i]->amount
-                 << "   " << expenses_transaction[i]->description << endl;
+        // 4. GENERATE: If not found, create the transaction for the 1st of that month
+        if (!already_exists)
+        {
+            this->resize(); // Ensure array has space
+
+            // Create new transaction object
+            expenses_transaction[expCount] = new Transaction_Expense;
+            
+            // Set Date to 1st of the month (as requested)
+            this->expenses_transaction[expCount]->id = p->id;
+            expenses_transaction[expCount]->date.day = iterator_date.day; 
+            expenses_transaction[expCount]->date.month = iterator_date.month;
+            expenses_transaction[expCount]->date.year = iterator_date.year;
+
+            // Copy details from Recurring template
+            expenses_transaction[expCount]->amount = p->amount;
+            expenses_transaction[expCount]->type = p->type;     // Pointer copy
+            expenses_transaction[expCount]->wallet = p->wallet; // Pointer copy
+            
+            // Generate a description so user knows it was automated
+            expenses_transaction[expCount]->description = p->description + " (Auto-Generated)";
+
+            // 5. UPDATE WALLET BALANCE
+            p->wallet->remain -= p->amount;
+
+            // Link transaction to Wallet's internal list
+            p->wallet->Wallet_resize();
+            p->wallet->expenses[p->wallet->expCount] = expenses_transaction[expCount];
+            p->wallet->expCount++;
+
+            // Increment User_Info global count
+            this->expCount++;
+            has_changes = true;
+
+            cout << " [Auto] Generated recurring expense for: " 
+                 << iterator_date.month << "/" << iterator_date.year << endl;
+        }
+
+        // 6. ADVANCE TIME: Move iterator to the next month
+        iterator_date.month++;
+        if (iterator_date.month > 12) {
+            iterator_date.month = 1;
+            iterator_date.year++;
         }
     }
 
-    if (inCount == 0 && expCount == 0)
-    {
-        cout << "No transactions found.\n";
+    // Sort list by date again to keep history tidy
+    if (has_changes) {
+         Sort_By_Date_Transaction(expenses_transaction, expCount); 
     }
-    cout << "=====================================================\n";
+
+    return has_changes;
 }
 
-void User_Info::Show_Recurring_Transaction_List()
+
+bool User_Info::check_recur_trans(Recurring_Transaction_Income*& p, Date current_date)
 {
-    cout << "\n=== RECURRING TRANSACTIONS (Feature in progress) ===\n";
-    // Tạm thời để trống hoặc in ra thông báo
-    cout << "Income Recurring Count: " << recur_trans_income_count << endl;
-    cout << "Expense Recurring Count: " << recur_trans_expense_count << endl;
+    // 1. Validate pointers
+    if (!p || !p->wallet || !p->type) return false;
+
+    bool has_changes = false;
+    Date iterator_date = p->start; 
+
+    // 2. Loop month-by-month until we pass the current date
+    while (Date_Less_Or_Equal(iterator_date, current_date))
+    {
+        // Stop if we have passed the recurring end date (if one is set)
+        if (p->end.day != 0) { 
+            if (!Date_Less_Or_Equal(iterator_date, p->end)) break;
+        }
+
+        // 3. CHECK: Has this transaction already been generated?
+        bool already_exists = false;
+        
+        // Scan the existing INCOME history
+        for (int i = 0; i < p->wallet->inCount; i++)
+        {
+            // Logic: ID matches Recurring Rule ID, plus matching Date/Type/Wallet/Amount
+            if (p->wallet->incomes[i]->id == p->id &&
+                p->wallet->incomes[i]->date.month == iterator_date.month &&
+                p->wallet->incomes[i]->date.year == iterator_date.year &&
+                p->wallet->incomes[i]->type->id == p->type->id &&
+                p->wallet->incomes[i]->wallet->id == p->wallet->id &&
+                p->wallet->incomes[i]->amount == p->amount)
+            {
+                already_exists = true;
+                break;
+            }
+        }
+
+        // 4. GENERATE: If not found, create the transaction
+        if (!already_exists)
+        {
+            this->resize(); 
+
+            // Create new transaction object
+            incomes_transaction[inCount] = new Transaction_Income;
+            
+            // Link ID to the Recurring Rule ID (as per your fix)
+            incomes_transaction[inCount]->id = p->id;
+
+            // Set Date
+            incomes_transaction[inCount]->date.day = iterator_date.day; 
+            incomes_transaction[inCount]->date.month = iterator_date.month;
+            incomes_transaction[inCount]->date.year = iterator_date.year;
+
+            // Copy details
+            incomes_transaction[inCount]->amount = p->amount;
+            incomes_transaction[inCount]->type = p->type;    
+            incomes_transaction[inCount]->wallet = p->wallet; 
+            incomes_transaction[inCount]->description = "(Auto-Generated)"+ p->description ;
+
+            // 5. UPDATE WALLET BALANCE (ADDITION for Income)
+            p->wallet->remain += p->amount;
+
+            // Link transaction to Wallet's internal list
+            p->wallet->Wallet_resize();
+            p->wallet->incomes[p->wallet->inCount] = incomes_transaction[inCount];
+            p->wallet->inCount++;
+
+            // Increment User_Info global count
+            this->inCount++;
+            has_changes = true;
+
+            cout << " [Auto] Generated recurring income for: " 
+                 << iterator_date.month << "/" << iterator_date.year << endl;
+        }
+
+        // 6. ADVANCE TIME
+        iterator_date.month++;
+        if (iterator_date.month > 12) {
+            iterator_date.month = 1;
+            iterator_date.year++;
+        }
+    }
+
+    // Sort list by date to keep history tidy
+    if (has_changes) {
+         Sort_By_Date_Transaction(incomes_transaction, inCount); 
+    }
+
+    return has_changes;
+}
+
+// Search for a Wallet by name
+Wallet* User_Info::Choose_Wallet(string name)
+{
+    for (int i = 0; i < this->wallet_count; i++)
+    {
+        // Check if pointer is valid before accessing name (safety check)
+        if (this->Wallet_List[i] && compare_string(name, this->Wallet_List[i]->name))
+        {
+            return this->Wallet_List[i];
+        }
+    }
+    return nullptr; // Return NULL if not found
+}
+
+// Search for an Income Source by name
+IncomeSource* User_Info::Choose_IS(string name)
+{
+    for (int i = 0; i < this->income_count; i++)
+    {
+        if (this->income[i] && compare_string(name, this->income[i]->name))
+        {
+            return this->income[i];
+        }
+    }
+    return nullptr; // Return NULL if not found
+}
+
+// Search for an Expense Category by name
+ExpenseCategory* User_Info::Choose_EC(string name)
+{
+    for (int i = 0; i < this->expense_count; i++)
+    {
+        if (this->expense[i] && compare_string(name, this->expense[i]->name))
+        {
+            return this->expense[i];
+        }
+    }
+    return nullptr; // Return NULL if not found
 }

@@ -145,3 +145,215 @@ void ClearLines(int numLines)
         cout << "\033[A" << "\033[2K";
     }
 }
+
+void OutputDateTable(Date src)
+{
+    stringstream ss;
+    // Force 2 digits for day/month and 4 for year (e.g., 05/01/2024)
+    ss << setfill('0') << setw(2) << src.day << "/" 
+       << setw(2) << src.month << "/" 
+       << setw(4) << src.year;
+    
+    // Print the string with padding to fill 15 characters
+    cout << left << setfill(' ') << setw(15) << ss.str();
+}
+
+// Helper to wrap text nicely
+// content: The text to print
+// width: The maximum width of the text block
+// indent: How many spaces to indent subsequent lines
+void PrintWrapped(string content, int width, int indent)
+{
+    if (content.empty()) return;
+
+    stringstream ss(content);
+    string word;
+    int currentLen = 0; 
+
+    while (ss >> word)
+    {
+        // Check if adding this word exceeds the width
+        // (+1 is for the space we would add)
+        if (currentLen + word.length() + 1 > width)
+        {
+            // Wrap to new line
+            cout << endl;
+            // Print indentation spaces
+            cout << string(indent, ' ');
+            currentLen = 0;
+        }
+
+        // Add space before word (unless it's the start of a new line)
+        if (currentLen > 0)
+        {
+            cout << " ";
+            currentLen++; 
+        }
+
+        cout << word;
+        currentLen += word.length();
+    }
+}
+
+
+template <typename T>
+void Show_Transaction(T**& list, int list_size)
+{
+    const int wDate = 14;
+    const int wCat = 22;
+    const int wWal = 18;
+    const int wAmt = 15;
+    // Define the total width of the "Card"
+    const int CARD_WIDTH = 60; 
+    // OutputDateTable prints 15 chars. Remaining space for Amount = 90 - 15 = 75.
+    const int AMT_WIDTH = CARD_WIDTH - 15; 
+
+    if (list_size == 0)
+    {
+        cout << "\n";
+        cout << string(CARD_WIDTH, '-') << "\n";
+        cout << "No transaction yet!"<<endl;
+        cout << string(CARD_WIDTH, '-') << "\n";
+        return;
+    }
+
+    cout << "\n";
+
+    for (int i = 0; i < list_size; i++)
+    {
+        // 1. Top Border of the "Card"
+        cout << string(CARD_WIDTH, '-') << "\n";
+
+        // 2. Row 1: Date [LEFT] .............................. Amount [RIGHT]
+        // OutputDateTable handles the first 15 chars (e.g., "01/01/2024   ")
+        OutputDateTable(list[i]->date); 
+        // Push Amount to the far right
+        cout << right << setw(AMT_WIDTH) << list[i]->amount << endl;
+
+        // 3. Row 2: Category / Type Name
+        string typeName = (list[i]->type) ? list[i]->type->name : "Unknown Source";
+        cout << left << setw(CARD_WIDTH) << typeName << endl;
+
+        // 4. Row 3: Wallet Name
+        string walletName = (list[i]->wallet) ? list[i]->wallet->name : "Unknown Wallet";
+        cout << left << "Via: " << walletName << endl;
+
+        // 5. Row 4: Description (Only if it exists, or placeholder)
+        if (!list[i]->description.empty()) {
+             PrintWrapped(list[i]->description, CARD_WIDTH-6, 6);
+             cout << endl;
+        } else {
+             cout << left << "Note: (No description)" << endl;
+        }
+    }
+    // Bottom Border
+    cout << string(CARD_WIDTH, '-') << "\n";
+}
+        /*
+        ------------------------------------------------------------------------------------------
+        Date          Amount
+        Type
+        Description
+        ------------------------------------------------------------------------------------------
+        Date          Amount
+        Type
+        Description
+        ------------------------------------------------------------------------------------------
+        Date          Amount
+        Type
+        Description
+        ------------------------------------------------------------------------------------------
+        
+        */
+
+template <typename T>
+void Show_Recur_Transaction(T**& list, int list_size)
+{
+    const int wDate = 14;
+    const int wCat = 22;
+    const int wWal = 18;
+    const int wAmt = 15;
+    // Define the total width of the "Card"
+    const int CARD_WIDTH = 60; 
+    // OutputDateTable prints 15 chars. Remaining space for Amount = 90 - 15 = 75.
+    const int AMT_WIDTH = CARD_WIDTH - 2*wDate - 5; 
+
+    if (list_size == 0)
+    {
+        cout << "\n";
+        cout << string(CARD_WIDTH, '-') << "\n";
+        cout << "No transaction yet!"<<endl;
+        cout << string(CARD_WIDTH, '-') << "\n";
+        return;
+    }
+
+    cout << "\n";
+
+    for (int i = 0; i < list_size; i++)
+    {
+        // 1. Top Border of the "Card"
+        cout << string(CARD_WIDTH, '-') << "\n";
+
+        // 2. Row 1: Date [LEFT] .............................. Amount [RIGHT]
+        // OutputDateTable handles the first 15 chars (e.g., "01/01/2024   ")
+        OutputDateTable(list[i]->start); 
+        cout << " to ";
+        OutputDateTable(list[i]->end);
+        // Push Amount to the far right
+        cout << right << setw(AMT_WIDTH) << list[i]->amount << endl;
+
+        // 3. Row 2: Category / Type Name
+        string typeName = (list[i]->type) ? list[i]->type->name : "Unknown Source";
+        cout << left << setw(CARD_WIDTH) << typeName << endl;
+
+        // 4. Row 3: Wallet Name
+        string walletName = (list[i]->wallet) ? list[i]->wallet->name : "Unknown Wallet";
+        cout << left << "Via: " << walletName << endl;
+
+        // 5. Row 4: Description (Only if it exists, or placeholder)
+        if (!list[i]->description.empty()) {
+             PrintWrapped(list[i]->description, CARD_WIDTH-6, 6);
+             cout << endl;
+        } else {
+             cout << left << "Note: (No description)" << endl;
+        }
+    }
+    // Bottom Border
+    cout << string(CARD_WIDTH, '-') << "\n";
+}
+
+template <typename T>
+void Sort_By_Date_Transaction(T**& list, int list_size)
+{
+    for(int i = list_size-1; i >=0; i--)
+    {
+        int max_idx = i; // Assume current is the intended one
+        for(int j = i-1; j >=0; j--)
+        {
+            // Assuming result '2' means list[min_idx] > list[j] (i.e., we want ascending order)
+            // If you want Descending (newest first), reverse the logic
+            if(compare_Date( list[j]->date, list[max_idx]->date) == 2) 
+            {
+                max_idx = j; // Just update the index, don't swap yet
+            }
+        }
+        
+        // Swap only once per outer loop
+        if(max_idx != i) 
+        {
+            T *save= list[i];
+            list[i] = list[max_idx];
+            list[max_idx] =save;
+        }
+    }
+}
+
+//Check if this recur trans have been added given the time
+
+
+
+void print_center(string s,char c, int width)
+{
+    cout<<string((width - s.length())/2, c)<<s<<string((width - s.length())/2, c);
+    
+}

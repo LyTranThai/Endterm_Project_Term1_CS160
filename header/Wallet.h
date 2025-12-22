@@ -46,6 +46,7 @@ struct Wallet : MasterData
     void SaveToBinary(string filename);
     void LoadFromBinary(string filename);
     void Wallet_resize();
+    
 };
 
 Wallet& Wallet::operator=(const Wallet &src)

@@ -40,8 +40,8 @@ struct User_Info
     int recur_trans_income_capacity;
 
 
-    void SaveToBinary(ofstream& out,string filename);
-    void LoadFromBinary(ifstream& out,string filename);
+    void SaveToBinary(ofstream& out);
+    void LoadFromBinary(ifstream& out);
 
     void resize();
     //Sort by Date
@@ -152,7 +152,14 @@ struct User_Info
     void Add_Income_Transaction();
     void Add_Recur_Expense_Transaction();
     void Add_Recur_Income_Transaction();
-    
+    bool check_recur_trans(Recurring_Transaction_Expense*& p, Date current_date);
+    bool check_recur_trans(Recurring_Transaction_Income*& p, Date current_date);
+
+    //If can not find, return NULL
+    Wallet* Choose_Wallet(string name);
+    IncomeSource* Choose_IS(string name);
+    ExpenseCategory* Choose_EC(string name);
+    void Erase_Wallet();
     bool Input_Choice(int& choice);
     void Input_User_Info_Textfile(string filename);
     

@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <iomanip>
+#include "Date.h"
+#include "Recurring_Transaction.h"
 using namespace std;
 
 
@@ -30,3 +33,18 @@ bool check_string(string info, char c);
 void Clear_Buffer();
 
 void ClearLines(int numLines);
+
+
+void OutputDateTable(Date src);
+template <typename T>
+void Show_Transaction(T**& list, int list_size);
+
+template <typename T>
+void Sort_By_Date_Transaction(T**& list, int list_size);
+
+template <typename T>
+void Show_Recur_Transaction(T**& list, int list_size);
+
+
+
+void print_center(string s,char c, int width);

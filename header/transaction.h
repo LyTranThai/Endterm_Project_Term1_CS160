@@ -17,7 +17,7 @@ struct Wallet;
 
 struct Transaction_Expense
 {
-
+    int id=0;
     Date date;
     ExpenseCategory* type;
     long long amount;
@@ -30,7 +30,7 @@ struct Transaction_Expense
 
 struct Transaction_Income
 {
-
+    int id=0;
     Date date;
     IncomeSource* type;
     long long amount;

@@ -409,7 +409,9 @@ string which_day_of_week(Date src)
 int compare_Date(Date day1, Date day2)
 {
     Date current;
-    GetCurrentDate(current);
+    current.day=1;
+    current.month=1;
+    current.year=1800;
     int age1=compare(day1,current);
     int age2=compare(day2,current);
     if(age1>age2)
@@ -425,4 +427,16 @@ int compare_Date(Date day1, Date day2)
         return 3;
     }
 
+}
+
+Date Get_Last_Date_Month(Date date)
+{
+    int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int y=date.year;
+    // Leap year check: Divisible by 4 AND (not divisible by 100 OR divisible by 400)
+    if ((y % 4 == 0 && y % 100 != 0) || (y % 400 == 0)) {
+        daysInMonth[2] = 29;
+    }
+    date.day=daysInMonth[date.month];
+    return date;
 }

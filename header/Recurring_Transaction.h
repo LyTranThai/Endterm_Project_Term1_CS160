@@ -2,7 +2,7 @@
 #include "transaction.h"
 struct Recurring_Transaction_Expense
 {
-
+    int id; 
     Date start;
     Date end;
     long long amount;
@@ -16,12 +16,14 @@ struct Recurring_Transaction_Expense
         amount=0;
         wallet=NULL;
         type=NULL;
+        
         description="";
     }
 
 };
 struct Recurring_Transaction_Income
 {
+    int id;
     Date start;
     Date end;
     long long amount;
@@ -39,3 +41,4 @@ struct Recurring_Transaction_Income
     }
 
 };
+

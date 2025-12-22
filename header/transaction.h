@@ -5,8 +5,8 @@ using namespace std;
 #include "Amount.h"
 #include "Date.h"
 #include "Wallet.h"
-#include "Recurring_Transaction.h"
 #include "InfoArray.h"
+#include "DataHandling.h"
 
 struct Date;
 struct Transaction_Type;
@@ -38,7 +38,7 @@ struct Transaction_Income
     string description;
     //Format
     // Date/Month/Year^Type of transaction ^Amount^WalletName^Description
-    bool Transaction_Income::Input_Transaction(string info,IncomeSourceArray array);
+    //bool Input_Transaction(string info,IncomeSourceArray array);
     bool Output_Terminal(Transaction_Income);
 
     void SaveToBinary(string filename);

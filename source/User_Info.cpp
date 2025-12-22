@@ -331,10 +331,6 @@
         //Must Link to Wallet and type
     }
 
-    void User_Info::Show_Wallet_List()
-    {
-
-    }
     void Show_Transaction_History();
     void Show_Recurring_Transaction_List();
     void User_Info::Add_Wallet()

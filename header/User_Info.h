@@ -1,3 +1,4 @@
+#pragma once
 #include "Transaction.h"
 #include "Wallet.h"
 #include "Recurring_Transaction.h"

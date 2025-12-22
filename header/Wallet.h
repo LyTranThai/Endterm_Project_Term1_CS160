@@ -49,32 +49,6 @@ struct Wallet : MasterData
     
 };
 
-Wallet& Wallet::operator=(const Wallet &src)
-{
-
-    if (this == &src)
-        return *this;
-
-
-    this->id = src.id;
-    this->name = src.name;
-    this->remain = src.remain;
-    this->inCount = src.inCount;
-    this->inCap = src.inCap;
-    this->expCount=src.expCount;
-    this->expCap=src.expCap;
-    this->incomes = new Transaction_Income*[src.inCap];
-    this->expenses = new Transaction_Expense*[src.expCap];
-    for(int i = 0; i < src.inCount; i++) 
-    {
-        this->incomes[i]=src.incomes[i];
-    }
-    for(int i=0; i< src.expCount; i++)
-    {
-        this->expenses[i]=src.expenses[i];
-    }
-    return *this;
-}
 
 // Format
 // ID-Name-remain

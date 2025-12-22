@@ -19,8 +19,6 @@ using namespace std;
 #include <fstream> // For File I/O
 #include <limits>  // For input cleaning
 
-Transaction_Type type[100];
-int number_of_type=0;
 
 using namespace std;
 bool Input_Choice(int& choice)
@@ -46,10 +44,6 @@ void clearScreen()
     #endif
 }
 
-void Clear_Buffer()
-{
-    cin.ignore(numeric_limits<streamsize>::max(),'\n');
-}
 //Wait for the user to press something
 void pause()
 {
@@ -269,7 +263,7 @@ int main()
         cout << "\n [!] Welcome back, " << name << "! Loading your data...\n";
         
         // LOAD DATA
-        user.LoadFromBinary(fin, filename);
+        user.LoadFromBinary(fin);
         fin.close();
 
         // 4. CHECK RECURRING TRANSACTIONS (Requirement: Check on startup)
@@ -307,7 +301,7 @@ int main()
         // This ensures the file exists with the default "Default" wallet
         ofstream fout(filename, ios::binary);
         if (fout.is_open()) {
-            user.SaveToBinary(fout, filename);
+            user.SaveToBinary(fout);
             fout.close();
             cout << " [!] Profile created successfully.\n";
         } else {

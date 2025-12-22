@@ -1,7 +1,8 @@
+#pragma once
 #include "MasterData.h"
 #include "Recurring_Transaction.h"
 #include "Wallet.h"
-#pragma once
+
 struct ExpenseCategoryArray
 {
     ExpenseCategory *data;
@@ -36,10 +37,7 @@ struct WalletArray
 
 const int INITIAL_CAPACITY = 10;
 
-struct Recurring_Transaction_Enpense_List
-{
-    /* data */
-};
+
 
 
 bool isLeapYear(int year);

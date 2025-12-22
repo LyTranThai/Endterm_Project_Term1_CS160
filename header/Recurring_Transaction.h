@@ -1,5 +1,7 @@
 #pragma once
 #include "transaction.h"
+#include "Wallet.h"
+struct Wallet;
 struct Recurring_Transaction_Expense
 {
     int id; 

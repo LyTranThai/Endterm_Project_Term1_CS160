@@ -1,4 +1,5 @@
-#include "Date.h"
+#include "../header/Date.h"
+#include "../header/InfoArray.h"
 #include <sstream>
 #include <iomanip>
 // Kiểm tra năm nhuận

@@ -1,4 +1,8 @@
+
 #include "../header/DataHandling.h"
+#include "../header/Transaction.h"          // Added: Needed for Transaction struct details
+#include "../header/Recurring_Transaction.h" // Added: Needed for Recurring struct details
+#include "../header/Wallet.h"
 
 
 void WriteString(ofstream &out, const string &s)
@@ -32,7 +36,7 @@ void ReadString(ifstream &in, string &s)
 
 
     template <typename T>
-    void resize1(T** & p, int size, int cap)
+    void Tresize1(T** & p, int size, int cap)
     {
         while(size>=cap)
         {
@@ -48,10 +52,39 @@ void ReadString(ifstream &in, string &s)
         delete[]dummy;
     }
 
+void resize1(Wallet** & p, int size, int cap)
+{
+    Tresize1( p, size, cap);
+}
+void resize1(IncomeSource** & p, int size, int cap)
+{
+    Tresize1( p, size, cap);
+}
+void resize1(ExpenseCategory** & p, int size, int cap)
+{
+    Tresize1( p, size, cap);
+}
+void resize1(Transaction_Income** & p, int size, int cap)
+{
+    Tresize1( p, size, cap);
+}
+void resize1(Transaction_Expense** & p, int size, int cap)
+{
+    Tresize1( p, size, cap);
+}
+void resize1(Recurring_Transaction_Income** & p, int size, int cap)
+{
+    Tresize1( p, size, cap);
+}
+void resize1(Recurring_Transaction_Expense** & p, int size, int cap)
+{
+    Tresize1( p, size, cap);
+}
+
     template <typename T>
-    bool Find_By_ID(int& id,T**& list, int& size,T*& pointer)
+    bool TFind_By_ID(int& id,T**& list, int& size,T*& pointer)
     {
-        check=false;
+        bool check=false;
         for(int i=0; i<size; i++)
         {
             if(list[i]->id==id)
@@ -67,11 +100,23 @@ void ReadString(ifstream &in, string &s)
         }
         return check;
     }
+bool Find_By_ID(int& id,Wallet**& list, int& size,Wallet*& pointer)
+{
+    return TFind_By_ID(id,list, size,pointer);
+}
+bool Find_By_ID(int& id,IncomeSource**& list, int& size,IncomeSource*& pointer)
+{
+    return TFind_By_ID(id,list, size,pointer);
+}
+bool Find_By_ID(int& id,ExpenseCategory**& list, int& size,ExpenseCategory*& pointer)
+{
+    return TFind_By_ID(id,list, size,pointer);
+}
 
 template <typename T>
-bool Find_By_Name(string& name,T**& list, int& size,T*& pointer)
+bool TFind_By_Name(string& name,T**& list, int& size,T*& pointer)
 {
-    check=false;
+    bool check=false;
         for(int i=0; i<size; i++)
         {
             if(compare_string(name, list[i]->name))
@@ -86,6 +131,19 @@ bool Find_By_Name(string& name,T**& list, int& size,T*& pointer)
             pointer=list[0];
         }
     return check;
+}
+
+bool Find_By_Name(string& name,Wallet**& list, int& size,Wallet*& pointer)
+{
+    return TFind_By_Name( name, list, size,pointer);
+}
+bool Find_By_Name(string& name,IncomeSource**& list, int& size,IncomeSource*& pointer)
+{
+    return TFind_By_Name( name, list, size,pointer);
+}
+bool Find_By_Name(string& name,ExpenseCategory**& list, int& size,ExpenseCategory*& pointer)
+{
+    return TFind_By_Name( name, list, size,pointer);
 }
 
 bool compare_string(string& s1, string& s2)
@@ -105,7 +163,7 @@ bool compare_string(string& s1, string& s2)
 }
 
 template <typename T>
-int Generate_ID(T** list, int count) 
+int TGenerate_ID(T** list, int count) 
 {
     if (count == 0) return 1; // Start at 1 if list is empty
 
@@ -116,6 +174,27 @@ int Generate_ID(T** list, int count)
         }
     }
     return max_id + 1;
+}
+
+int Generate_ID(Wallet** list, int count)
+{
+    return TGenerate_ID( list, count);
+}
+int Generate_ID(IncomeSource** list, int count)
+{
+    return TGenerate_ID( list, count);
+}
+int Generate_ID(ExpenseCategory** list, int count)
+{
+    return TGenerate_ID( list, count);
+}
+int Generate_ID(Recurring_Transaction_Income** list, int count)
+{
+    return TGenerate_ID( list, count);
+}
+int Generate_ID(Recurring_Transaction_Expense** list, int count)
+{
+    return TGenerate_ID( list, count);
 }
 
 bool check_string(string info, char c)
@@ -196,8 +275,9 @@ void PrintWrapped(string content, int width, int indent)
 }
 
 
+
 template <typename T>
-void Show_Transaction(T**& list, int list_size)
+void TShow_Transaction(T**& list, int list_size)
 {
     const int wDate = 14;
     const int wCat = 22;
@@ -249,6 +329,15 @@ void Show_Transaction(T**& list, int list_size)
     // Bottom Border
     cout << string(CARD_WIDTH, '-') << "\n";
 }
+
+void Show_Transaction(Transaction_Income**& list, int list_size)
+{
+    TShow_Transaction( list, list_size);
+}
+void Show_Transaction(Transaction_Expense**& list, int list_size)
+{
+    TShow_Transaction( list, list_size);
+}
         /*
         ------------------------------------------------------------------------------------------
         Date          Amount
@@ -267,7 +356,7 @@ void Show_Transaction(T**& list, int list_size)
         */
 
 template <typename T>
-void Show_Recur_Transaction(T**& list, int list_size)
+void TShow_Recur_Transaction(T**& list, int list_size)
 {
     const int wDate = 14;
     const int wCat = 22;
@@ -322,8 +411,17 @@ void Show_Recur_Transaction(T**& list, int list_size)
     cout << string(CARD_WIDTH, '-') << "\n";
 }
 
+void Show_Recur_Transaction(Recurring_Transaction_Income**& list, int list_size)
+{
+    TShow_Recur_Transaction(list, list_size);
+}
+void Show_Recur_Transaction(Recurring_Transaction_Expense**& list, int list_size)
+{
+    TShow_Recur_Transaction(list, list_size);
+}
+
 template <typename T>
-void Sort_By_Date_Transaction(T**& list, int list_size)
+void TSort_By_Date_Transaction(T**& list, int list_size)
 {
     for(int i = list_size-1; i >=0; i--)
     {
@@ -346,6 +444,15 @@ void Sort_By_Date_Transaction(T**& list, int list_size)
             list[max_idx] =save;
         }
     }
+}
+
+void Sort_By_Date_Transaction(Transaction_Income**& list, int list_size)
+{
+    TSort_By_Date_Transaction(list, list_size);
+}
+void Sort_By_Date_Transaction(Transaction_Expense**& list, int list_size)
+{
+    TSort_By_Date_Transaction(list, list_size);
 }
 
 //Check if this recur trans have been added given the time

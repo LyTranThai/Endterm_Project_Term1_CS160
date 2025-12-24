@@ -174,4 +174,27 @@ struct User_Info
     bool IsDateInRange(Date target, Date start, Date end);
 
     //
+
+    //
+    //
+    //
+    //
+    bool Is_Wallet_In_Use(int id);
+    bool Is_Category_In_Use(int id);
+    bool Is_Source_In_Use(int id);
+    // mục số 6
+    void Edit_Wallet();
+    void Delete_Wallet();
+
+    void Edit_ExpenseCategory();
+    void Delete_ExpenseCategory();
+
+    void Edit_IncomeSource();
+    void Delete_IncomeSource();
+    // navigation
+    void Draw_MasterData_Menu();
+    //
+    //
+    //
+    //
 };

@@ -10,8 +10,6 @@ using namespace std;
 struct Transaction_Income;
 struct Transaction_Expense;
 
-struct Amount;
-
 struct Wallet : MasterData
 {
     // id đồ lấy bên master luôn
@@ -27,18 +25,25 @@ struct Wallet : MasterData
 
     Wallet()
     {
-        name="unknown";
-        id=0;
-        remain=0;
+        name = "unknown";
+        id = 0;
+        remain = 0;
         inCount = 0;
         inCap = 10;
         expCount = 0;
         expCap = 10;
-        incomes = new Transaction_Income*[inCap];
-        expenses = new Transaction_Expense*[expCap];
+        incomes = new Transaction_Income *[inCap];
+        expenses = new Transaction_Expense *[expCap];
     }
 
-    Wallet& operator=(const Wallet &src);
+    /// @brief
+    ~Wallet()
+    {
+        delete[] incomes;
+        delete[] expenses;
+    }
+
+    Wallet &operator=(const Wallet &src);
     bool Input_Wallet(string info);
     void Output_Terminal();
 
@@ -46,17 +51,12 @@ struct Wallet : MasterData
     void SaveToBinary(string filename);
     void LoadFromBinary(string filename);
     void Wallet_resize();
-    
 };
-
 
 // Format
 // ID-Name-remain
 
 template <typename T>
-void resize(T*& array, int& size,int& capcity);
+void resize(T *&array, int &size, int &capcity);
 template <typename T>
-void add_element(T*& array, int& size,int& capcity, T element);
-
-
-
+void add_element(T *&array, int &size, int &capcity, T element);

@@ -18,8 +18,7 @@ void RunApplication_Navigation(User_Info &user);
 //      delete[]Currency_Type;
 //      return 0;
 //  }
-
-#include <vector>
+#include <iostream>
 #include <string>
 #include <iomanip> // For formatting tables
 #include <fstream> // For File I/O
@@ -142,7 +141,7 @@ void drawMenu(User_Info &user) // ifstream& fin
     cout << "3. Add Transaction (Update)\n";
     cout << "4. Recurring Transaction List\n";
     cout << "5. Statistics & Reports\n";
-    cout << "6. Don't Know How to Call This Thing :))\n";
+    cout << "6. Add/Edit/Delete IN/EXP\n";
     cout << "7. Save Progress\n";
     cout << "8. Exit (Auto-Save & End)\n";
     cout << string(window_width, '-') << endl;
@@ -165,8 +164,9 @@ void Draw_Wallet_List(User_Info &user)
         user.Show_Wallet_List(); // Hiển thị danh sách
 
         // Menu con
-        cout << "1. Choose Wallet (Set as Default/Adjust/Delete)\n";
-        cout << "2. Add New Wallet\n";
+        cout << "1. Add New Wallet\n";
+        cout << "2. Edit Wallet\n";
+        cout << "3. Delete Wallet\n";
         cout << "0. Back to Main Menu\n";
         cout << string(window_width, '-') << endl;
         cout << "Select option: ";
@@ -179,6 +179,16 @@ void Draw_Wallet_List(User_Info &user)
 
         switch (choice)
         {
+        case 1:
+            user.Add_Wallet();
+            pause();
+            break;
+        case 2:
+            user.Edit_Wallet();
+            break; // Pause đã có bên trong hàm
+        case 3:
+            user.Delete_Wallet();
+            break;
         case 0:
             return; // Thoát vòng lặp, quay về Menu chính
         default:
@@ -276,10 +286,13 @@ void Draw_Add_Transaction(User_Info &user)
     }
 }
 
-    void Draw_Recurring_Transaction_List(User_Info & user)
+void Draw_Recurring_Transaction_List(User_Info &user)
+{
+    int window_width = 70;
+    int choice;
+    while (true)
     {
-        int window_width = 70;
-
+        clearScreen();
         // 1. Header & User Info
         cout << string(window_width, '=') << endl;
         print_center("PERSONAL FINANCE MANAGER", ' ', window_width);
@@ -295,177 +308,199 @@ void Draw_Add_Transaction(User_Info &user)
         cout << "0. Back to menu\n";
         cout << "-------------------------------------------------\n";
         cout << "Select option: ";
-    }
-    bool Input_Choice(int &choice);
-    void Input_User_Info_Textfile(string filename);
-
-    // Income Management:
-    // ▪ Users enter information for an income transaction.
-    // ▪ Required Data:
-    // ▪ Date: The date the transaction is executed.
-    // ▪ Income Source: The system stores the Source ID for logic processing but displays the
-    // Source Name on the user interface.
-    // ▪ Amount: The value of the income.
-    // ▪ Wallet: The system stores the Wallet ID but displays the Wallet Name.
-    // ▪ Description: Detailed notes for the income.
-    // o Expense Management:
-    // ▪ Users enter information for expense transactions.
-    // ▪ Required Data:
-    // ▪ Date: The date the transaction is executed.
-    // ▪ Income Source: the system stores the Category ID but displays the Category Name.
-    // ▪ Amount: The value of the expense.
-    // ▪ Wallet: The system stores the Wallet ID but displays the Wallet Name.
-    // ▪ Description: Detailed notes for the expense.
-
-    // Support automation for entering frequently recurring income or expenses.
-    // o Recurring Configuration: Allow pre-creation of recurring transactions on Monthly basis.
-    // o Applicable Time:
-    // ▪ Start Date: Required.
-    // ▪ End Date: Optional (Can be left blank if the transaction recurs indefinitely).
-    // o Mechanism: When the user opens the application, the system checks and adds the transaction for
-    // the current month if the conditions are met, ensuring that the transaction is not added again if it
-    // already exists for the current cycle.
-    void RunApplication_Navigation(User_Info & user)
-    {
-        ofstream fout;
-        while (true)
+        if (!Input_Choice(choice))
         {
-            int choice;
-            clearScreen();
-            drawMenu(user);
-            if (!Input_Choice(choice))
-            {
-                cout << "\n[!] Invalid input. Please enter a number.\n";
-                pause();
-                continue;
-            }
-            switch (choice)
-            {
-            case 1:
-                Draw_Wallet_List(user);
-                break;
-            case 2:
-                Draw_Transaction_History(user);
-                break;
-            case 3:
-                Draw_Add_Transaction(user);
-                break;
-            case 4:
-                Draw_Recurring_Transaction_List(user);
-                break;
-            case 5:
-                user.Draw_Statistics_Menu();
-                break;
-            case 6:
-                user.Draw_MasterData_Menu(); // tutu, nay de add edit delete a
-                break;
-            case 7:
-                fout.open("../UserData/" + user.name + ".bin", ios::binary | ios::trunc);
-                user.SaveToBinary(fout);
-                cout << "\nSaving progress...\n";
-                pause();
-                break;
-            case 8:
-                cout << "\nExiting application. Goodbye!\n";
-                return;
-            default:
-                cout << "\n[!] Option not found.\n";
-                pause();
-                break;
-            }
+            continue;
+        }
+        switch (choice)
+        {
+        case 1:
+            user.Add_Recur_Income_Transaction();
+            break;
+        case 2:
+            user.Add_Recur_Expense_Transaction();
+            break;
+        case 0:
+            return;
+        default:
+            cout << "\n[!] Invalid option.\n";
+            pause();
+            break;
         }
     }
+}
+bool Input_Choice(int &choice);
+void Input_User_Info_Textfile(string filename);
 
-    int main()
+// Income Management:
+// ▪ Users enter information for an income transaction.
+// ▪ Required Data:
+// ▪ Date: The date the transaction is executed.
+// ▪ Income Source: The system stores the Source ID for logic processing but displays the
+// Source Name on the user interface.
+// ▪ Amount: The value of the income.
+// ▪ Wallet: The system stores the Wallet ID but displays the Wallet Name.
+// ▪ Description: Detailed notes for the income.
+// o Expense Management:
+// ▪ Users enter information for expense transactions.
+// ▪ Required Data:
+// ▪ Date: The date the transaction is executed.
+// ▪ Income Source: the system stores the Category ID but displays the Category Name.
+// ▪ Amount: The value of the expense.
+// ▪ Wallet: The system stores the Wallet ID but displays the Wallet Name.
+// ▪ Description: Detailed notes for the expense.
+
+// Support automation for entering frequently recurring income or expenses.
+// o Recurring Configuration: Allow pre-creation of recurring transactions on Monthly basis.
+// o Applicable Time:
+// ▪ Start Date: Required.
+// ▪ End Date: Optional (Can be left blank if the transaction recurs indefinitely).
+// o Mechanism: When the user opens the application, the system checks and adds the transaction for
+// the current month if the conditions are met, ensuring that the transaction is not added again if it
+// already exists for the current cycle.
+void RunApplication_Navigation(User_Info &user)
+{
+    ofstream fout;
+    while (true)
     {
-        // 1. Setup Interface
+        int choice;
         clearScreen();
-        cout << endl;
-        cout << "=================================================\n";
-        cout << "              FINANCIAL TRACKER APP              \n";
-        cout << "=================================================\n";
-        cout << "Type in your name (no spaces): ";
-
-        string name;
-        std::cin >> name;
-        Clear_Buffer(); // Clear newline left by cin >> name
-
-        // 2. Define File Path
-        // Ensure the "UserData" folder exists relative to your exe, or create it manually.
-        string filename = "../UserData/" + name + ".bin";
-
-        User_Info user; // Constructor runs here (initializes Default Wallet, Unknown Categories)
-
-        // 3. Check if file exists
-        ifstream fin(filename, ios::binary);
-
-        if (fin.is_open())
+        drawMenu(user);
+        if (!Input_Choice(choice))
         {
-            cout << "\n [!] Welcome back, " << name << "! Loading your data...\n";
+            cout << "\n[!] Invalid input. Please enter a number.\n";
+            pause();
+            continue;
+        }
+        switch (choice)
+        {
+        case 1:
+            Draw_Wallet_List(user);
+            break;
+        case 2:
+            Draw_Transaction_History(user);
+            break;
+        case 3:
+            Draw_Add_Transaction(user);
+            break;
+        case 4:
+            Draw_Recurring_Transaction_List(user);
+            break;
+        case 5:
+            user.Draw_Statistics_Menu();
+            break;
+        case 6:
+            user.Draw_MasterData_Menu(); // tutu, nay de add edit delete a
+            break;
+        case 7:
+            fout.open("../UserData/" + user.name + ".bin", ios::binary | ios::trunc);
+            user.SaveToBinary(fout);
+            cout << "\nSaving progress...\n";
+            fout.close();
+            cout << "Progress saved successfully.\n";
+            pause();
+            break;
+        case 8:
+            cout << "\nExiting application. Goodbye!\n";
+            return;
+        default:
+            cout << "\n[!] Option not found.\n";
+            pause();
+            break;
+        }
+    }
+}
 
-            // LOAD DATA
-            user.LoadFromBinary(fin);
-            fin.close();
+int main()
+{
+    // 1. Setup Interface
+    clearScreen();
+    cout << endl;
+    cout << "=================================================\n";
+    cout << "              FINANCIAL TRACKER APP              \n";
+    cout << "=================================================\n";
+    cout << "Type in your name (no spaces): ";
 
-            // 4. CHECK RECURRING TRANSACTIONS (Requirement: Check on startup)
-            Date today;
-            GetCurrentDate(today); // Assumed function from Date.h
+    string name;
+    std::cin >> name;
+    Clear_Buffer(); // Clear newline left by cin >> name
 
-            bool auto_updates = false;
+    // 2. Define File Path
+    // Ensure the "UserData" folder exists relative to your exe, or create it manually.
+    string filename = "../UserData/" + name + ".bin";
 
-            // Check Recurring Expenses
-            for (int i = 0; i < user.recur_trans_expense_count; i++)
+    User_Info user; // Constructor runs here (initializes Default Wallet, Unknown Categories)
+
+    // 3. Check if file exists
+    ifstream fin(filename, ios::binary);
+
+    if (fin.is_open())
+    {
+        cout << "\n [!] Welcome back, " << name << "! Loading your data...\n";
+
+        // LOAD DATA
+        user.LoadFromBinary(fin);
+        fin.close();
+
+        // 4. CHECK RECURRING TRANSACTIONS (Requirement: Check on startup)
+        Date today;
+        GetCurrentDate(today); // Assumed function from Date.h
+
+        bool auto_updates = false;
+
+        // Check Recurring Expenses
+        for (int i = 0; i < user.recur_trans_expense_count; i++)
+        {
+            if (user.check_recur_trans(user.Recurring_Transaction_Expense_List[i], today))
             {
-                if (user.check_recur_trans(user.Recurring_Transaction_Expense_List[i], today))
-                {
-                    auto_updates = true;
-                }
+                auto_updates = true;
             }
+        }
 
-            // Check Recurring Incomes
-            for (int i = 0; i < user.recur_trans_income_count; i++)
+        // Check Recurring Incomes
+        for (int i = 0; i < user.recur_trans_income_count; i++)
+        {
+            if (user.check_recur_trans(user.Recurring_Transaction_Income_List[i], today))
             {
-                if (user.check_recur_trans(user.Recurring_Transaction_Income_List[i], today))
-                {
-                    auto_updates = true;
-                }
+                auto_updates = true;
             }
+        }
 
-            if (auto_updates)
-            {
-                cout << " [!] Automatic recurring transactions have been generated for this month.\n";
-                cout << "     Press Enter to continue...";
-                std::cin.get();
-            }
+        if (auto_updates)
+        {
+            cout << " [!] Automatic recurring transactions have been generated for this month.\n";
+            cout << "     Press Enter to continue...";
+            std::cin.get();
+        }
+    }
+    else
+    {
+        cout << "\n [!] New user detected. Creating profile for " << name << "...\n";
+        user.name = name;
+
+        // SAVE DEFAULTS IMMEDIATELY
+        // This ensures the file exists with the default "Default" wallet
+        ofstream fout(filename, ios::binary);
+        if (fout.is_open())
+        {
+            user.SaveToBinary(fout);
+            fout.close();
+            cout << " [!] Profile created successfully.\n";
         }
         else
         {
-            cout << "\n [!] New user detected. Creating profile for " << name << "...\n";
-            user.name = name;
-
-            // SAVE DEFAULTS IMMEDIATELY
-            // This ensures the file exists with the default "Default" wallet
-            ofstream fout(filename, ios::binary);
-            if (fout.is_open())
-            {
-                user.SaveToBinary(fout);
-                fout.close();
-                cout << " [!] Profile created successfully.\n";
-            }
-            else
-            {
-                cerr << " [Error] Could not create file at: " << filename << endl;
-                cerr << "         Please ensure the folder '../UserData' exists.\n";
-                system("pause");
-                return 1;
-            }
-
-            cout << " Press Enter to start...";
-            std::cin.get();
+            cerr << " [Error] Could not create file at: " << filename << endl;
+            cerr << "         Please ensure the folder '../UserData' exists.\n";
+            system("pause");
+            return 1;
         }
 
-        // 5. Run Application
-        RunApplication_Navigation(user);
-
-        return 0;
+        cout << " Press Enter to start...";
+        std::cin.get();
     }
+
+    // 5. Run Application
+    RunApplication_Navigation(user);
+
+    return 0;
+}

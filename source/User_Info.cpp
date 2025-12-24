@@ -171,8 +171,11 @@ void User_Info::LoadFromBinary(ifstream &out)
         ReadString(out, this->Wallet_List[i]->name);
         // bà lăng (balance)
         out.read(reinterpret_cast<char *>(&this->Wallet_List[i]->remain), sizeof(long long));
-        out.read(reinterpret_cast<char *>(&this->Wallet_List[i]->inCount), sizeof(int));
-        out.read(reinterpret_cast<char *>(&this->Wallet_List[i]->expCount), sizeof(int));
+        int tempIn, tempExp;
+        out.read(reinterpret_cast<char *>(&tempIn), sizeof(int));
+        out.read(reinterpret_cast<char *>(&tempExp), sizeof(int));
+        this->Wallet_List[i]->inCount = 0;
+        this->Wallet_List[i]->expCount = 0;
         this->Wallet_List[i]->Wallet_resize();
     }
 
@@ -931,7 +934,7 @@ void User_Info::Add_Income_Transaction()
     {
         while (true)
         {
-            cout << "Enter your new wallet name: ";
+            cout << "Enter your wallet name: ";
             // Show_Wallet();
             // Draw all Wallet for user to choose
             if (cin.peek() == '\n')
@@ -953,6 +956,7 @@ void User_Info::Add_Income_Transaction()
             {
                 cout << "Wallet chosen successfully: " << dummy.name << endl;
                 check_W = false;
+                break;
             }
             else
             {
@@ -2307,6 +2311,11 @@ bool User_Info::Is_Category_In_Use(int id)
             return true;
     }
     // check recurr
+    for (int i = 0; i < recur_trans_expense_count; i++)
+    {
+        if (Recurring_Transaction_Expense_List[i]->type->id == id)
+            return true;
+    }
     return false;
 }
 
@@ -2319,7 +2328,11 @@ bool User_Info::Is_Source_In_Use(int id)
             return true;
     }
     // Check recur
-
+    for (int i = 0; i < recur_trans_income_count; i++)
+    {
+        if (Recurring_Transaction_Income_List[i]->type->id == id)
+            return true;
+    }
     return false;
 }
 //

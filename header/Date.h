@@ -83,3 +83,6 @@ string which_day_of_week(Date src);
 int compare_Date(Date day1, Date day2);
 
 Date Get_Last_Date_Month(Date date);
+
+// Helper to compare dates (returns true if d1 <= d2)
+bool Date_Less_Or_Equal(Date d1, Date d2);

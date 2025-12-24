@@ -448,3 +448,15 @@ Date Get_Last_Date_Month(Date date)
     date.day = daysInMonth[date.month];
     return date;
 }
+
+// Helper to compare dates (returns true if d1 <= d2)
+bool Date_Less_Or_Equal(Date d1, Date d2)
+{
+    if (d1.year < d2.year)
+        return true;
+    if (d1.year == d2.year && d1.month < d2.month)
+        return true;
+    if (d1.year == d2.year && d1.month == d2.month && d1.day <= d2.day)
+        return true;
+    return false;
+}

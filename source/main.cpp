@@ -106,9 +106,7 @@ void drawMenu(User_Info &user) // ifstream& fin
 
     // Hiển thị ví :))
     cout << " Wallet Breakdown:\n";
-    cout << endl;
-    cout << endl;
-    cout << endl;
+    cout << " " << string((int)50, '-') << endl;
     if (user.wallet_count == 0)
     {
         cout << "   (No wallets created yet)\n";
@@ -129,7 +127,7 @@ void drawMenu(User_Info &user) // ifstream& fin
     //
     //
     //
-    cout << " " << string((int)50, '-') << endl;
+
     cout << " " << string((int)50, '-') << endl;
     //
     cout << endl;
@@ -281,6 +279,7 @@ void Draw_Add_Transaction(User_Info &user)
         default:
             cout << "\n[!] Invalid option.\n";
             pause();
+            //Thiếu xóa
             break;
         }
     }
@@ -305,6 +304,7 @@ void Draw_Recurring_Transaction_List(User_Info &user)
         // 2. Selectable Options
         cout << "1. Add Income Recurring Transaction\n";
         cout << "2. Add Expense Recurring Transaction\n";
+        //edit
         cout << "0. Back to menu\n";
         cout << "-------------------------------------------------\n";
         cout << "Select option: ";

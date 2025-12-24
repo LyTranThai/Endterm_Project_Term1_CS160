@@ -87,7 +87,7 @@ void User_Info::SaveToBinary(ofstream &out)
         // Wallet
         out.write((char *)&this->Recurring_Transaction_Expense_List[i]->wallet->id, sizeof(int));
         // Desc
-        WriteString(out, this->Recurring_Transaction_Income_List[i]->description);
+        WriteString(out, this->Recurring_Transaction_Expense_List[i]->description);
     }
 
     // Write Transaction;
@@ -1075,7 +1075,7 @@ void User_Info::Add_Recur_Expense_Transaction()
     Date endDate;
     while (true)
     {
-        cout << "Enter end date 31/12/3000 to make your transaction recur indefinitely";
+        cout << "Enter end date 31/12/3000 to make your transaction recur indefinitely\n";
         cout << "Enter End Date (dd/mm/yyyy): ";
         getline(cin, dateStr);
         endDate = InputDate(dateStr);
@@ -1090,7 +1090,7 @@ void User_Info::Add_Recur_Expense_Transaction()
             continue;
         }
 
-        if (compare(endDate, startDate) < 0)
+        if (!Date_Less_Or_Equal(startDate, endDate))
         {
             cout << "Error: End Date cannot be before Start Date.\n";
             cout << "Press enter to retype...";
@@ -1351,34 +1351,35 @@ void User_Info::Add_Recur_Income_Transaction()
     // --- STEP 2: END DATE ---
     Date endDate;
     while (true)
-    {
-        cout << "Enter End Date (dd/mm/yyyy): ";
-        getline(cin, dateStr);
-        endDate = InputDate(dateStr);
+        {
+            cout << "Enter end date 31/12/3000 to make your transaction recur indefinitely\n";
+            cout << "Enter End Date (dd/mm/yyyy): ";
+            getline(cin, dateStr);
+            endDate = InputDate(dateStr);
 
-        if (endDate.day == 0)
-        {
-            cout << "Invalid date format! Please try again.\n";
-            cout << "Press enter to retype...";
-            cin.get();
-            Clear_Buffer();
-            ClearLines(3);
-            continue;
-        }
+            if (endDate.day == 0)
+            {
+                cout << "Invalid date format! Please try again.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(4);
+                continue;
+            }
 
-        if (compare(endDate, startDate) < 0)
-        {
-            cout << "Error: End Date cannot be before Start Date.\n";
-            cout << "Press enter to retype...";
-            cin.get();
-            Clear_Buffer();
-            ClearLines(3);
+            if (!Date_Less_Or_Equal(startDate, endDate))
+            {
+                cout << "Error: End Date cannot be before Start Date.\n";
+                cout << "Press enter to retype...";
+                cin.get();
+                Clear_Buffer();
+                ClearLines(4);
+            }
+            else
+            {
+                break;
+            }
         }
-        else
-        {
-            break;
-        }
-    }
 
     // --- STEP 3: INCOME SOURCE ---
     string type_name;
@@ -1699,17 +1700,7 @@ void User_Info::Show_Recurring_Transaction_List()
 
 // Add to User_Info.cpp
 
-// Helper to compare dates (returns true if d1 <= d2)
-bool Date_Less_Or_Equal(Date d1, Date d2)
-{
-    if (d1.year < d2.year)
-        return true;
-    if (d1.year == d2.year && d1.month < d2.month)
-        return true;
-    if (d1.year == d2.year && d1.month == d2.month && d1.day <= d2.day)
-        return true;
-    return false;
-}
+
 
 bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date current_date)
 {
@@ -1719,6 +1710,11 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
 
     bool has_changes = false;
     Date iterator_date = p->start; // Start checking from the recurring start date
+    Date end_date=p->end;
+    if(Date_Less_Or_Equal(current_date, p->end))
+    {
+        end_date=current_date;
+    }
 
     // 2. Loop month-by-month until we pass the current date
     while (Date_Less_Or_Equal(iterator_date, current_date))
@@ -1768,7 +1764,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
             expenses_transaction[expCount]->wallet = p->wallet; // Pointer copy
 
             // Generate a description so user knows it was automated
-            expenses_transaction[expCount]->description = p->description + " (Auto-Generated)";
+            expenses_transaction[expCount]->description = "(Auto-Generated)" + p->description;
 
             // 5. UPDATE WALLET BALANCE
             p->wallet->remain -= p->amount;
@@ -1812,6 +1808,11 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
 
     bool has_changes = false;
     Date iterator_date = p->start;
+    Date end_date=p->end;
+    if(Date_Less_Or_Equal(current_date, p->end))
+    {
+        end_date=current_date;
+    }
 
     // 2. Loop month-by-month until we pass the current date
     while (Date_Less_Or_Equal(iterator_date, current_date))
@@ -1819,7 +1820,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
         // Stop if we have passed the recurring end date (if one is set)
         if (p->end.day != 0)
         {
-            if (!Date_Less_Or_Equal(iterator_date, p->end))
+            if (!Date_Less_Or_Equal(iterator_date, end_date))
                 break;
         }
 

@@ -95,6 +95,35 @@ struct User_Info
         expCount = 0;
         expCap = 10;
         expenses_transaction = new Transaction_Expense *[expCap];
+        for (int i = 1; i < wallet_capacity; i++)
+        {
+            Wallet_List[i] = NULL;
+        }
+        for (int i = 1; i < expense_capacity; i++)
+        {
+            expense[i]= NULL;
+        }
+        for (int i = 1; i < income_capacity; i++)
+        {
+            income[i]= NULL;
+        }
+        for (int i = 0; i < recur_trans_expense_capacity; i++)
+        {
+            Recurring_Transaction_Expense_List[i]= NULL;
+        }
+        for (int i = 0; i < recur_trans_income_capacity; i++)
+        {
+            Recurring_Transaction_Income_List[i]= NULL;
+        }
+        for (int i = 0; i < expCap; i++)
+        {
+            expenses_transaction[i]= NULL;
+        }
+        for (int i = 0; i < inCap; i++)
+        {
+            incomes_transaction[i]= NULL;
+        }
+
     }
     ~User_Info()
     {

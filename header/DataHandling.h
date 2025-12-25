@@ -29,9 +29,9 @@ void resize1(Transaction_Expense **&p, int size, int &cap);
 void resize1(Recurring_Transaction_Income **&p, int size, int &cap);
 void resize1(Recurring_Transaction_Expense **&p, int size, int &cap);
 
-bool Find_By_ID(int &id, Wallet **&list, int &size, Wallet *&pointer);
-bool Find_By_ID(int &id, IncomeSource **&list, int &size, IncomeSource *&pointer);
-bool Find_By_ID(int &id, ExpenseCategory **&list, int &size, ExpenseCategory *&pointer);
+bool Find_By_ID(int id, Wallet **&list, int &size, Wallet *&pointer);
+bool Find_By_ID(int id, IncomeSource **&list, int &size, IncomeSource *&pointer);
+bool Find_By_ID(int id, ExpenseCategory **&list, int &size, ExpenseCategory *&pointer);
 
 bool Find_By_Name(string &name, Wallet **&list, int &size, Wallet *&pointer);
 bool Find_By_Name(string &name, IncomeSource **&list, int &size, IncomeSource *&pointer);

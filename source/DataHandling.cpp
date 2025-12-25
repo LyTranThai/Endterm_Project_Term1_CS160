@@ -36,17 +36,28 @@ void ReadString(ifstream &in, string &s)
 template <typename T>
 void Tresize1(T **&p, int size, int &cap)
 {
+    if(size>=cap)
+    {
+        int save=cap;
     while (size >= cap)
     {
         cap *= 2;
     }
+
     T **dummy = p;
     p = new T *[cap];
-    for (int i = 0; i < size; i++)
+
+    for (int i = 0; i < save; i++)
     {
         p[i] = dummy[i];
     }
+
     delete[] dummy;
+    for (int i = save; i < cap; i++)
+    {
+        p[i] = NULL;
+    }
+    }
 }
 
 void resize1(Wallet **&p, int size, int &cap)
@@ -97,15 +108,15 @@ bool TFind_By_ID(int &id, T **&list, int &size, T *&pointer)
     }
     return check;
 }
-bool Find_By_ID(int &id, Wallet **&list, int &size, Wallet *&pointer)
+bool Find_By_ID(int id, Wallet **&list, int &size, Wallet *&pointer)
 {
     return TFind_By_ID(id, list, size, pointer);
 }
-bool Find_By_ID(int &id, IncomeSource **&list, int &size, IncomeSource *&pointer)
+bool Find_By_ID(int id, IncomeSource **&list, int &size, IncomeSource *&pointer)
 {
     return TFind_By_ID(id, list, size, pointer);
 }
-bool Find_By_ID(int &id, ExpenseCategory **&list, int &size, ExpenseCategory *&pointer)
+bool Find_By_ID(int id, ExpenseCategory **&list, int &size, ExpenseCategory *&pointer)
 {
     return TFind_By_ID(id, list, size, pointer);
 }
@@ -403,6 +414,7 @@ void TShow_Recur_Transaction(T **&list, int list_size)
         // 5. Row 4: Description (Only if it exists, or placeholder)
         if (!list[i]->description.empty())
         {
+            cout<<"Note: ";
             PrintWrapped(list[i]->description, CARD_WIDTH - 6, 6);
             cout << endl;
         }

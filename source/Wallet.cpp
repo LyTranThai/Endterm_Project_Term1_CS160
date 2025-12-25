@@ -123,6 +123,24 @@ void Wallet::Wallet_resize()
     resize1(this->incomes,this->inCount,this->inCap);
 }
 
+void Wallet::Wallet_resize_no_copy()
+{
+    while (this->inCount>=inCap)
+    {
+        inCap*=2;
+    }
+    while(this->expCount>=expCap)
+    {
+        expCap*=2;
+    }
+
+    delete[]incomes;
+    incomes= new Transaction_Income*[inCap];
+    delete[]expenses;
+    expenses = new Transaction_Expense*[expCap];
+    
+}
+
 // Thêm
 //
 //

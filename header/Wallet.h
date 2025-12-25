@@ -34,9 +34,17 @@ struct Wallet : MasterData
         expCap = 10;
         incomes = new Transaction_Income *[inCap];
         expenses = new Transaction_Expense *[expCap];
+        for(int i=0; i<inCap; i++)
+        {
+            incomes[i]=NULL;
+        }
+        for(int i=0; i<expCap; i++)
+        {
+            expenses[i]=NULL;
+        }
     }
 
-    /// @brief
+
     ~Wallet()
     {
         delete[] incomes;
@@ -51,6 +59,7 @@ struct Wallet : MasterData
     void SaveToBinary(string filename);
     void LoadFromBinary(string filename);
     void Wallet_resize();
+    void Wallet_resize_no_copy();
 };
 
 // Format

@@ -150,7 +150,8 @@ void Draw_Wallet_List(User_Info &user)
 {
     int window_width = 70;
     int choice;
-    while (true)
+    bool checkk=true;
+    while (checkk)
     {
         clearScreen();
         // Header
@@ -167,13 +168,33 @@ void Draw_Wallet_List(User_Info &user)
         cout << "3. Delete Wallet\n";
         cout << "0. Back to Main Menu\n";
         cout << string(window_width, '-') << endl;
-        cout << "Select option: ";
-
-        // Xử lý nhập liệu
-        if (!Input_Choice(choice))
+        bool check=true;
+        string input;
+        while(check)
         {
-            continue;
+        cout << "Select option: ";
+        cin>>input;
+    
+        if (!isValidInt(input))
+        {
+            Clear_Buffer();
+            cout << "Error: Please Input an valid ID.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
+        else
+        {
+            choice=stoi(input);
+            check=false;
+        }
+        }
+        // Xử lý nhập liệu
+        // if (!Input_Choice(choice))
+        // {
+        //     continue;
+        // }
 
         switch (choice)
         {
@@ -440,6 +461,7 @@ int main()
 
         // LOAD DATA
         user.LoadFromBinary(fin);
+        cout<<"Load Success"<<endl;
         fin.close();
 
         // 4. CHECK RECURRING TRANSACTIONS (Requirement: Check on startup)
@@ -456,7 +478,7 @@ int main()
                 auto_updates = true;
             }
         }
-
+        cout<<"Done check 1"<<endl;
         // Check Recurring Incomes
         for (int i = 0; i < user.recur_trans_income_count; i++)
         {
@@ -465,6 +487,7 @@ int main()
                 auto_updates = true;
             }
         }
+        cout<<"Done check 2"<<endl;
 
         if (auto_updates)
         {

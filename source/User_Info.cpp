@@ -1718,11 +1718,11 @@ void User_Info::Show_Recurring_Transaction_List(Recurring_Transaction_Income**& 
     // EXPENSE TABLE
     if (recur_trans_expense_count > 0)
     {
-        cout << "\n [RECURRING EXPENSE TRANSACTIONS]\n";
-        Show_Recur_Transaction(this->Recurring_Transaction_Expense_List, this->recur_trans_expense_count);
+        cout << "\n [RECURRING INCOME TRANSACTIONS]\n";
+        Show_Recur_Transaction(this->Recurring_Transaction_Income_List, this->recur_trans_income_count);
     }
 
-    if (recur_trans_expense_count == 0 && recur_trans_income_count == 0)
+    if (recur_trans_income_count == 0)
     {
         cout << " [!] No recurring transaction yet found.\n";
     }
@@ -1745,7 +1745,7 @@ void User_Info::Show_Recurring_Transaction_List(Recurring_Transaction_Expense**&
         Show_Recur_Transaction(this->Recurring_Transaction_Expense_List, this->recur_trans_expense_count);
     }
 
-    if (recur_trans_expense_count == 0 && recur_trans_income_count == 0)
+    if (recur_trans_expense_count == 0)
     {
         cout << " [!] No recurring transaction yet found.\n";
     }
@@ -1769,14 +1769,9 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
     }
 
     // 2. Loop month-by-month until we pass the current date
-    while (Date_Less_Or_Equal(iterator_date, current_date))
+    while (Date_Less_Or_Equal(iterator_date, end_date))
     {
-        // Stop if we have passed the recurring end date (if one is set)
-        if (p->end.day != 0)
-        { // Assuming day=0 means "no end date"
-            if (!Date_Less_Or_Equal(iterator_date, p->end))
-                break;
-        }
+
 
         // 3. CHECK: Has this transaction already been generated for this specific Month/Year?
         bool already_exists = false;
@@ -1830,7 +1825,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
             this->expCount++;
             has_changes = true;
 
-            cout << " [Auto] Generated recurring expense for: "
+            cout << " [Auto] Generated recurring expense for ID "<<p->id<<" : "
                  << iterator_date.month << "/" << iterator_date.year << endl;
         }
 
@@ -1867,14 +1862,8 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
     }
 
     // 2. Loop month-by-month until we pass the current date
-    while (Date_Less_Or_Equal(iterator_date, current_date))
+    while (Date_Less_Or_Equal(iterator_date, end_date))
     {
-        // Stop if we have passed the recurring end date (if one is set)
-        if (p->end.day != 0)
-        {
-            if (!Date_Less_Or_Equal(iterator_date, p->end))
-                break;
-        }
 
         // 3. CHECK: Has this transaction already been generated?
         bool already_exists = false;
@@ -1929,7 +1918,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
             this->inCount++;
             has_changes = true;
 
-            cout << " [Auto] Generated recurring income for: "
+            cout << " [Auto] Generated recurring expense for ID "<<p->id<<" : "
                  << iterator_date.month << "/" << iterator_date.year << endl;
         }
 
@@ -2243,16 +2232,37 @@ void User_Info::Stats_Wallet_TimeRange()
 
 void User_Info::Stats_Annual_Overview()
 {
-    cout << "\n=== ANNUAL INCOME/EXPENSE OVERVIEW ===\n";
+    bool check = true;
     int startYear, endYear;
+    while(true)
+    {
+    clearScreen();
+    cout << "\n=== ANNUAL INCOME/EXPENSE OVERVIEW ===\n";
+    if(!check)
+    {
+        cout<<"[Error] Please enter a valid integer for year!"<<endl;
+    }
     cout << "Enter Start Year (e.g., 2023): ";
-    cin >> startYear;
-    cout << "Enter End Year (e.g., 2025): ";
-    cin >> endYear;
+    check=true;
+    if (!Input_Choice(startYear))
+        {
+            check=false;
+            continue;
+        }
     Clear_Buffer();
+    cout << "Enter End Year (e.g., 2025): ";
+    if (!Input_Choice(endYear))
+        {
+            check=false;
+            continue;
+        }
+    Clear_Buffer();
+    break;
+    }
 
     if (startYear > endYear)
     {
+        cout<<"Auto Year-Swap"<<endl;
         int temp = startYear;
         startYear = endYear;
         endYear = temp;
@@ -2298,11 +2308,28 @@ void User_Info::Stats_Annual_Overview()
 
 void User_Info::Stats_Annual_Breakdown()
 {
-    cout << "\n=== ANNUAL BREAKDOWN ===\n";
     int year;
-    cout << "Enter Year to analyze: ";
-    cin >> year;
+    bool check = true;
     Clear_Buffer();
+    while(true)
+    {
+    clearScreen();
+    cout << "\n=== ANNUAL BREAKDOWN ===\n";
+    if(!check)
+    {
+        cout<<"[Error] Please enter a valid integer for year!"<<endl;
+    }
+    cout << "Enter Year to analyze: (e.g., 2023): ";
+    check=true;
+    if (!Input_Choice(year))
+        {
+            check=false;
+            continue;
+        }
+    Clear_Buffer();
+    break;
+    }
+    
 
     cout << "\n [INCOME BREAKDOWN - " << year << "]\n";
     cout << left << setw(30) << "Source Name" << right << setw(20) << "Amount" << endl;

@@ -61,6 +61,10 @@ struct User_Info
 
     User_Info()
     {
+        Date zero_date;
+        zero_date.day=0;
+        zero_date.month=0;
+        zero_date.year=0;
         wallet_capacity = 10; // Start small
         wallet_count = 1;
         Wallet_List = new Wallet *[wallet_capacity];
@@ -81,12 +85,25 @@ struct User_Info
         income[0] = new IncomeSource;
         income[0]->name = "Unknown";
         income[0]->id = 0;
-        recur_trans_expense_count = 0;
+        recur_trans_expense_count = 1;
         recur_trans_expense_capacity = 10;
         Recurring_Transaction_Expense_List = new Recurring_Transaction_Expense *[recur_trans_expense_capacity];
-        recur_trans_income_count = 0;
+        Recurring_Transaction_Expense_List[0] = new Recurring_Transaction_Expense;
+        Recurring_Transaction_Expense_List[0]->id = 0;
+        Recurring_Transaction_Expense_List[0]->start=zero_date;
+        Recurring_Transaction_Expense_List[0]->end=zero_date;
+        Recurring_Transaction_Expense_List[0]->wallet=Wallet_List[0];
+        Recurring_Transaction_Expense_List[0]->type=expense[0];
+
+        recur_trans_income_count = 1;
         recur_trans_income_capacity = 10;
         Recurring_Transaction_Income_List = new Recurring_Transaction_Income *[recur_trans_income_capacity];
+        Recurring_Transaction_Income_List[0] = new Recurring_Transaction_Income;
+        Recurring_Transaction_Income_List[0]->id = 0;
+        Recurring_Transaction_Income_List[0]->start=zero_date;
+        Recurring_Transaction_Income_List[0]->end=zero_date;
+        Recurring_Transaction_Income_List[0]->wallet=Wallet_List[0];
+        Recurring_Transaction_Income_List[0]->type=income[0];
 
         inCount = 0;
         inCap = 10;
@@ -107,11 +124,11 @@ struct User_Info
         {
             income[i]= NULL;
         }
-        for (int i = 0; i < recur_trans_expense_capacity; i++)
+        for (int i = 1; i < recur_trans_expense_capacity; i++)
         {
             Recurring_Transaction_Expense_List[i]= NULL;
         }
-        for (int i = 0; i < recur_trans_income_capacity; i++)
+        for (int i = 1; i < recur_trans_income_capacity; i++)
         {
             Recurring_Transaction_Income_List[i]= NULL;
         }

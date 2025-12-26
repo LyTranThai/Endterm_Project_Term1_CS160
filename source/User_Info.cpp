@@ -129,7 +129,8 @@ void User_Info::SaveToBinary(ofstream &out)
 void User_Info::LoadFromBinary(ifstream &out)
 {
     ReadString(out, name);
-    out.read(reinterpret_cast<char *>(&this->default_Wallet->id), sizeof(int));
+    int default_Wallet_ID;
+    out.read(reinterpret_cast<char *>(&default_Wallet_ID), sizeof(int));
 
     // Get baxk number of elements of each array
     out.read(reinterpret_cast<char *>(&this->income_count), sizeof(int));
@@ -167,6 +168,10 @@ void User_Info::LoadFromBinary(ifstream &out)
     {
         this->Wallet_List[i] = new Wallet;
         out.read(reinterpret_cast<char *>(&this->Wallet_List[i]->id), sizeof(int));
+        if(this->Wallet_List[i]->id == default_Wallet_ID)
+        {
+            default_Wallet=this->Wallet_List[i];
+        }
         // name
         ReadString(out, this->Wallet_List[i]->name);
         // bà lăng (balance)

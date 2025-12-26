@@ -1706,6 +1706,52 @@ void User_Info::Show_Recurring_Transaction_List()
 
 // Add to User_Info.cpp
 
+void User_Info::Show_Recurring_Transaction_List(Recurring_Transaction_Income**& p)
+{
+        // Define standard widths
+    const int wDate = 14;
+    const int wCat = 22;
+    const int wWal = 18;
+    const int wAmt = 15;
+
+    cout << "\n";
+    // EXPENSE TABLE
+    if (recur_trans_expense_count > 0)
+    {
+        cout << "\n [RECURRING EXPENSE TRANSACTIONS]\n";
+        Show_Recur_Transaction(this->Recurring_Transaction_Expense_List, this->recur_trans_expense_count);
+    }
+
+    if (recur_trans_expense_count == 0 && recur_trans_income_count == 0)
+    {
+        cout << " [!] No recurring transaction yet found.\n";
+    }
+    cout << string(width, '=') << endl;
+}
+void User_Info::Show_Recurring_Transaction_List(Recurring_Transaction_Expense**& p)
+{
+        // Define standard widths
+    const int wDate = 14;
+    const int wCat = 22;
+    const int wWal = 18;
+    const int wAmt = 15;
+
+    cout << "\n";
+
+    // EXPENSE TABLE
+    if (recur_trans_expense_count > 0)
+    {
+        cout << "\n [RECURRING EXPENSE TRANSACTIONS]\n";
+        Show_Recur_Transaction(this->Recurring_Transaction_Expense_List, this->recur_trans_expense_count);
+    }
+
+    if (recur_trans_expense_count == 0 && recur_trans_income_count == 0)
+    {
+        cout << " [!] No recurring transaction yet found.\n";
+    }
+    cout << string(width, '=') << endl;
+}
+
 
 
 bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date current_date)
@@ -1905,6 +1951,94 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
     return has_changes;
 }
 
+void User_Info::Stop_recur_trans(Recurring_Transaction_Expense*& p)
+{
+    int id;
+    string input;
+    bool check=true;
+    Recurring_Transaction_Expense *dummy;
+    while(check)
+    {
+    cout << "Enter Recurring Transaction Expense ID to stop: ";
+    cin>>input;
+    
+    if (!isValidInt(input))
+    {
+        Clear_Buffer();
+        cout << "Error: Please Input an valid ID.\n";
+        cout << "Press enter to retype...";
+        cin.get();
+        Clear_Buffer();
+        ClearLines(3);
+    }
+    else
+    {
+        id=stoi(input);
+        if(!Find_By_ID(id, Recurring_Transaction_Expense_List, recur_trans_expense_count, dummy))
+        {
+            cout << "Error: Please Input an valid ID.\n";
+            system("pause");
+            return;
+        }
+        else
+        check=false;
+    }
+    }
+    Clear_Buffer();
+    dummy->end.day=0;
+    dummy->end.month=0;
+    dummy->end.year=0;
+    Date pin;
+    GetCurrentDate(pin);
+    dummy->description="Deleted on " + Date_to_string(pin);
+    cout << "Stop recurring transaction with ID "<<id<<" successfully.\n";
+    system("pause");
+}
+void User_Info::Stop_recur_trans(Recurring_Transaction_Income*& p)
+{
+    int id;
+    string input;
+    bool check=true;
+    Recurring_Transaction_Income *dummy;
+    while(check)
+    {
+    cout << "Enter Recurring Transaction Income ID to stop: ";
+    cin>>input;
+    
+    if (!isValidInt(input))
+    {
+        Clear_Buffer();
+        cout << "Error: Please Input an valid ID.\n";
+        cout << "Press enter to retype...";
+        cin.get();
+        Clear_Buffer();
+        ClearLines(3);
+    }
+    else
+    {
+        id=stoi(input);
+        if(!Find_By_ID(id, Recurring_Transaction_Income_List, recur_trans_income_count, dummy))
+        {
+            cout << "Error: Please Input an valid ID.\n";
+            system("pause");
+            return;
+        }
+        else
+        check=false;
+    }
+    }
+    Clear_Buffer();
+    dummy->end.day=0;
+    dummy->end.month=0;
+    dummy->end.year=0;
+    Date pin;
+    GetCurrentDate(pin);
+    dummy->description="Deleted on " + Date_to_string(pin);
+    cout << "Stop recurring transaction with ID "<<id<<" successfully.\n";
+    system("pause");
+}
+
+
 // Search for a Wallet by name
 Wallet *User_Info::Choose_Wallet(string name)
 {
@@ -1986,8 +2120,7 @@ void User_Info::Stats_TimeRange()
 
     do
     {
-        if (cin.peek() == '\n')
-            cin.ignore();
+        Clear_Buffer();
         cout << "Enter Start Date (dd/mm/yyyy): ";
         getline(cin, sDate);
         dStart = InputDate(sDate);
@@ -2238,7 +2371,7 @@ void User_Info::Draw_Statistics_Menu()
 {
     while (true)
     {
-        system("cls");
+        clearScreen();
         cout << "=========================================\n";
         cout << "       STATISTICS & REPORTS              \n";
         cout << "=========================================\n";
@@ -2251,8 +2384,12 @@ void User_Info::Draw_Statistics_Menu()
         cout << "Select option: ";
 
         int choice;
-        cin >> choice;
-        Clear_Buffer();
+        if (!Input_Choice(choice))
+        {
+            cout << "\n[!] Invalid input. Please enter a number.\n";
+            pause();
+            continue;
+        }
 
         switch (choice)
         {
@@ -2356,6 +2493,7 @@ bool User_Info::Is_Source_In_Use(int id)
 //
 void User_Info::Edit_Wallet()
 {
+    clearScreen();
     Show_Wallet_List();
     int id;
     cout << "Enter Wallet ID to Edit: ";
@@ -2401,6 +2539,7 @@ void User_Info::Edit_Wallet()
 
 void User_Info::Delete_Wallet()
 {
+    clearScreen();
     Show_Wallet_List();
     int id;
     string input;
@@ -2423,13 +2562,11 @@ void User_Info::Delete_Wallet()
     else
     {
         id=stoi(input);
-        if(id==0 || !Find_By_ID(id, Wallet_List, wallet_count, dummy))
+        if(!Find_By_ID(id, Wallet_List, wallet_count, dummy))
         {
             cout << "Error: Please Input an valid ID.\n";
-            cout << "Press enter to retype...";
-            cin.get();
-            Clear_Buffer();
-            ClearLines(3);
+            system("pause");
+            return;
         }
         else
         check=false;
@@ -2484,17 +2621,84 @@ void User_Info::Delete_Wallet()
     system("pause");
 }
 
+void User_Info::Switch_Wallet()
+{
+   Show_Wallet_List();
+    int id;
+    string input;
+    bool check=true;
+    Wallet *dummy;
+    while(check)
+    {
+    cout << "Enter Wallet ID to set default: ";
+    cin>>input;
+    
+    if (!isValidInt(input))
+    {
+        Clear_Buffer();
+        cout << "Error: Please Input an valid ID.\n";
+        cout << "Press enter to retype...";
+        cin.get();
+        Clear_Buffer();
+        ClearLines(3);
+    }
+    else
+    {
+        id=stoi(input);
+        if(!Find_By_ID(id, Wallet_List, wallet_count, dummy))
+        {
+            cout << " [Error] Cannot find wallet with ID: " << id<<endl;
+            system("pause");
+            return;
+        }
+        else
+        check=false;
+    }
+    }
+    Clear_Buffer();
+
+    //  Switch
+    this->default_Wallet=dummy;
+    cout << " [Success] Default Wallet set to: "<<this->default_Wallet->name<<endl;
+    system("pause"); 
+}
+
 void User_Info::Edit_ExpenseCategory()
 {
 
     cout << "\n--- Expense Categories ---\n";
     for (int i = 0; i < expense_count; i++)
         cout << "ID: " << expense[i]->id << " | " << expense[i]->name << endl;
-
     int id;
-    cout << "Enter ID to Edit: ";
-    cin >> id;
-    Clear_Buffer();
+    string input;
+    bool check=true;
+    ExpenseCategory *dummy;
+    while(check)
+    {
+    cout << "Enter Expense Category ID to Delete: ";
+    cin>>input;
+    
+    if (!isValidInt(input))
+    {
+        cout << "Error: Please Input an valid ID.\n";
+        cout << "Press enter to retype...";
+        cin.get();
+        Clear_Buffer();
+        ClearLines(3);
+    }
+    else
+    {
+        id=stoi(input);
+        if(!Find_By_ID(id, expense, expense_count, dummy))
+        {
+            cout << "Error: Please Input an valid ID.\n";
+            system("pause");
+            return;
+        }
+        else
+        check=false;
+    }
+    }
 
     ExpenseCategory *target = nullptr;
     if (!Find_By_ID(id, expense, expense_count, target))
@@ -2531,7 +2735,6 @@ void User_Info::Delete_ExpenseCategory()
     
     if (!isValidInt(input))
     {
-        Clear_Buffer();
         cout << "Error: Please Input an valid ID.\n";
         cout << "Press enter to retype...";
         cin.get();
@@ -2541,13 +2744,11 @@ void User_Info::Delete_ExpenseCategory()
     else
     {
         id=stoi(input);
-        if(id==0 || !Find_By_ID(id, expense, expense_count, dummy))
+        if(!Find_By_ID(id, expense, expense_count, dummy))
         {
             cout << "Error: Please Input an valid ID.\n";
-            cout << "Press enter to retype...";
-            cin.get();
-            Clear_Buffer();
-            ClearLines(3);
+            system("pause");
+            return;
         }
         else
         check=false;
@@ -2601,9 +2802,35 @@ void User_Info::Edit_IncomeSource()
         cout << "ID: " << income[i]->id << " | " << income[i]->name << endl;
 
     int id;
-    cout << "Enter ID to Edit: ";
-    cin >> id;
-    Clear_Buffer();
+    string input;
+    bool check=true;
+    ExpenseCategory *dummy;
+    while(check)
+    {
+    cout << "Enter Expense Category ID to Delete: ";
+    cin>>input;
+    
+    if (!isValidInt(input))
+    {
+        cout << "Error: Please Input an valid ID.\n";
+        cout << "Press enter to retype...";
+        cin.get();
+        Clear_Buffer();
+        ClearLines(3);
+    }
+    else
+    {
+        id=stoi(input);
+        if(!Find_By_ID(id, expense, expense_count, dummy))
+        {
+            cout << "Error: Please Input an valid ID.\n";
+            system("pause");
+            return;
+        }
+        else
+        check=false;
+    }
+    }
 
     IncomeSource *target = nullptr;
     if (!Find_By_ID(id, income, income_count, target))
@@ -2629,9 +2856,35 @@ void User_Info::Delete_IncomeSource()
         cout << "ID: " << income[i]->id << " | " << income[i]->name << endl;
 
     int id;
-    cout << "Enter ID to Delete: ";
-    cin >> id;
-    Clear_Buffer();
+    string input;
+    bool check=true;
+    ExpenseCategory *dummy;
+    while(check)
+    {
+    cout << "Enter Expense Category ID to Delete: ";
+    cin>>input;
+    
+    if (!isValidInt(input))
+    {
+        cout << "Error: Please Input an valid ID.\n";
+        cout << "Press enter to retype...";
+        cin.get();
+        Clear_Buffer();
+        ClearLines(3);
+    }
+    else
+    {
+        id=stoi(input);
+        if(!Find_By_ID(id, expense, expense_count, dummy))
+        {
+            cout << "Error: Please Input an valid ID.\n";
+            system("pause");
+            return;
+        }
+        else
+        check=false;
+    }
+    }
 
     int index = -1;
     for (int i = 0; i < income_count; i++)
@@ -2652,6 +2905,7 @@ void User_Info::Delete_IncomeSource()
     if (income[index]->name == "Unknown")
     {
         cout << "Cannot delete system source.\n";
+        system("pause");
         return;
     }
 
@@ -2693,11 +2947,15 @@ void User_Info::Draw_MasterData_Menu()
         cout << " 0. Back\n";
         cout << "====================================\n";
         cout << " Select: ";
-        int c;
-        cin >> c;
-        Clear_Buffer();
+        int choice;
+        if (!Input_Choice(choice))
+        {
+            cout << "\n[!] Invalid input. Please enter a number.\n";
+            pause();
+            continue;
+        }
 
-        switch (c)
+        switch (choice)
         {
         case 1:
             Add_Expense();

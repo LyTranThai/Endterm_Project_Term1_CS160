@@ -26,46 +26,15 @@ void RunApplication_Navigation(User_Info &user);
 
 using namespace std;
 void Draw_Add_Transaction(User_Info &user);
-bool Input_Choice(int &choice)
-{
-    string input;
-    std::getline(std::cin, input);
+void Auto_Check_Recur(User_Info& user);
 
-    try
-    {
-        choice = stoi(input);
-        return true; // Try to convert string to int
-    }
-    catch (...)
-    {
-        return false; // reset
-    }
-}
-
-// Clear screen
-void clearScreen()
-{
-// If you are on Windows, use "cls". If on Mac/Linux, use "clear"
-#ifdef _WIN32
-    system("cls");
-#endif
-}
-
-// Wait for the user to press something
-void pause()
-{
-    cout << "\nPress Enter to continue...";
-    // This line clears any leftover "Enter" keys in the keyboard buffer
-    // This line waits for a NEW "Enter" key press
-    std::cin.get();
-}
 
 void drawMenu(User_Info &user) // ifstream& fin
 {
     int window_width = 70;
     string userName = user.name;
     string currentWallet = user.default_Wallet->name;
-    double currentRemainder = 10000;
+    double currentRemainder = user.default_Wallet->remain;
 
     // 1. Header & User Info
     cout << string(window_width, '=') << endl;
@@ -166,6 +135,7 @@ void Draw_Wallet_List(User_Info &user)
         cout << "1. Add New Wallet\n";
         cout << "2. Edit Wallet\n";
         cout << "3. Delete Wallet\n";
+        cout << "4. Switch default Wallet\n";
         cout << "0. Back to Main Menu\n";
         cout << string(window_width, '-') << endl;
         bool check=true;
@@ -207,6 +177,9 @@ void Draw_Wallet_List(User_Info &user)
             break; // Pause đã có bên trong hàm
         case 3:
             user.Delete_Wallet();
+            break;
+        case 4:
+            user.Switch_Wallet();
             break;
         case 0:
             return; // Thoát vòng lặp, quay về Menu chính
@@ -325,7 +298,8 @@ void Draw_Recurring_Transaction_List(User_Info &user)
         // 2. Selectable Options
         cout << "1. Add Income Recurring Transaction\n";
         cout << "2. Add Expense Recurring Transaction\n";
-        //edit
+        cout << "3. Stop Income Recurring Transaction\n";
+        cout << "4. Stop Expense Recurring Transaction\n";
         cout << "0. Back to menu\n";
         cout << "-------------------------------------------------\n";
         cout << "Select option: ";
@@ -340,6 +314,16 @@ void Draw_Recurring_Transaction_List(User_Info &user)
             break;
         case 2:
             user.Add_Recur_Expense_Transaction();
+            break;
+        case 3:
+            clearScreen();
+            user.Show_Recurring_Transaction_List(user.Recurring_Transaction_Income_List);
+            user.Stop_recur_trans(user.Recurring_Transaction_Income_List[0]);
+            break;
+        case 4:
+            clearScreen();
+            user.Show_Recurring_Transaction_List(user.Recurring_Transaction_Expense_List);
+            user.Stop_recur_trans(user.Recurring_Transaction_Expense_List[0]);
             break;
         case 0:
             return;
@@ -414,6 +398,7 @@ void RunApplication_Navigation(User_Info &user)
             user.Draw_MasterData_Menu(); // tutu, nay de add edit delete a
             break;
         case 7:
+            Auto_Check_Recur(user);
             fout.open("../UserData/" + user.name + ".bin", ios::binary | ios::trunc);
             user.SaveToBinary(fout);
             cout << "\nSaving progress...\n";
@@ -422,6 +407,11 @@ void RunApplication_Navigation(User_Info &user)
             pause();
             break;
         case 8:
+            fout.open("../UserData/" + user.name + ".bin", ios::binary | ios::trunc);
+            user.SaveToBinary(fout);
+            cout << "\nSaving progress...\n";
+            fout.close();
+            cout << "Progress saved successfully.\n";
             cout << "\nExiting application. Goodbye!\n";
             return;
         default:
@@ -430,6 +420,43 @@ void RunApplication_Navigation(User_Info &user)
             break;
         }
     }
+}
+
+void Auto_Check_Recur(User_Info& user)
+
+{
+    
+        // 4. CHECK RECURRING TRANSACTIONS (Requirement: Check on startup)
+        Date today;
+        GetCurrentDate(today); // Assumed function from Date.h
+
+        bool auto_updates = false;
+
+        // Check Recurring Expenses
+        for (int i = 0; i < user.recur_trans_expense_count; i++)
+        {
+            if (user.check_recur_trans(user.Recurring_Transaction_Expense_List[i], today))
+            {
+                auto_updates = true;
+            }
+        }
+        cout<<"Done Check Recurring Expenses"<<endl;
+        // Check Recurring Incomes
+        for (int i = 0; i < user.recur_trans_income_count; i++)
+        {
+            if (user.check_recur_trans(user.Recurring_Transaction_Income_List[i], today))
+            {
+                auto_updates = true;
+            }
+        }
+        cout<<"Done Check Recurring Incomes"<<endl;
+
+        if (auto_updates)
+        {
+            cout << " [!] Automatic recurring transactions have been generated for this month.\n";
+            cout << "     Press Enter to continue...";
+            std::cin.get();
+        }
 }
 
 int main()
@@ -465,36 +492,7 @@ int main()
         fin.close();
 
         // 4. CHECK RECURRING TRANSACTIONS (Requirement: Check on startup)
-        Date today;
-        GetCurrentDate(today); // Assumed function from Date.h
-
-        bool auto_updates = false;
-
-        // Check Recurring Expenses
-        for (int i = 0; i < user.recur_trans_expense_count; i++)
-        {
-            if (user.check_recur_trans(user.Recurring_Transaction_Expense_List[i], today))
-            {
-                auto_updates = true;
-            }
-        }
-        cout<<"Done check 1"<<endl;
-        // Check Recurring Incomes
-        for (int i = 0; i < user.recur_trans_income_count; i++)
-        {
-            if (user.check_recur_trans(user.Recurring_Transaction_Income_List[i], today))
-            {
-                auto_updates = true;
-            }
-        }
-        cout<<"Done check 2"<<endl;
-
-        if (auto_updates)
-        {
-            cout << " [!] Automatic recurring transactions have been generated for this month.\n";
-            cout << "     Press Enter to continue...";
-            std::cin.get();
-        }
+        Auto_Check_Recur(user);
     }
     else
     {

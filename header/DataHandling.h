@@ -16,9 +16,15 @@ struct Wallet;
 struct ExpenseCategory;
 struct IncomeSource;
 
-void WriteString(ofstream &out, const string &s);
+void clearScreen();
+// Wait for the user to press something
+void pause();
+bool Input_Choice(int &choice);
 
-// đọc xâu
+
+string Date_to_string(Date d);
+
+void WriteString(ofstream &out, const string &s);
 void ReadString(ifstream &in, string &s);
 
 void resize1(Wallet **&p, int size, int &cap);
@@ -32,6 +38,8 @@ void resize1(Recurring_Transaction_Expense **&p, int size, int &cap);
 bool Find_By_ID(int id, Wallet **&list, int &size, Wallet *&pointer);
 bool Find_By_ID(int id, IncomeSource **&list, int &size, IncomeSource *&pointer);
 bool Find_By_ID(int id, ExpenseCategory **&list, int &size, ExpenseCategory *&pointer);
+bool Find_By_ID(int id, Recurring_Transaction_Income **&list, int &size, Recurring_Transaction_Income *&pointer);
+bool Find_By_ID(int id, Recurring_Transaction_Expense **&list, int &size, Recurring_Transaction_Expense *&pointer);
 
 bool Find_By_Name(string &name, Wallet **&list, int &size, Wallet *&pointer);
 bool Find_By_Name(string &name, IncomeSource **&list, int &size, IncomeSource *&pointer);

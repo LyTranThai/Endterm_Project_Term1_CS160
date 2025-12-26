@@ -4,6 +4,46 @@
 #include "../header/Recurring_Transaction.h" // Added: Needed for Recurring struct details
 #include "../header/Wallet.h"
 
+void clearScreen()
+{
+// If you are on Windows, use "cls". If on Mac/Linux, use "clear"
+#ifdef _WIN32
+    system("cls");
+#endif
+}
+
+// Wait for the user to press something
+void pause()
+{
+    cout << "\nPress Enter to continue...";
+    // This line clears any leftover "Enter" keys in the keyboard buffer
+    // This line waits for a NEW "Enter" key press
+    std::cin.get();
+}
+
+bool Input_Choice(int &choice)
+{
+    string input;
+    std::getline(std::cin, input);
+
+    try
+    {
+        choice = stoi(input);
+        return true; // Try to convert string to int
+    }
+    catch (...)
+    {
+        return false; // reset
+    }
+}
+
+string Date_to_string(Date d)
+{
+    string out="";
+    out += to_string(d.day) + "/" + to_string(d.month)+"/" +to_string(d.year);
+    return out;
+}
+
 void WriteString(ofstream &out, const string &s)
 {
     size_t len = s.size();
@@ -117,6 +157,14 @@ bool Find_By_ID(int id, IncomeSource **&list, int &size, IncomeSource *&pointer)
     return TFind_By_ID(id, list, size, pointer);
 }
 bool Find_By_ID(int id, ExpenseCategory **&list, int &size, ExpenseCategory *&pointer)
+{
+    return TFind_By_ID(id, list, size, pointer);
+}
+bool Find_By_ID(int id, Recurring_Transaction_Income **&list, int &size, Recurring_Transaction_Income *&pointer)
+{
+    return TFind_By_ID(id, list, size, pointer);
+}
+bool Find_By_ID(int id, Recurring_Transaction_Expense **&list, int &size, Recurring_Transaction_Expense *&pointer)
 {
     return TFind_By_ID(id, list, size, pointer);
 }
@@ -394,7 +442,8 @@ void TShow_Recur_Transaction(T **&list, int list_size)
     {
         // 1. Top Border of the "Card"
         cout << string(CARD_WIDTH, '-') << "\n";
-
+        //print ID
+        cout<<"ID: "<< list[i]->id<<endl;
         // 2. Row 1: Date [LEFT] .............................. Amount [RIGHT]
         // OutputDateTable handles the first 15 chars (e.g., "01/01/2024   ")
         OutputDateTable(list[i]->start);

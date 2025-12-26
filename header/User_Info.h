@@ -168,6 +168,8 @@ struct User_Info
     void Show_Wallet_List();
     void Show_Transaction_History();
     void Show_Recurring_Transaction_List();
+    void Show_Recurring_Transaction_List(Recurring_Transaction_Income**& p);
+    void Show_Recurring_Transaction_List(Recurring_Transaction_Expense**& p);
     void Add_Wallet();
     void Add_Expense();
     void Add_Income();
@@ -177,18 +179,18 @@ struct User_Info
     void Add_Recur_Income_Transaction();
     bool check_recur_trans(Recurring_Transaction_Expense *&p, Date current_date);
     bool check_recur_trans(Recurring_Transaction_Income *&p, Date current_date);
+    //Delete an recurring transaction -> Let the endate to {0,0,0}
+    //Do not delete the existing transaction
+    void Stop_recur_trans(Recurring_Transaction_Expense *&p);
+    void Stop_recur_trans(Recurring_Transaction_Income *&p);
 
     // If can not find, return NULL
     Wallet *Choose_Wallet(string name);
     IncomeSource *Choose_IS(string name);
     ExpenseCategory *Choose_EC(string name);
-    void Erase_Wallet();
-    bool Input_Choice(int &choice);
-    void Input_User_Info_Textfile(string filename);
 
     // Xu ly thong ke:
     //-> Basic Features của 4.Statistics and Reporting
-
     // Menu
     void Draw_Statistics_Menu();
 
@@ -214,6 +216,7 @@ struct User_Info
     // mục số 6
     void Edit_Wallet();
     void Delete_Wallet();
+    void Switch_Wallet();
 
     void Edit_ExpenseCategory();
     void Delete_ExpenseCategory();

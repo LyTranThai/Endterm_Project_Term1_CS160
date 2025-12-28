@@ -1,7 +1,5 @@
 #include "../header/User_Info.h"
 
-
-
 bool User_Info::Is_Wallet_In_Use(int id)
 {
     // Check in
@@ -20,7 +18,17 @@ bool User_Info::Is_Wallet_In_Use(int id)
     //
     //
     // this is for recur
-
+    for (int i = 0; i < recur_trans_income_count; i++)
+    {
+        if (Recurring_Transaction_Income_List[i]->wallet->id == id)
+            return true;
+    }
+    // Check recurring expense
+    for (int i = 0; i < recur_trans_expense_count; i++)
+    {
+        if (Recurring_Transaction_Expense_List[i]->wallet->id == id)
+            return true;
+    }
     return false;
 }
 
@@ -121,34 +129,34 @@ void User_Info::Delete_Wallet()
     Show_Wallet_List();
     int id;
     string input;
-    bool check=true;
+    bool check = true;
     Wallet *dummy;
-    while(check)
+    while (check)
     {
-    cout << "Enter Wallet ID to Delete: ";
-    cin>>input;
-    
-    if (!isValidInt(input))
-    {
-        Clear_Buffer();
-        cout << "Error: Please Input an valid ID.\n";
-        cout << "Press enter to retype...";
-        cin.get();
-        Clear_Buffer();
-        ClearLines(3);
-    }
-    else
-    {
-        id=stoi(input);
-        if(!Find_By_ID(id, Wallet_List, wallet_count, dummy))
+        cout << "Enter Wallet ID to Delete: ";
+        cin >> input;
+
+        if (!isValidInt(input))
         {
+            Clear_Buffer();
             cout << "Error: Please Input an valid ID.\n";
-            system("pause");
-            return;
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         else
-        check=false;
-    }
+        {
+            id = stoi(input);
+            if (!Find_By_ID(id, Wallet_List, wallet_count, dummy))
+            {
+                cout << "Error: Please Input an valid ID.\n";
+                system("pause");
+                return;
+            }
+            else
+                check = false;
+        }
     }
     Clear_Buffer();
 
@@ -201,44 +209,44 @@ void User_Info::Delete_Wallet()
 
 void User_Info::Switch_Wallet()
 {
-   Show_Wallet_List();
+    Show_Wallet_List();
     int id;
     string input;
-    bool check=true;
+    bool check = true;
     Wallet *dummy;
-    while(check)
+    while (check)
     {
-    cout << "Enter Wallet ID to set default: ";
-    cin>>input;
-    
-    if (!isValidInt(input))
-    {
-        Clear_Buffer();
-        cout << "Error: Please Input an valid ID.\n";
-        cout << "Press enter to retype...";
-        cin.get();
-        Clear_Buffer();
-        ClearLines(3);
-    }
-    else
-    {
-        id=stoi(input);
-        if(!Find_By_ID(id, Wallet_List, wallet_count, dummy))
+        cout << "Enter Wallet ID to set default: ";
+        cin >> input;
+
+        if (!isValidInt(input))
         {
-            cout << " [Error] Cannot find wallet with ID: " << id<<endl;
-            system("pause");
-            return;
+            Clear_Buffer();
+            cout << "Error: Please Input an valid ID.\n";
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         else
-        check=false;
-    }
+        {
+            id = stoi(input);
+            if (!Find_By_ID(id, Wallet_List, wallet_count, dummy))
+            {
+                cout << " [Error] Cannot find wallet with ID: " << id << endl;
+                system("pause");
+                return;
+            }
+            else
+                check = false;
+        }
     }
     Clear_Buffer();
 
     //  Switch
-    this->default_Wallet=dummy;
-    cout << " [Success] Default Wallet set to: "<<this->default_Wallet->name<<endl;
-    system("pause"); 
+    this->default_Wallet = dummy;
+    cout << " [Success] Default Wallet set to: " << this->default_Wallet->name << endl;
+    system("pause");
 }
 
 void User_Info::Edit_ExpenseCategory()
@@ -249,33 +257,33 @@ void User_Info::Edit_ExpenseCategory()
         cout << "ID: " << expense[i]->id << " | " << expense[i]->name << endl;
     int id;
     string input;
-    bool check=true;
+    bool check = true;
     ExpenseCategory *dummy;
-    while(check)
+    while (check)
     {
-    cout << "Enter Expense Category ID to Delete: ";
-    cin>>input;
-    
-    if (!isValidInt(input))
-    {
-        cout << "Error: Please Input an valid ID.\n";
-        cout << "Press enter to retype...";
-        cin.get();
-        Clear_Buffer();
-        ClearLines(3);
-    }
-    else
-    {
-        id=stoi(input);
-        if(!Find_By_ID(id, expense, expense_count, dummy))
+        cout << "Enter Expense Category ID to Delete: ";
+        cin >> input;
+
+        if (!isValidInt(input))
         {
             cout << "Error: Please Input an valid ID.\n";
-            system("pause");
-            return;
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         else
-        check=false;
-    }
+        {
+            id = stoi(input);
+            if (!Find_By_ID(id, expense, expense_count, dummy))
+            {
+                cout << "Error: Please Input an valid ID.\n";
+                system("pause");
+                return;
+            }
+            else
+                check = false;
+        }
     }
 
     ExpenseCategory *target = nullptr;
@@ -304,33 +312,33 @@ void User_Info::Delete_ExpenseCategory()
 
     int id;
     string input;
-    bool check=true;
+    bool check = true;
     ExpenseCategory *dummy;
-    while(check)
+    while (check)
     {
-    cout << "Enter Expense Category ID to Delete: ";
-    cin>>input;
-    
-    if (!isValidInt(input))
-    {
-        cout << "Error: Please Input an valid ID.\n";
-        cout << "Press enter to retype...";
-        cin.get();
-        Clear_Buffer();
-        ClearLines(3);
-    }
-    else
-    {
-        id=stoi(input);
-        if(!Find_By_ID(id, expense, expense_count, dummy))
+        cout << "Enter Expense Category ID to Delete: ";
+        cin >> input;
+
+        if (!isValidInt(input))
         {
             cout << "Error: Please Input an valid ID.\n";
-            system("pause");
-            return;
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         else
-        check=false;
-    }
+        {
+            id = stoi(input);
+            if (!Find_By_ID(id, expense, expense_count, dummy))
+            {
+                cout << "Error: Please Input an valid ID.\n";
+                system("pause");
+                return;
+            }
+            else
+                check = false;
+        }
     }
     int index = -1;
     for (int i = 0; i < expense_count; i++)
@@ -381,33 +389,33 @@ void User_Info::Edit_IncomeSource()
 
     int id;
     string input;
-    bool check=true;
+    bool check = true;
     ExpenseCategory *dummy;
-    while(check)
+    while (check)
     {
-    cout << "Enter Expense Category ID to Delete: ";
-    cin>>input;
-    
-    if (!isValidInt(input))
-    {
-        cout << "Error: Please Input an valid ID.\n";
-        cout << "Press enter to retype...";
-        cin.get();
-        Clear_Buffer();
-        ClearLines(3);
-    }
-    else
-    {
-        id=stoi(input);
-        if(!Find_By_ID(id, expense, expense_count, dummy))
+        cout << "Enter Expense Category ID to Delete: ";
+        cin >> input;
+
+        if (!isValidInt(input))
         {
             cout << "Error: Please Input an valid ID.\n";
-            system("pause");
-            return;
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         else
-        check=false;
-    }
+        {
+            id = stoi(input);
+            if (!Find_By_ID(id, expense, expense_count, dummy))
+            {
+                cout << "Error: Please Input an valid ID.\n";
+                system("pause");
+                return;
+            }
+            else
+                check = false;
+        }
     }
 
     IncomeSource *target = nullptr;
@@ -435,33 +443,33 @@ void User_Info::Delete_IncomeSource()
 
     int id;
     string input;
-    bool check=true;
+    bool check = true;
     ExpenseCategory *dummy;
-    while(check)
+    while (check)
     {
-    cout << "Enter Expense Category ID to Delete: ";
-    cin>>input;
-    
-    if (!isValidInt(input))
-    {
-        cout << "Error: Please Input an valid ID.\n";
-        cout << "Press enter to retype...";
-        cin.get();
-        Clear_Buffer();
-        ClearLines(3);
-    }
-    else
-    {
-        id=stoi(input);
-        if(!Find_By_ID(id, expense, expense_count, dummy))
+        cout << "Enter Expense Category ID to Delete: ";
+        cin >> input;
+
+        if (!isValidInt(input))
         {
             cout << "Error: Please Input an valid ID.\n";
-            system("pause");
-            return;
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         else
-        check=false;
-    }
+        {
+            id = stoi(input);
+            if (!Find_By_ID(id, expense, expense_count, dummy))
+            {
+                cout << "Error: Please Input an valid ID.\n";
+                system("pause");
+                return;
+            }
+            else
+                check = false;
+        }
     }
 
     int index = -1;
@@ -512,7 +520,7 @@ void User_Info::Draw_MasterData_Menu()
     {
         system("cls");
         cout << "====================================\n";
-        cout << "    DON'T KNOW WHAT IT IS CALLED    \n";
+        cout << "       MASTER DATA MANAGEMENT       \n";
         cout << "====================================\n";
         cout << " 1. Add Expense Category\n";
         cout << " 2. Edit Expense Category\n";

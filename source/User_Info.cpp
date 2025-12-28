@@ -11,7 +11,7 @@ void User_Info::resize()
     resize1(expenses_transaction, expCount, expCap);
 }
 
-void User_Info::SaveToBinary(ofstream &out) 
+void User_Info::SaveToBinary(ofstream &out)
 {
     WriteString(out, name);
     out.write(reinterpret_cast<char *>(&this->default_Wallet->id), sizeof(int));
@@ -168,9 +168,9 @@ void User_Info::LoadFromBinary(ifstream &out)
     {
         this->Wallet_List[i] = new Wallet;
         out.read(reinterpret_cast<char *>(&this->Wallet_List[i]->id), sizeof(int));
-        if(this->Wallet_List[i]->id == default_Wallet_ID)
+        if (this->Wallet_List[i]->id == default_Wallet_ID)
         {
-            default_Wallet=this->Wallet_List[i];
+            default_Wallet = this->Wallet_List[i];
         }
         // name
         ReadString(out, this->Wallet_List[i]->name);
@@ -184,7 +184,6 @@ void User_Info::LoadFromBinary(ifstream &out)
         this->Wallet_List[i]->Wallet_resize();
         this->Wallet_List[i]->inCount = 0;
         this->Wallet_List[i]->expCount = 0;
-
     }
 
     // Read Recur
@@ -329,14 +328,8 @@ void User_Info::LoadFromBinary(ifstream &out)
     // Must Link to Wallet and type
 }
 
-
-
 // --- Bổ sung vào User_Info.cpp ---
 // --- Helper to ensure uniform date spacing (10 chars + 2 padding) ---
-
-
-
-
 
 bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date current_date)
 {
@@ -346,16 +339,15 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
 
     bool has_changes = false;
     Date iterator_date = p->start; // Start checking from the recurring start date
-    Date end_date=p->end;
-    if(Date_Less_Or_Equal(current_date, p->end))
+    Date end_date = p->end;
+    if (Date_Less_Or_Equal(current_date, p->end))
     {
-        end_date=current_date;
+        end_date = current_date;
     }
 
     // 2. Loop month-by-month until we pass the current date
     while (Date_Less_Or_Equal(iterator_date, end_date))
     {
-
 
         // 3. CHECK: Has this transaction already been generated for this specific Month/Year?
         bool already_exists = false;
@@ -395,7 +387,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
             expenses_transaction[expCount]->wallet = p->wallet; // Pointer copy
 
             // Generate a description so user knows it was automated
-            expenses_transaction[expCount]->description = "(Auto-Generated for ID "+to_string(expenses_transaction[expCount]->id)+")" + p->description;
+            expenses_transaction[expCount]->description = "(Auto-Generated for ID " + to_string(expenses_transaction[expCount]->id) + ")" + p->description;
 
             // 5. UPDATE WALLET BALANCE
             p->wallet->remain -= p->amount;
@@ -409,7 +401,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
             this->expCount++;
             has_changes = true;
 
-            cout << " [Auto] Generated recurring expense for ID "<<p->id<<" : "
+            cout << " [Auto] Generated recurring expense for ID " << p->id << " : "
                  << iterator_date.month << "/" << iterator_date.year << endl;
         }
 
@@ -419,6 +411,17 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
         {
             iterator_date.month = 1;
             iterator_date.year++;
+        }
+    // Sort list by date to keep history tidy
+        int maxDays = getDaysInMonth(iterator_date.month, iterator_date.year);
+        
+        if (iterator_date.day != p->start.day)
+        {
+            iterator_date.day = p->start.day;
+        }
+        if (iterator_date.day > maxDays)
+        {
+            iterator_date.day = maxDays;
         }
     }
 
@@ -439,10 +442,10 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
 
     bool has_changes = false;
     Date iterator_date = p->start;
-    Date end_date=p->end;
-    if(Date_Less_Or_Equal(current_date, p->end))
+    Date end_date = p->end;
+    if (Date_Less_Or_Equal(current_date, p->end))
     {
-        end_date=current_date;
+        end_date = current_date;
     }
 
     // 2. Loop month-by-month until we pass the current date
@@ -460,7 +463,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
                 p->wallet->incomes[i]->date.month == iterator_date.month &&
                 p->wallet->incomes[i]->date.year == iterator_date.year &&
                 p->wallet->incomes[i]->type->id == p->type->id &&
-                //p->wallet->incomes[i]->wallet->id == p->wallet->id &&
+                // p->wallet->incomes[i]->wallet->id == p->wallet->id &&
                 p->wallet->incomes[i]->amount == p->amount)
             {
                 already_exists = true;
@@ -502,7 +505,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
             this->inCount++;
             has_changes = true;
 
-            cout << " [Auto] Generated recurring expense for ID "<<p->id<<" : "
+            cout << " [Auto] Generated recurring expense for ID " << p->id << " : "
                  << iterator_date.month << "/" << iterator_date.year << endl;
         }
 
@@ -513,6 +516,17 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
             iterator_date.month = 1;
             iterator_date.year++;
         }
+        int maxDays = getDaysInMonth(iterator_date.month, iterator_date.year);
+        
+        if (iterator_date.day != p->start.day)
+        {
+            iterator_date.day = p->start.day;
+        }
+        if (iterator_date.day > maxDays)
+        {
+            iterator_date.day = maxDays;
+        }
+        
     }
 
     // Sort list by date to keep history tidy
@@ -524,93 +538,92 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Income *&p, Date current
     return has_changes;
 }
 
-void User_Info::Stop_recur_trans(Recurring_Transaction_Expense*& p)
+void User_Info::Stop_recur_trans(Recurring_Transaction_Expense *&p)
 {
     int id;
     string input;
-    bool check=true;
+    bool check = true;
     Recurring_Transaction_Expense *dummy;
-    while(check)
+    while (check)
     {
-    cout << "Enter Recurring Transaction Expense ID to stop: ";
-    cin>>input;
-    
-    if (!isValidInt(input))
-    {
-        Clear_Buffer();
-        cout << "Error: Please Input an valid ID.\n";
-        cout << "Press enter to retype...";
-        cin.get();
-        Clear_Buffer();
-        ClearLines(3);
-    }
-    else
-    {
-        id=stoi(input);
-        if(!Find_By_ID(id, Recurring_Transaction_Expense_List, recur_trans_expense_count, dummy))
+        cout << "Enter Recurring Transaction Expense ID to stop: ";
+        cin >> input;
+
+        if (!isValidInt(input))
         {
+            Clear_Buffer();
             cout << "Error: Please Input an valid ID.\n";
-            system("pause");
-            return;
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         else
-        check=false;
-    }
+        {
+            id = stoi(input);
+            if (!Find_By_ID(id, Recurring_Transaction_Expense_List, recur_trans_expense_count, dummy))
+            {
+                cout << "Error: Please Input an valid ID.\n";
+                system("pause");
+                return;
+            }
+            else
+                check = false;
+        }
     }
     Clear_Buffer();
-    dummy->end.day=0;
-    dummy->end.month=0;
-    dummy->end.year=0;
+    dummy->end.day = 0;
+    dummy->end.month = 0;
+    dummy->end.year = 0;
     Date pin;
     GetCurrentDate(pin);
-    dummy->description="Deleted on " + Date_to_string(pin);
-    cout << "Stop recurring transaction with ID "<<id<<" successfully.\n";
+    dummy->description = "Deleted on " + Date_to_string(pin);
+    cout << "Stop recurring transaction with ID " << id << " successfully.\n";
     system("pause");
 }
-void User_Info::Stop_recur_trans(Recurring_Transaction_Income*& p)
+void User_Info::Stop_recur_trans(Recurring_Transaction_Income *&p)
 {
     int id;
     string input;
-    bool check=true;
+    bool check = true;
     Recurring_Transaction_Income *dummy;
-    while(check)
+    while (check)
     {
-    cout << "Enter Recurring Transaction Income ID to stop: ";
-    cin>>input;
-    
-    if (!isValidInt(input))
-    {
-        Clear_Buffer();
-        cout << "Error: Please Input an valid ID.\n";
-        cout << "Press enter to retype...";
-        cin.get();
-        Clear_Buffer();
-        ClearLines(3);
-    }
-    else
-    {
-        id=stoi(input);
-        if(!Find_By_ID(id, Recurring_Transaction_Income_List, recur_trans_income_count, dummy))
+        cout << "Enter Recurring Transaction Income ID to stop: ";
+        cin >> input;
+
+        if (!isValidInt(input))
         {
+            Clear_Buffer();
             cout << "Error: Please Input an valid ID.\n";
-            system("pause");
-            return;
+            cout << "Press enter to retype...";
+            cin.get();
+            Clear_Buffer();
+            ClearLines(3);
         }
         else
-        check=false;
-    }
+        {
+            id = stoi(input);
+            if (!Find_By_ID(id, Recurring_Transaction_Income_List, recur_trans_income_count, dummy))
+            {
+                cout << "Error: Please Input an valid ID.\n";
+                system("pause");
+                return;
+            }
+            else
+                check = false;
+        }
     }
     Clear_Buffer();
-    dummy->end.day=0;
-    dummy->end.month=0;
-    dummy->end.year=0;
+    dummy->end.day = 0;
+    dummy->end.month = 0;
+    dummy->end.year = 0;
     Date pin;
     GetCurrentDate(pin);
-    dummy->description="Deleted on " + Date_to_string(pin);
-    cout << "Stop recurring transaction with ID "<<id<<" successfully.\n";
+    dummy->description = "Deleted on " + Date_to_string(pin);
+    cout << "Stop recurring transaction with ID " << id << " successfully.\n";
     system("pause");
 }
-
 
 // Search for a Wallet by name
 Wallet *User_Info::Choose_Wallet(string name)

@@ -395,7 +395,7 @@ bool User_Info::check_recur_trans(Recurring_Transaction_Expense *&p, Date curren
             expenses_transaction[expCount]->wallet = p->wallet; // Pointer copy
 
             // Generate a description so user knows it was automated
-            expenses_transaction[expCount]->description = "(Auto-Generated)" + p->description;
+            expenses_transaction[expCount]->description = "(Auto-Generated for ID "+to_string(expenses_transaction[expCount]->id)+")" + p->description;
 
             // 5. UPDATE WALLET BALANCE
             p->wallet->remain -= p->amount;

@@ -261,7 +261,7 @@ void User_Info::Edit_ExpenseCategory()
     ExpenseCategory *dummy;
     while (check)
     {
-        cout << "Enter Expense Category ID to Delete: ";
+        cout << "Enter Expense Category ID to Edit: ";
         cin >> input;
 
         if (!isValidInt(input))
@@ -285,7 +285,7 @@ void User_Info::Edit_ExpenseCategory()
                 check = false;
         }
     }
-
+    Clear_Buffer();
     ExpenseCategory *target = nullptr;
     if (!Find_By_ID(id, expense, expense_count, target))
     {
@@ -393,7 +393,7 @@ void User_Info::Edit_IncomeSource()
     ExpenseCategory *dummy;
     while (check)
     {
-        cout << "Enter Expense Category ID to Delete: ";
+        cout << "Enter Income Source ID to Edit: ";
         cin >> input;
 
         if (!isValidInt(input))
@@ -417,7 +417,7 @@ void User_Info::Edit_IncomeSource()
                 check = false;
         }
     }
-
+    Clear_Buffer();
     IncomeSource *target = nullptr;
     if (!Find_By_ID(id, income, income_count, target))
     {
@@ -447,7 +447,7 @@ void User_Info::Delete_IncomeSource()
     ExpenseCategory *dummy;
     while (check)
     {
-        cout << "Enter Expense Category ID to Delete: ";
+        cout << "Enter Income Source ID to Edit: ";
         cin >> input;
 
         if (!isValidInt(input))

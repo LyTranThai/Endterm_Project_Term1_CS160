@@ -523,7 +523,7 @@ void User_Info::Add_Income_Transaction()
         }
         else
         {
-            cout << "Income source does not exist, do you want to create a new incoce source?\n";
+            cout << "Income source does not exist, do you want to create a new income source?\n";
             cout << "Enter your choice (1/0): \n";
             cout << "1. Yes\n";
             cout << "2. No\n";

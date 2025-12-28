@@ -505,7 +505,7 @@ void TSort_By_Date_Transaction(T **&list, int list_size)
         {
             // Assuming result '2' means list[min_idx] > list[j] (i.e., we want ascending order)
             // If you want Descending (newest first), reverse the logic
-            if (compare_Date(list[j]->date, list[max_idx]->date) == 2)
+            if (!Date_Less_Or_Equal( list[j]->date, list[max_idx]->date))
             {
                 max_idx = j; // Just update the index, don't swap yet
             }

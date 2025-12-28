@@ -63,6 +63,8 @@ void OutputDateTable(Date src);
 
 void Show_Transaction(Transaction_Income **&list, int list_size);
 void Show_Transaction(Transaction_Expense **&list, int list_size);
+void Show_All_Transaction(Transaction_Income **&list, int list_size);
+void Show_All_Transaction(Transaction_Expense **&list, int list_size);
 
 void Sort_By_Date_Transaction(Transaction_Income **&list, int list_size);
 void Sort_By_Date_Transaction(Transaction_Expense **&list, int list_size);

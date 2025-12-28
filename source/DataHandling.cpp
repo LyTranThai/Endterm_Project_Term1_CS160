@@ -334,7 +334,7 @@ void PrintWrapped(string content, int width, int indent)
 }
 
 template <typename T>
-void TShow_Transaction(T **&list, int list_size)
+void TShow_Transaction(T **&list, int list_size,int n)
 {
     const int wDate = 14;
     const int wCat = 22;
@@ -356,8 +356,9 @@ void TShow_Transaction(T **&list, int list_size)
 
     cout << "\n";
 
-    for (int i = 0; i < list_size; i++)
+    for (int i = list_size-n; i < list_size; i++)
     {
+        if(i<0) continue;
         // 1. Top Border of the "Card"
         cout << string(CARD_WIDTH, '-') << "\n";
 
@@ -378,7 +379,8 @@ void TShow_Transaction(T **&list, int list_size)
         // 5. Row 4: Description (Only if it exists, or placeholder)
         if (!list[i]->description.empty())
         {
-            PrintWrapped(list[i]->description, CARD_WIDTH - 6, 6);
+            cout<<"Note: ";
+            PrintWrapped(list[i]->description, CARD_WIDTH - 6, 0);
             cout << endl;
         }
         else
@@ -392,11 +394,19 @@ void TShow_Transaction(T **&list, int list_size)
 
 void Show_Transaction(Transaction_Income **&list, int list_size)
 {
-    TShow_Transaction(list, list_size);
+    TShow_Transaction(list, list_size,10);
 }
 void Show_Transaction(Transaction_Expense **&list, int list_size)
 {
-    TShow_Transaction(list, list_size);
+    TShow_Transaction(list, list_size,10);
+}
+void Show_All_Transaction(Transaction_Income **&list, int list_size)
+{
+    TShow_Transaction(list, list_size, list_size);
+}
+void Show_All_Transaction(Transaction_Expense **&list, int list_size)
+{
+    TShow_Transaction(list, list_size,list_size);
 }
 /*
 ------------------------------------------------------------------------------------------

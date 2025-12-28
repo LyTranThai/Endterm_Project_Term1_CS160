@@ -184,6 +184,7 @@ struct User_Info
 
     void Show_Wallet_List();
     void Show_Transaction_History();
+    void Show_All_Transaction_History();
     void Show_Recurring_Transaction_List();
     void Show_Recurring_Transaction_List(Recurring_Transaction_Income**& p);
     void Show_Recurring_Transaction_List(Recurring_Transaction_Expense**& p);

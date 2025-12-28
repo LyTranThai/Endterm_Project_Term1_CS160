@@ -6,6 +6,7 @@ using namespace std;
 void Draw_Wallet_List(User_Info &user);
 void Draw_Transaction_History(User_Info &user);
 void Draw_Add_Transaction(User_Info &user);
+void Draw_All_Transaction(User_Info &user);
 void Draw_Recurring_Transaction_List(User_Info &user);
 void RunApplication_Navigation(User_Info &user);
 
@@ -46,7 +47,7 @@ void drawMenu(User_Info &user) // ifstream& fin
     cout
         << " User:      " << userName << "\n";
     cout << " Wallet:    " << currentWallet << "\n";
-    cout << " Remainder: $" << fixed << setprecision(2) << currentRemainder << "\n";
+    cout << " Remainder: " << fixed << setprecision(2) << currentRemainder << "\n";
     cout << string(window_width, '-') << endl;
     cout << endl;
     cout << endl;
@@ -213,6 +214,7 @@ void Draw_Transaction_History(User_Info &user)
 
         // 2. Selectable Options
         cout << "1. Add Transaction\n";
+        cout << "2. Show all Transaction\n";
         cout << "0. Back to menu\n";
         cout << string(window_width, '-') << endl;
         cout << "Select option: ";
@@ -224,6 +226,9 @@ void Draw_Transaction_History(User_Info &user)
         {
         case 1:
             Draw_Add_Transaction(user);
+            break;
+        case 2:
+            Draw_All_Transaction(user);
             break;
         case 0:
             return;
@@ -278,6 +283,44 @@ void Draw_Add_Transaction(User_Info &user)
         }
     }
 }
+
+void Draw_All_Transaction(User_Info &user)
+{
+    int window_width = 70;
+    int choice;
+    while (true)
+    {
+        clearScreen();
+        // 1. Header & User Info
+        cout << string(window_width, '=') << endl;
+        print_center("PERSONAL FINANCE MANAGER", ' ', window_width);
+        cout << endl;
+        cout << string(window_width, '=') << endl;
+        print_center("ADD TRANSACTION", ' ', window_width);
+        cout << endl;
+        cout << string(window_width, '=') << endl;
+        user.Show_All_Transaction_History();
+        // 2. Selectable Options
+        cout << "0. Back to menu\n";
+        cout << string(window_width, '=') << endl;
+        cout << "Select option: ";
+        if (!Input_Choice(choice))
+        {
+            continue;
+        }
+        switch (choice)
+        {
+        case 0:
+            return;
+        default:
+            cout << "\n[!] Invalid option.\n";
+            pause();
+            break;
+        }
+    }
+}
+
+
 
 void Draw_Recurring_Transaction_List(User_Info &user)
 {

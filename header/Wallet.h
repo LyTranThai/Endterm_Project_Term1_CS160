@@ -25,7 +25,7 @@ struct Wallet : MasterData
 
     Wallet()
     {
-        name = "unknown";
+        name = "Unknown";
         id = 0;
         remain = 0;
         inCount = 0;

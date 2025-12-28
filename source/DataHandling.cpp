@@ -1,6 +1,6 @@
 
 #include "../header/DataHandling.h"
-#include "../header/Transaction.h"           // Added: Needed for Transaction struct details
+#include "../header/transaction.h"           // Added: Needed for Transaction struct details
 #include "../header/Recurring_Transaction.h" // Added: Needed for Recurring struct details
 #include "../header/Wallet.h"
 

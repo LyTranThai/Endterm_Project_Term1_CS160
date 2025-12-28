@@ -1,4 +1,5 @@
-#include "..\header\User_Info.h"
+#include "../header/User_Info.h"
+
 
 
 bool User_Info::Is_Wallet_In_Use(int id)

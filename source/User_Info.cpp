@@ -1,4 +1,4 @@
-#include "../header/User_Info.h"
+#include "..\header\User_Info.h"
 
 void User_Info::resize()
 {
